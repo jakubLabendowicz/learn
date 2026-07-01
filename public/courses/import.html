@@ -42,7 +42,7 @@
   </div>
 
   <div class="page-header" style="padding-top:1rem">
-    <h1 style="font-size:1.3rem">Zaimportowane kursy</h1>
+    <h1 style="font-size:1.3rem">Wszystkie kursy</h1>
   </div>
   <div class="imported-list" id="imported-list"></div>
 </main>
@@ -90,7 +90,8 @@ function handleFile(file) {
       showMessage('error', `Nie udało się zaimportować kursu:\n${result.error}`);
       return;
     }
-    showMessage('success', `Zaimportowano kurs „${data.course.title}”. <a href="/courses/${result.slug}">Rozpocznij kurs →</a>`);
+    const title = data.courses[0].title;
+    showMessage('success', `Zaimportowano kurs „${title}”. <a href="/courses/${result.slug}">Rozpocznij kurs →</a>`);
     renderImportedList();
   };
   reader.onerror = () => showMessage('error', 'Nie udało się odczytać pliku.');
@@ -99,9 +100,9 @@ function handleFile(file) {
 
 function renderImportedList() {
   const list = document.getElementById('imported-list');
-  const courses = learnListImportedCourses();
+  const courses = learnListCourses();
   if (!courses.length) {
-    list.innerHTML = `<p class="dash-empty">Nie zaimportowano jeszcze żadnego kursu.</p>`;
+    list.innerHTML = `<p class="dash-empty">Brak kursów. Zaimportuj plik powyżej.</p>`;
     return;
   }
   list.innerHTML = courses.map(c => `
@@ -120,12 +121,12 @@ function renderImportedList() {
 }
 
 function removeImported(slug) {
-  if (!confirm('Usunąć zaimportowany kurs? Postęp i wyniki quizów dla tego kursu pozostaną zapisane, ale sam kurs zniknie z listy, dopóki nie zaimportujesz go ponownie.')) return;
-  learnDeleteImportedCourse(slug);
+  if (!confirm('Usunąć ten kurs? Postęp i wyniki quizów pozostaną zapisane, ale sam kurs zniknie z listy, dopóki nie zaimportujesz go ponownie.')) return;
+  learnDeleteCourse(slug);
   renderImportedList();
 }
 
-renderImportedList();
+learnEnsureSeeded().then(renderImportedList);
 </script>
 
 </body>
