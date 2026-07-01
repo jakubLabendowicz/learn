@@ -154,19 +154,22 @@ test.
 | `question`    | string                    | tak        | Treść pytania (zwykły tekst, bez markdown). |
 | `options`     | tablica `{key, text}`      | tak, min. 2 | Klucze zwykle `"A"`, `"B"`, `"C"`, `"D"`… `text` to zwykły tekst odpowiedzi. |
 | `answer`      | tablica kluczy (string[])  | tak, min. 1 | Klucze poprawnych odpowiedzi. Jedna wartość = pytanie jednokrotnego wyboru. Więcej niż jedna = pytanie wielokrotnego wyboru (checkboxy). |
-| `explanation` | string (HTML)              | tak        | Wyjaśnienie poprawnej odpowiedzi. To pole jest wstawiane jako HTML (NIE markdown) — możesz użyć np. `<strong>`, `<br>`, `<ul><li>`. |
+| `explanation` | string (Markdown)          | tak        | Wyjaśnienie poprawnej odpowiedzi. Renderowane przez ten sam silnik Markdown co pole `content` (patrz obsługiwana składnia niżej) — NIE wstawiaj surowego HTML, użyj np. `**pogrubienie**`, list `- `, cytatu `> `. |
 
-## Obsługiwana składnia Markdown w polu `content`
+## Obsługiwana składnia Markdown (pola `content` i `explanation`)
 
 - Nagłówki: `#`, `##`, `###`
 - Cytat: `> tekst`
-- Listy: `- ` lub `* ` (nieuporządkowane), `1. ` (uporządkowane) — obsługiwany jeden poziom zagnieżdżenia przez wcięcie spacjami
+- Listy: `- ` lub `* ` (nieuporządkowane), `1. ` (uporządkowane) — dowolna głębokość zagnieżdżenia przez wcięcie spacjami (2 spacje = jeden poziom głębiej)
 - Tabele: standardowa składnia `| a | b |` z wierszem separatora pod nagłówkiem
 - Pogrubienie: `**tekst**`
 - Kursywa: `*tekst*`
 - Kod inline: `` `kod` ``
+- Blok kodu: potrójny backtick na osobnej linii otwiera i zamyka blok (opcjonalny tag języka po otwierającym `` ``` `` jest ignorowany, np. `` ```js ``)
+- Linki: `[tekst](url)` — otwierają się w nowej karcie; schematy `javascript:`/`data:`/`vbscript:` są blokowane
+- Obrazy: `![tekst alternatywny](url)`
 - Linia pozioma: `---`
-- NIEobsługiwane: linki `[]()`, obrazy, bloki kodu potrójnym backtickiem, zagnieżdżenie list głębsze niż 1 poziom
+- NIEobsługiwane: HTML wstawiony wprost w treści (jest traktowany jako zwykły tekst i eskejpowany)
 
 ## Zasady unikalności slugów
 
@@ -233,7 +236,7 @@ test.
                 { "key": "C", "text": "Odpowiedź C" }
               ],
               "answer": ["B"],
-              "explanation": "<strong>Poprawna odpowiedź: B.</strong> Krótkie wyjaśnienie dlaczego."
+              "explanation": "**Poprawna odpowiedź: B.** Krótkie wyjaśnienie dlaczego.\n\n> Dodatkowa wskazówka na przyszłość."
             },
             {
               "id": "2b3c4d5e-6f70-4819-9a0b-c1d2e3f4a5b7",
@@ -244,7 +247,7 @@ test.
                 { "key": "C", "text": "Odpowiedź poprawna nr 2" }
               ],
               "answer": ["A", "C"],
-              "explanation": "Poprawne są A i C, ponieważ..."
+              "explanation": "Poprawne są **A** i **C**, ponieważ:\n\n- pierwszy powód\n- drugi powód"
             }
           ]
         }
