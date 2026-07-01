@@ -74,6 +74,32 @@
   function quizzesOf(mod) { return mod.items.filter(i => i.type === 'quiz'); }
   function itemBySlug(mod, slug) { return mod.items.find(i => i.slug === slug); }
 
+  function flatItems() {
+    return MODULES.flatMap(m => m.items.map(it => ({ module: m, item: it })));
+  }
+
+  // Previous/next item across the WHOLE course (not just within the module).
+  function prevNextItem(item) {
+    const flat = flatItems();
+    const idx = flat.findIndex(x => x.item.id === item.id);
+    if (idx === -1) return { prev: null, next: null };
+    return { prev: idx > 0 ? flat[idx - 1] : null, next: idx < flat.length - 1 ? flat[idx + 1] : null };
+  }
+
+  // Renders the prev/next navigation for an item page. Not shown for the
+  // course-wide final quiz, which isn't part of the sequential item list.
+  function itemPrevNextNav(mod, item) {
+    if (!mod) return '';
+    const { prev, next } = prevNextItem(item);
+    const prevHtml = prev
+      ? `<a class="btn-secondary" href="${itemUrl(prev.module, prev.item)}" onclick="navigate('${itemUrl(prev.module, prev.item)}');return false;">← Wróć do ${escapeHtml(prev.item.title)}</a>`
+      : '<span></span>';
+    const nextHtml = next
+      ? `<a class="course-btn" href="${itemUrl(next.module, next.item)}" onclick="navigate('${itemUrl(next.module, next.item)}');return false;">Przejdź do ${escapeHtml(next.item.title)} →</a>`
+      : '<span></span>';
+    return `<div class="item-nav">${prevHtml}${nextHtml}</div>`;
+  }
+
   // ---------------- URLs ----------------
 
   const courseUrl = () => `/courses/${COURSE.slug}`;
@@ -291,12 +317,7 @@
 
   function renderModulePage(mod) {
     const entry = stateEntry();
-    const arts = articlesOf(mod);
-    const quizzes = quizzesOf(mod);
-
-    const artRows = arts.map(a => itemRow(mod, entry, a)).join('') || `<p class="dash-empty">Brak artykułów w tym module.</p>`;
-    const quizRows = quizzes.map(q => itemRow(mod, entry, q)).join('') || `<p class="dash-empty">Brak quizów w tym module.</p>`;
-
+    const rows = mod.items.map(it => itemRow(mod, entry, it)).join('') || `<p class="dash-empty">Brak elementów w tym module.</p>`;
     const idx = MODULES.indexOf(mod);
 
     return `
@@ -304,16 +325,8 @@
       <div class="module-head">
         <div class="module-head-eyebrow">Moduł ${idx + 1} / ${MODULES.length}${mod.weight != null ? ` · Waga: ${mod.weight}%` : ''}</div>
         <h1>${escapeHtml(mod.title)}</h1>
-        <a href="${itemsUrl(mod)}" onclick="navigate('${itemsUrl(mod)}');return false;">Zobacz wszystkie elementy →</a>
       </div>
-      <div class="module-section">
-        <div class="module-list-header"><h2>Artykuły</h2></div>
-        <div class="item-list">${artRows}</div>
-      </div>
-      <div class="module-section">
-        <div class="module-list-header"><h2>Quizy</h2></div>
-        <div class="item-list">${quizRows}</div>
-      </div>`;
+      <div class="item-list">${rows}</div>`;
   }
 
   // ---------------- Items list page ----------------
@@ -340,9 +353,6 @@
       );
     }
     const html = renderMarkdown(item.content);
-    const quizzes = quizzesOf(mod);
-    const ctaUrl = quizzes.length === 1 ? itemUrl(mod, quizzes[0]) : itemsUrl(mod);
-    const ctaLabel = quizzes.length === 1 ? 'Przejdź do quizu →' : 'Zobacz quizy modułu →';
 
     return `
       ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Elementy', href: itemsUrl(mod) }, { label: item.title }])}
@@ -353,9 +363,9 @@
         <div class="article-body">${html}</div>
         <div class="article-footer">
           <div class="mark-read-note">✓ Artykuł oznaczony jako przeczytany</div>
-          ${quizzes.length ? `<a class="course-btn" href="${ctaUrl}" onclick="navigate('${ctaUrl}');return false;">${ctaLabel}</a>` : ''}
         </div>
-      </div>`;
+      </div>
+      ${itemPrevNextNav(mod, item)}`;
   }
 
   // ---------------- Quiz: setup / run / results (scoped route version) ----------------
@@ -414,7 +424,8 @@
           <input type="number" id="setup-custom-input" min="1" max="${SETUP.max}" placeholder="np. 7" oninput="onSetupCustomInput(this.value)">
         </div>
         <button class="course-btn" onclick="confirmStartQuiz()">Rozpocznij quiz →</button>
-      </div>`;
+      </div>
+      ${itemPrevNextNav(mod, item)}`;
   }
 
   function selectSetupCount(n) {
@@ -666,7 +677,8 @@
           <h3>📋 Przegląd odpowiedzi</h3>
           ${reviewHtml}
         </div>
-      </div>`;
+      </div>
+      ${itemPrevNextNav(mod, item)}`;
   }
 
   function retryQuizSession() {

@@ -406,6 +406,20 @@
   color: var(--text-muted);
 }
 
+.item-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.setup-card + .item-nav {
+  max-width: 480px;
+  margin: 1rem auto 0;
+}
+
 /* ---------- Buttons ---------- */
 
 .btn-secondary {
