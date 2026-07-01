@@ -1,31 +1,67 @@
-/* Local "database": courses, modules and items stored as three normalized
- * tables (with UUID ids and id-reference relations between them) in a
- * single localStorage key. This is the app's only source of course data —
- * built-in courses are seeded here on first load (see learnEnsureSeeded)
- * from their course.json files, and every page reads exclusively from here
- * afterwards, whether the course is built-in or user-imported. */
+/* Local "database": courses, modules, items, the user(s), and per-user
+ * activity (userCourses/userModules/userItems/userQuizAttempts) stored as
+ * normalized tables (UUID ids, id-reference relations) in a single
+ * localStorage key. This is the app's only source of data — built-in
+ * courses and a default user are seeded here on first load (see
+ * learnEnsureSeeded), and every page reads exclusively from here
+ * afterwards, whether a course is built-in or user-imported. */
 const LEARN_DB_KEY = 'learn:db:v1';
 const LEARN_SEEDED_KEY = 'learn:seeded-builtin:v1';
+const LEARN_DB_DEFAULTS = { courses: [], modules: [], items: [], users: [], userCourses: [], userModules: [], userItems: [], userQuizAttempts: [] };
+
+function learnUuid() { return crypto.randomUUID(); }
 
 function learnLoadDB() {
   try {
     const raw = localStorage.getItem(LEARN_DB_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && Array.isArray(parsed.courses) && Array.isArray(parsed.modules) && Array.isArray(parsed.items)) return parsed;
+      if (parsed && typeof parsed === 'object') return Object.assign({}, LEARN_DB_DEFAULTS, parsed);
     }
   } catch (e) {}
-  return { courses: [], modules: [], items: [] };
+  return Object.assign({}, LEARN_DB_DEFAULTS);
 }
 
 function learnSaveDB(db) {
   localStorage.setItem(LEARN_DB_KEY, JSON.stringify(db));
 }
 
-/* Seeds the built-in courses (listed in /courses/manifest.json) into the
- * local DB the first time the app ever runs. A no-op on every later call
- * (including after the user deletes a built-in course — it stays deleted). */
+/* Creates the single local user the first time the app ever runs. */
+function learnEnsureDefaultUser() {
+  const db = learnLoadDB();
+  if (db.users.length > 0) return;
+  db.users.push({
+    id: learnUuid(),
+    name: 'Gość',
+    email: '',
+    bio: '',
+    avatarIcon: '🙂',
+    createdAt: new Date().toISOString(),
+  });
+  learnSaveDB(db);
+}
+
+/* This app has exactly one local user (no accounts/auth) — this is them. */
+function learnCurrentUser() {
+  const db = learnLoadDB();
+  return db.users[0] || null;
+}
+
+function learnUpdateUser(userId, patch) {
+  const db = learnLoadDB();
+  const user = db.users.find(u => u.id === userId);
+  if (!user) return null;
+  Object.assign(user, patch);
+  learnSaveDB(db);
+  return user;
+}
+
+/* Seeds the built-in courses (listed in /courses/manifest.json) and the
+ * default user into the local DB the first time the app ever runs. A
+ * no-op on every later call (including after the user deletes a built-in
+ * course — it stays deleted). */
 async function learnEnsureSeeded() {
+  learnEnsureDefaultUser();
   if (localStorage.getItem(LEARN_SEEDED_KEY)) return;
   try {
     const slugs = await fetch('/courses/manifest.json').then(r => r.json());
@@ -35,6 +71,17 @@ async function learnEnsureSeeded() {
     }
   } catch (e) {}
   localStorage.setItem(LEARN_SEEDED_KEY, '1');
+}
+
+/* Graph-traversal helpers shared by state.js and profile.html. */
+function learnFindModuleForItem(itemId) {
+  const db = learnLoadDB();
+  return db.modules.find(m => m.items.some(r => r.item_id === itemId)) || null;
+}
+
+function learnFindCourseForModule(moduleId) {
+  const db = learnLoadDB();
+  return db.courses.find(c => c.modules.some(r => r.module_id === moduleId)) || null;
 }
 
 /* Resolves a course by slug into { course, modules }, where each module
@@ -69,7 +116,8 @@ function learnListCourses() {
   }));
 }
 
-/* Removes a course's own row plus every module/item it (exclusively) owns. */
+/* Removes a course's own row plus every module/item it (exclusively) owns,
+ * and cascades into per-user activity referencing any of them. */
 function learnRemoveCourseRows(db, courseId) {
   const course = db.courses.find(c => c.id === courseId);
   if (!course) return;
@@ -79,6 +127,10 @@ function learnRemoveCourseRows(db, courseId) {
   db.courses = db.courses.filter(c => c.id !== courseId);
   db.modules = db.modules.filter(m => !moduleIds.has(m.id));
   db.items = db.items.filter(it => !itemIds.has(it.id));
+  db.userCourses = db.userCourses.filter(r => r.courseId !== courseId);
+  db.userModules = db.userModules.filter(r => !moduleIds.has(r.moduleId));
+  db.userItems = db.userItems.filter(r => !itemIds.has(r.itemId));
+  db.userQuizAttempts = db.userQuizAttempts.filter(r => !itemIds.has(r.itemId));
 }
 
 function learnDeleteCourse(slug) {

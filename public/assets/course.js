@@ -17,10 +17,14 @@
   let MODULES = null;
   let SETUP = null;
   let QUIZ_SESSION = null; // { itemId, phase: 'run'|'results', ...quiz state }
+  let CURRENT_USER = null;
+  let lastTouchedModuleId = null;
+  let lastTouchedItemId = null;
 
   // The local DB (localStorage) is the only source of course data; on
   // first ever load it's seeded from the built-in course.json files.
   learnEnsureSeeded().then(() => {
+    CURRENT_USER = learnCurrentUser();
     const data = learnGetCourseData(courseSlug);
     if (!data) {
       app.innerHTML = `<div class="course-hero"><h1>Nie znaleziono kursu</h1><p><a href="/courses">Wróć do listy kursów</a></p></div>`;
@@ -33,7 +37,6 @@
     COURSE = data.course;
     MODULES = data.modules;
     document.title = `${COURSE.title} — learn`;
-    document.documentElement.style.setProperty('--course-accent', COURSE.accent || '#4f46e5');
     document.getElementById('course-topbar-title').textContent = COURSE.shortTitle || COURSE.title;
     fetch(`/archive/${COURSE.slug}`, { method: 'HEAD' })
       .then(r => {
@@ -45,24 +48,15 @@
     topbar.style.display = 'block';
     footer.style.display = 'block';
 
-    let totalArticles = 0, totalQuizzes = 0;
-    MODULES.forEach(m => m.items.forEach(it => { if (it.type === 'article') totalArticles++; else totalQuizzes++; }));
-
-    const state = learnLoadState();
-    learnTouchCourse(state, {
-      id: COURSE.id, slug: COURSE.slug, title: COURSE.title, shortTitle: COURSE.shortTitle, icon: COURSE.icon,
-      accent: COURSE.accent, totalArticles, totalQuizzes,
-    });
-    learnSaveState(state);
+    const userCourse = learnTouchUserCourse(CURRENT_USER.id, COURSE.id);
+    document.documentElement.style.setProperty('--course-accent', userCourse.customAccent || COURSE.accent || '#4f46e5');
 
     window.addEventListener('popstate', () => renderRoute());
     renderRoute();
   }
 
-  function stateEntry() { return learnLoadState().courses[COURSE.id]; }
-
   function updateTopbar() {
-    const pct = learnCourseProgress(stateEntry());
+    const pct = learnCourseProgress(CURRENT_USER.id, COURSE.id);
     document.getElementById('course-topbar-pct').textContent = pct + '% ukończone';
     document.getElementById('course-topbar-bar-fill').style.width = pct + '%';
   }
@@ -146,6 +140,10 @@
 
     const mod = r.moduleSlug ? moduleBySlug(r.moduleSlug) : null;
     if (!mod) { app.innerHTML = renderNotFound('moduł'); updateTopbar(); return; }
+    if (lastTouchedModuleId !== mod.id) {
+      learnTouchUserModule(CURRENT_USER.id, mod.id);
+      lastTouchedModuleId = mod.id;
+    }
 
     if (r.isModule) { app.innerHTML = renderModulePage(mod); updateTopbar(); return; }
     if (r.isItemsList) { app.innerHTML = renderItemsList(mod); updateTopbar(); return; }
@@ -153,6 +151,12 @@
     if (r.isItem) {
       const item = itemBySlug(mod, r.itemSlug);
       if (!item) { app.innerHTML = renderNotFound('element'); updateTopbar(); return; }
+      // Touched once per navigation (not on every re-render during a quiz
+      // session) so answering questions doesn't spam localStorage writes.
+      if (lastTouchedItemId !== item.id) {
+        learnTouchUserItem(CURRENT_USER.id, item.id);
+        lastTouchedItemId = item.id;
+      }
       if (item.type === 'article') { app.innerHTML = renderArticlePage(mod, item); updateTopbar(); return; }
       renderQuizRoute(mod, item);
       updateTopbar();
@@ -177,22 +181,15 @@
 
   // ---------------- Progress helpers ----------------
 
-  function moduleQuizAttempts(entry, quizId) {
-    return (entry.quizAttempts || []).filter(a => a.itemId === quizId);
-  }
-  function bestAttempt(attempts) {
-    if (!attempts.length) return null;
-    return attempts.reduce((best, a) => (!best || a.pct > best.pct ? a : best), null);
-  }
   // Right-side status shown on item rows only: ✓ (green) for read articles,
   // n% (green/red vs. passThreshold) for attempted quizzes/exams. Nothing is
   // shown when there's no read/attempt yet.
-  function itemStatus(entry, it) {
+  function itemStatus(it) {
     if (it.type === 'article') {
-      if (!entry.articlesRead[it.id]) return '';
+      if (!learnHasVisitedItem(CURRENT_USER.id, it.id)) return '';
       return `<span class="pct-pill good">✓</span>`;
     }
-    const best = bestAttempt(moduleQuizAttempts(entry, it.id));
+    const best = learnBestAttempt(learnQuizAttemptsFor(CURRENT_USER.id, it.id));
     if (!best) return '';
     const cls = it.passThreshold != null ? (best.pct >= it.passThreshold ? 'good' : 'bad') : '';
     return `<span class="pct-pill ${cls}">${best.pct}%</span>`;
@@ -215,12 +212,10 @@
   // ---------------- Course page (modules + nested items) ----------------
 
   function renderCoursePage() {
-    const entry = stateEntry();
-
     const rows = MODULES.map((m, idx) => {
       const nested = `
         <div class="nested-items">
-          ${m.items.map(it => itemRow(m, entry, it)).join('')}
+          ${m.items.map(it => itemRow(m, it)).join('')}
         </div>`;
       return `
         <div class="module-row-wrap">
@@ -256,7 +251,7 @@
 
   // ---------------- Module page ----------------
 
-  function itemRow(mod, entry, it) {
+  function itemRow(mod, it) {
     return `
       <a class="item-row" href="${itemUrl(mod, it)}" onclick="navigate('${itemUrl(mod, it)}');return false;">
         <span class="item-row-icon">${iconForType(it.type)}</span>
@@ -264,13 +259,12 @@
           <span class="item-row-title">${escapeHtml(it.shortTitle || it.title)}</span>
           <span class="item-row-desc">${escapeHtml(it.shortDescription || '')}</span>
         </span>
-        ${itemStatus(entry, it)}
+        ${itemStatus(it)}
       </a>`;
   }
 
   function renderModulePage(mod) {
-    const entry = stateEntry();
-    const rows = mod.items.map(it => itemRow(mod, entry, it)).join('') || `<p class="dash-empty">Brak elementów w tym module.</p>`;
+    const rows = mod.items.map(it => itemRow(mod, it)).join('') || `<p class="dash-empty">Brak elementów w tym module.</p>`;
     const idx = MODULES.indexOf(mod);
 
     return `
@@ -287,8 +281,7 @@
   // ---------------- Items list page ----------------
 
   function renderItemsList(mod) {
-    const entry = stateEntry();
-    const rows = mod.items.map(it => itemRow(mod, entry, it)).join('') || `<p class="dash-empty">Brak elementów w tym module.</p>`;
+    const rows = mod.items.map(it => itemRow(mod, it)).join('') || `<p class="dash-empty">Brak elementów w tym module.</p>`;
 
     return `
       ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Elementy' }])}
@@ -299,14 +292,7 @@
   // ---------------- Article page ----------------
 
   function renderArticlePage(mod, item) {
-    const entry = stateEntry();
-    const alreadyRead = !!entry.articlesRead[item.id];
-    if (!alreadyRead) {
-      learnMarkArticleRead(
-        { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, shortTitle: COURSE.shortTitle, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
-        mod, item
-      );
-    }
+    // The visit (== "read") is recorded centrally in renderRoute().
     const html = renderMarkdown(item.content);
 
     return `
@@ -573,14 +559,10 @@
   function finishQuiz() {
     const total = QUIZ_SESSION.questions.length;
     const pct = Math.round((QUIZ_SESSION.score / total) * 100);
-    const mod = moduleBySlug(QUIZ_SESSION.moduleSlug);
-    const item = itemById(QUIZ_SESSION.itemId);
 
-    const entry = stateEntry();
-    learnRecordQuizAttempt(
-      { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, shortTitle: COURSE.shortTitle, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
-      mod, item, { score: QUIZ_SESSION.score, total, pct }
-    );
+    learnRecordQuizAttempt(CURRENT_USER.id, QUIZ_SESSION.itemId, {
+      answers: QUIZ_SESSION.answers, score: QUIZ_SESSION.score, total, pct,
+    });
 
     QUIZ_SESSION.phase = 'results';
     renderRoute();

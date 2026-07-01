@@ -16,6 +16,7 @@
     </a>
     <div class="nav-links">
       <a href="/courses">Kursy</a>
+      <a href="/profile">Profil</a>
     </div>
   </div>
 </nav>
@@ -36,28 +37,27 @@
 </footer>
 
 <script src="/assets/state.js"></script>
+<script src="/assets/imported-courses.js"></script>
 <script>
-(function () {
-  const state = learnLoadState();
+(async () => {
+  await learnEnsureSeeded();
+  const user = learnCurrentUser();
   const dashboard = document.getElementById('dashboard');
-  const courses = learnRecentCourses(state, 4);
+  const courses = learnRecentCourses(user.id, 4);
   if (!courses.length) return; // first-time visitor: keep the page minimal
 
-  const modules = learnRecentModules(state, 5);
-  const results = learnRecentResults(state, 5);
+  const modules = learnRecentModules(user.id, 5);
+  const results = learnRecentResults(user.id, 5);
   const fmtDate = iso => new Date(iso).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' });
 
-  const courseCards = courses.map(c => {
-    const pct = learnCourseProgress(c);
-    return `
+  const courseCards = courses.map(c => `
       <a class="dash-card" href="/courses/${c.slug}">
         <div class="dash-card-icon">${c.icon || ''}</div>
         <div class="dash-card-body">
           <div class="dash-card-title">${c.shortTitle || c.title}</div>
-          <div class="dash-card-pct">${pct}% ukończone</div>
+          <div class="dash-card-pct">${c.pct}% ukończone</div>
         </div>
-      </a>`;
-  }).join('');
+      </a>`).join('');
 
   const moduleRows = modules.length ? modules.map(m => `
       <a class="dash-row" href="/courses/${m.courseSlug}">
