@@ -4,7 +4,7 @@
  *   /courses/{course}/modules
  *   /courses/{course}/modules/{module}
  *   /courses/{course}/modules/{module}/items
- *   /courses/{course}/modules/{module}/items/{item}   (article or quiz, by item.type)
+ *   /courses/{course}/modules/{module}/items/{item}   (article, quiz or exam, by item.type)
  */
 (function () {
   const app = document.getElementById('course-app');
@@ -17,7 +17,6 @@
   let MODULES = null;
   let SETUP = null;
   let QUIZ_SESSION = null; // { itemId, phase: 'run'|'results', ...quiz state }
-  let FINAL_QUIZ_ACTIVE = false;
 
   const imported = learnGetImportedCourse(courseSlug);
   if (imported) {
@@ -48,7 +47,6 @@
 
     let totalArticles = 0, totalQuizzes = 0;
     MODULES.forEach(m => m.items.forEach(it => { if (it.type === 'article') totalArticles++; else totalQuizzes++; }));
-    totalQuizzes += 1; // final quiz
 
     const state = learnLoadState();
     learnTouchCourse(state, {
@@ -78,6 +76,11 @@
     return MODULES.flatMap(m => m.items.map(it => ({ module: m, item: it })));
   }
 
+  function itemById(id) {
+    const found = flatItems().find(x => x.item.id === id);
+    return found ? found.item : null;
+  }
+
   // Previous/next item across the WHOLE course (not just within the module).
   function prevNextItem(item) {
     const flat = flatItems();
@@ -86,18 +89,32 @@
     return { prev: idx > 0 ? flat[idx - 1] : null, next: idx < flat.length - 1 ? flat[idx + 1] : null };
   }
 
-  // Renders the prev/next navigation for an item page. Not shown for the
-  // course-wide final quiz, which isn't part of the sequential item list.
+  // Renders the prev/next navigation for an item page.
   function itemPrevNextNav(mod, item) {
-    if (!mod) return '';
     const { prev, next } = prevNextItem(item);
     const prevHtml = prev
-      ? `<a class="btn-secondary" href="${itemUrl(prev.module, prev.item)}" onclick="navigate('${itemUrl(prev.module, prev.item)}');return false;">← Wróć do ${escapeHtml(prev.item.title)}</a>`
+      ? `<a class="btn-secondary" href="${itemUrl(prev.module, prev.item)}" onclick="navigate('${itemUrl(prev.module, prev.item)}');return false;">← Wróć do ${escapeHtml(prev.item.shortTitle || prev.item.title)}</a>`
       : '<span></span>';
     const nextHtml = next
-      ? `<a class="course-btn" href="${itemUrl(next.module, next.item)}" onclick="navigate('${itemUrl(next.module, next.item)}');return false;">Przejdź do ${escapeHtml(next.item.title)} →</a>`
+      ? `<a class="course-btn" href="${itemUrl(next.module, next.item)}" onclick="navigate('${itemUrl(next.module, next.item)}');return false;">Przejdź do ${escapeHtml(next.item.shortTitle || next.item.title)} →</a>`
       : '<span></span>';
     return `<div class="item-nav">${prevHtml}${nextHtml}</div>`;
+  }
+
+  function iconForType(type) {
+    if (type === 'article') return '📖';
+    if (type === 'exam') return '🏁';
+    return '✅'; // quiz
+  }
+
+  function itemCountsLabel(mod) {
+    const counts = {};
+    mod.items.forEach(it => { counts[it.type] = (counts[it.type] || 0) + 1; });
+    const labels = [];
+    if (counts.article) labels.push(`${counts.article} art.`);
+    if (counts.quiz) labels.push(`${counts.quiz} quiz${counts.quiz === 1 ? '' : 'ów'}`);
+    if (counts.exam) labels.push(`${counts.exam} egzamin${counts.exam === 1 ? '' : 'y'}`);
+    return labels.join(' · ');
   }
 
   // ---------------- URLs ----------------
@@ -111,7 +128,6 @@
   // ---------------- Router ----------------
 
   function navigate(path) {
-    FINAL_QUIZ_ACTIVE = false;
     history.pushState(null, '', path);
     renderRoute();
     window.scrollTo({ top: 0 });
@@ -134,12 +150,6 @@
   }
 
   function renderRoute() {
-    if (FINAL_QUIZ_ACTIVE) {
-      renderFinalQuizInPlace();
-      updateTopbar();
-      return;
-    }
-
     const r = parsePath();
     if (r.depth === 1 || r.depth === 0) { app.innerHTML = renderCoursePage(); updateTopbar(); return; }
     if (r.isModulesList) { app.innerHTML = renderModulesList(); updateTopbar(); return; }
@@ -184,80 +194,50 @@
     if (!attempts.length) return null;
     return attempts.reduce((best, a) => (!best || a.pct > best.pct ? a : best), null);
   }
-  function pillFor(best) {
+  function pillFor(best, passThreshold) {
     if (!best) return `<span class="pct-pill">— %</span>`;
-    const cls = COURSE.passThreshold ? (best.pct >= COURSE.passThreshold ? 'good' : 'bad') : (best.pct >= 70 ? 'good' : '');
+    const cls = passThreshold != null ? (best.pct >= passThreshold ? 'good' : 'bad') : (best.pct >= 70 ? 'good' : '');
     return `<span class="pct-pill ${cls}">${best.pct}%</span>`;
   }
 
-  // ---------------- Course page (modules + nested articles/quizzes) ----------------
+  // ---------------- Course page (modules + nested items) ----------------
 
   function renderCoursePage() {
     const entry = stateEntry();
-    const hasWeights = MODULES.every(m => m.weight != null);
-
-    let weightbar = '';
-    if (hasWeights) {
-      const segs = MODULES.map(m => {
-        const color = m.accent || COURSE.accent || '#4f46e5';
-        return `<div class="weightbar-seg" style="width:${m.weight}%;background:${color}" title="${escapeHtml(m.title)} — ${m.weight}%"></div>`;
-      }).join('');
-      weightbar = `<div class="weightbar">${segs}</div>`;
-    }
 
     const rows = MODULES.map((m, idx) => {
-      const arts = articlesOf(m);
-      const quizzes = quizzesOf(m);
       const nested = `
         <div class="nested-items">
-          ${arts.map(a => `<a class="nested-link" href="${itemUrl(m, a)}" onclick="navigate('${itemUrl(m, a)}');return false;">📖 ${escapeHtml(a.title)}</a>`).join('')}
-          ${quizzes.map(q => `<a class="nested-link" href="${itemUrl(m, q)}" onclick="navigate('${itemUrl(m, q)}');return false;">✅ ${escapeHtml(q.title)}</a>`).join('')}
+          ${m.items.map(it => `<a class="nested-link" href="${itemUrl(m, it)}" onclick="navigate('${itemUrl(m, it)}');return false;">${iconForType(it.type)} ${escapeHtml(it.shortTitle || it.title)}</a>`).join('')}
         </div>`;
-      const bestQuiz = bestAttempt(quizzes.flatMap(q => moduleQuizAttempts(entry, q.id)));
+      const graded = m.items.filter(it => it.type !== 'article');
+      const best = bestAttempt(graded.flatMap(it => moduleQuizAttempts(entry, it.id)));
+      const threshold = graded.length === 1 ? graded[0].passThreshold : null;
       return `
         <div class="module-row-wrap">
           <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
             <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
             <div class="module-row-body">
               <div class="module-row-title">${escapeHtml(m.title)}</div>
-              <div class="module-row-meta">
-                ${m.weight != null ? `<span>Waga egzaminu: ${m.weight}%</span>` : ''}
-                <span>${arts.length} art. · ${quizzes.length} quiz${quizzes.length === 1 ? '' : 'ów'}</span>
-              </div>
+              <div class="module-row-meta"><span>${itemCountsLabel(m)}</span></div>
             </div>
-            <div class="module-row-status">${pillFor(bestQuiz)}</div>
+            <div class="module-row-status">${pillFor(best, threshold)}</div>
           </div>
           ${nested}
         </div>`;
     }).join('');
-
-    const totalFinalQ = MODULES.reduce((s, m) => s + quizzesOf(m).reduce((s2, q) => s2 + q.questions.length, 0), 0);
-    const finalBest = bestAttempt(moduleQuizAttempts(entry, 'final-quiz'));
-    const finalRow = `
-      <div class="module-row-wrap">
-        <div class="module-row final" onclick="openFinalQuiz();return false;">
-          <div class="module-num">🏁</div>
-          <div class="module-row-body">
-            <div class="module-row-title">${escapeHtml(COURSE.finalQuizTitle || 'Egzamin końcowy')}</div>
-            <div class="module-row-meta"><span>${COURSE.finalQuizDescription || `${totalFinalQ} pytań ze wszystkich modułów`}</span></div>
-          </div>
-          <div class="module-row-status">${pillFor(finalBest)}</div>
-        </div>
-      </div>`;
 
     return `
       <div class="course-hero">
         <span class="course-hero-eyebrow">${escapeHtml(COURSE.shortTitle || 'Kurs')}</span>
         <h1>${escapeHtml(COURSE.title)}</h1>
         <p>${escapeHtml(COURSE.description || '')}</p>
-        ${weightbar}
       </div>
       <div class="module-list-header">
         <h2>Moduły</h2>
       </div>
       <div class="module-list">
         ${rows}
-        ${finalRow}
       </div>`;
   }
 
@@ -266,19 +246,17 @@
   function renderModulesList() {
     const entry = stateEntry();
     const rows = MODULES.map((m, idx) => {
-      const quizzes = quizzesOf(m);
-      const bestQuiz = bestAttempt(quizzes.flatMap(q => moduleQuizAttempts(entry, q.id)));
+      const graded = m.items.filter(it => it.type !== 'article');
+      const best = bestAttempt(graded.flatMap(it => moduleQuizAttempts(entry, it.id)));
+      const threshold = graded.length === 1 ? graded[0].passThreshold : null;
       return `
         <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
           <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
           <div class="module-row-body">
             <div class="module-row-title">${escapeHtml(m.title)}</div>
-            <div class="module-row-meta">
-              ${m.weight != null ? `<span>Waga egzaminu: ${m.weight}%</span>` : ''}
-              <span>${articlesOf(m).length} art. · ${quizzes.length} quiz${quizzes.length === 1 ? '' : 'ów'}</span>
-            </div>
+            <div class="module-row-meta"><span>${itemCountsLabel(m)}</span></div>
           </div>
-          <div class="module-row-status">${pillFor(bestQuiz)}</div>
+          <div class="module-row-status">${pillFor(best, threshold)}</div>
         </div>`;
     }).join('');
 
@@ -295,7 +273,7 @@
       const read = entry.articlesRead[it.id];
       return `
         <a class="item-row" href="${itemUrl(mod, it)}" onclick="navigate('${itemUrl(mod, it)}');return false;">
-          <span class="item-row-icon">📖</span>
+          <span class="item-row-icon">${iconForType(it.type)}</span>
           <span class="item-row-body">
             <span class="item-row-title">${escapeHtml(it.title)}</span>
             <span class="item-row-meta">${read ? 'Przeczytane' : 'Nieprzeczytane'}</span>
@@ -303,14 +281,15 @@
         </a>`;
     }
     const best = bestAttempt(moduleQuizAttempts(entry, it.id));
+    const meta = it.type === 'exam' ? `${examMaxQuestions(it)} pytań` : `${it.questions.length} pytań`;
     return `
       <a class="item-row" href="${itemUrl(mod, it)}" onclick="navigate('${itemUrl(mod, it)}');return false;">
-        <span class="item-row-icon">✅</span>
+        <span class="item-row-icon">${iconForType(it.type)}</span>
         <span class="item-row-body">
           <span class="item-row-title">${escapeHtml(it.title)}</span>
-          <span class="item-row-meta">${it.questions.length} pytań</span>
+          <span class="item-row-meta">${meta}</span>
         </span>
-        ${pillFor(best)}
+        ${pillFor(best, it.passThreshold)}
       </a>`;
   }
 
@@ -320,11 +299,12 @@
     const idx = MODULES.indexOf(mod);
 
     return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title }])}
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title }])}
       <button class="back-link" onclick="navigate('${courseUrl()}')">← Wróć</button>
       <div class="module-head">
-        <div class="module-head-eyebrow">Moduł ${idx + 1} / ${MODULES.length}${mod.weight != null ? ` · Waga: ${mod.weight}%` : ''}</div>
+        <div class="module-head-eyebrow">Moduł ${idx + 1} / ${MODULES.length}</div>
         <h1>${escapeHtml(mod.title)}</h1>
+        ${mod.description ? `<p class="module-head-desc">${escapeHtml(mod.description)}</p>` : ''}
       </div>
       <div class="item-list">${rows}</div>`;
   }
@@ -336,7 +316,7 @@
     const rows = mod.items.map(it => itemRow(mod, entry, it)).join('') || `<p class="dash-empty">Brak elementów w tym module.</p>`;
 
     return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Elementy' }])}
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Elementy' }])}
       <div class="course-hero"><h1>Elementy — ${escapeHtml(mod.title)}</h1></div>
       <div class="item-list">${rows}</div>`;
   }
@@ -355,10 +335,11 @@
     const html = renderMarkdown(item.content);
 
     return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Elementy', href: itemsUrl(mod) }, { label: item.title }])}
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Elementy', href: itemsUrl(mod) }, { label: item.shortTitle || item.title }])}
       <button class="back-link" onclick="navigate('${moduleUrl(mod)}')">← Wróć</button>
       <div class="module-head">
         <h1>${escapeHtml(item.title)}</h1>
+        ${item.description ? `<p class="module-head-desc">${escapeHtml(item.description)}</p>` : ''}
       </div>
       <div class="article-card">
         <div class="article-body">${html}</div>
@@ -369,7 +350,7 @@
       ${itemPrevNextNav(mod, item)}`;
   }
 
-  // ---------------- Quiz: setup / run / results (scoped route version) ----------------
+  // ---------------- Quiz / exam: setup / run / results ----------------
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -380,19 +361,51 @@
     return a;
   }
 
+  function examMaxQuestions(examItem) {
+    return examItem.quizes.reduce((sum, ref) => {
+      const q = itemById(ref.id);
+      return sum + (q ? q.questions.length : 0);
+    }, 0);
+  }
+
+  // Builds the question set for an exam: proportional to each referenced
+  // quiz's weight when fewer than all questions are requested; includes
+  // everything when the full pool is requested.
+  function buildExamSelection(examItem, count) {
+    const total = examMaxQuestions(examItem);
+    if (count >= total) {
+      let all = [];
+      examItem.quizes.forEach(ref => {
+        const q = itemById(ref.id);
+        if (q) all.push(...q.questions);
+      });
+      return shuffle(all);
+    }
+    const totalWeight = examItem.quizes.reduce((s, r) => s + r.weight, 0) || 1;
+    let selected = [];
+    examItem.quizes.forEach(ref => {
+      const q = itemById(ref.id);
+      if (!q) return;
+      const share = Math.round(count * (ref.weight / totalWeight));
+      selected.push(...shuffle(q.questions).slice(0, Math.min(share, q.questions.length)));
+    });
+    return shuffle(selected);
+  }
+
   function renderQuizRoute(mod, item) {
     const crumbs = breadcrumbs([
       { label: COURSE.shortTitle || COURSE.title, href: courseUrl() },
       { label: 'Moduły', href: modulesUrl() },
-      { label: mod.title, href: moduleUrl(mod) },
+      { label: mod.shortTitle || mod.title, href: moduleUrl(mod) },
       { label: 'Elementy', href: itemsUrl(mod) },
-      { label: item.title },
+      { label: item.shortTitle || item.title },
     ]);
     const backUrl = moduleUrl(mod);
 
     if (!QUIZ_SESSION || QUIZ_SESSION.itemId !== item.id) {
       if (!SETUP || SETUP.itemId !== item.id) {
-        SETUP = { itemId: item.id, max: item.questions.length, selected: item.questions.length };
+        const max = item.type === 'exam' ? examMaxQuestions(item) : item.questions.length;
+        SETUP = { itemId: item.id, max, selected: max };
       }
       app.innerHTML = crumbs + renderQuizSetup(mod, item, backUrl);
       return;
@@ -403,8 +416,7 @@
   }
 
   function renderQuizSetup(mod, item, backUrl) {
-    const icon = mod ? (mod.icon || '📝') : '🏁';
-    const title = item.title;
+    const icon = item.type === 'exam' ? '🏁' : (mod.icon || '📝');
     const presets = [5, 10, 15, 20, 25].filter(n => n < SETUP.max);
     const optionsHtml = presets.map(n => `
         <div class="setup-opt ${SETUP.selected === n ? 'selected' : ''}" onclick="selectSetupCount(${n})">${n}</div>
@@ -417,7 +429,8 @@
       <button class="back-link" onclick="navigate('${backUrl}')">← Wróć</button>
       <div class="setup-card">
         <div class="setup-icon">${icon}</div>
-        <div class="setup-title">${escapeHtml(title)}</div>
+        <div class="setup-title">${escapeHtml(item.title)}</div>
+        ${item.description ? `<div class="setup-desc">${escapeHtml(item.description)}</div>` : ''}
         <div class="setup-sub">Dostępnych pytań: ${SETUP.max}. Ile losowych pytań chcesz rozwiązać?</div>
         <div class="setup-options" id="setup-options">${optionsHtml}</div>
         <div class="setup-custom">
@@ -453,26 +466,14 @@
   }
   window.confirmStartQuiz = confirmStartQuiz;
 
-  function questionPoolFor(mod, item) {
-    if (item.id === 'final-quiz') {
-      let pool = [];
-      MODULES.forEach(m => quizzesOf(m).forEach(q => pool.push(...q.questions)));
-      return pool;
-    }
-    return item.questions;
-  }
-
   function startQuiz(count) {
     const r = parsePath();
-    const mod = FINAL_QUIZ_ACTIVE ? null : moduleBySlug(r.moduleSlug);
-    const item = FINAL_QUIZ_ACTIVE
-      ? { id: 'final-quiz', title: COURSE.finalQuizTitle || 'Egzamin końcowy', questions: questionPoolFor(null, { id: 'final-quiz' }) }
-      : itemBySlug(mod, r.itemSlug);
+    const mod = moduleBySlug(r.moduleSlug);
+    const item = itemBySlug(mod, r.itemSlug);
+    const shuffled = item.type === 'exam' ? buildExamSelection(item, count) : shuffle(item.questions).slice(0, count);
 
-    const pool = questionPoolFor(mod, item);
-    const shuffled = shuffle(pool).slice(0, count);
     QUIZ_SESSION = {
-      itemId: item.id, moduleSlug: mod ? mod.slug : null, isFinal: !mod,
+      itemId: item.id, moduleSlug: mod.slug,
       phase: 'run',
       questions: shuffled,
       index: 0,
@@ -484,8 +485,7 @@
     };
     shuffled.forEach(q => { QUIZ_SESSION.optionOrder[q.id] = shuffle(q.options.map(o => o.key)); });
 
-    if (FINAL_QUIZ_ACTIVE) renderFinalQuizInPlace();
-    else renderRoute();
+    renderRoute();
     window.scrollTo({ top: 0 });
   }
 
@@ -559,7 +559,7 @@
     if (!isMulti) { submitAnswer([k]); return; }
     const i = QUIZ_SESSION.multiSelection.indexOf(k);
     if (i > -1) QUIZ_SESSION.multiSelection.splice(i, 1); else QUIZ_SESSION.multiSelection.push(k);
-    rerenderInPlace();
+    renderRoute();
   }
   window.selectOption = selectOption;
 
@@ -576,22 +576,21 @@
     const correctSet = new Set(q.answer);
     const isCorrect = userSet.size === correctSet.size && [...userSet].every(k => correctSet.has(k));
     if (isCorrect) QUIZ_SESSION.score++; else QUIZ_SESSION.wrong++;
-    rerenderInPlace();
+    renderRoute();
     window.scrollTo({ top: 0 });
   }
 
   function nextQuestion() {
     QUIZ_SESSION.index++;
     if (QUIZ_SESSION.index >= QUIZ_SESSION.questions.length) finishQuiz();
-    else { rerenderInPlace(); window.scrollTo({ top: 0 }); }
+    else { renderRoute(); window.scrollTo({ top: 0 }); }
   }
   window.nextQuestion = nextQuestion;
 
   function confirmExitQuiz(backUrl) {
     if (confirm('Czy na pewno chcesz przerwać quiz? Postęp tego podejścia nie zostanie zapisany.')) {
       QUIZ_SESSION = null;
-      if (FINAL_QUIZ_ACTIVE) { FINAL_QUIZ_ACTIVE = false; renderRoute(); }
-      else navigate(backUrl);
+      navigate(backUrl);
     }
   }
   window.confirmExitQuiz = confirmExitQuiz;
@@ -599,24 +598,18 @@
   function finishQuiz() {
     const total = QUIZ_SESSION.questions.length;
     const pct = Math.round((QUIZ_SESSION.score / total) * 100);
-    const mod = QUIZ_SESSION.moduleSlug ? moduleBySlug(QUIZ_SESSION.moduleSlug) : null;
-    const title = QUIZ_SESSION.isFinal ? (COURSE.finalQuizTitle || 'Egzamin końcowy') : (mod ? quizzesOf(mod).find(q => q.id === QUIZ_SESSION.itemId).title : '');
+    const mod = moduleBySlug(QUIZ_SESSION.moduleSlug);
+    const item = itemById(QUIZ_SESSION.itemId);
 
     const entry = stateEntry();
     learnRecordQuizAttempt(
       { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
-      mod, { id: QUIZ_SESSION.itemId, title }, { score: QUIZ_SESSION.score, total, pct }
+      mod, item, { score: QUIZ_SESSION.score, total, pct }
     );
 
     QUIZ_SESSION.phase = 'results';
-    if (FINAL_QUIZ_ACTIVE) renderFinalQuizInPlace();
-    else renderRoute();
-    window.scrollTo({ top: 0 });
-  }
-
-  function rerenderInPlace() {
-    if (FINAL_QUIZ_ACTIVE) { renderFinalQuizInPlace(); return; }
     renderRoute();
+    window.scrollTo({ top: 0 });
   }
 
   function renderQuizResults(mod, item, backUrl) {
@@ -633,9 +626,9 @@
     else { color = '#dc2626'; grade = 'Niewystarczający ❌'; msg = 'Wróć do artykułu tego modułu i spróbuj ponownie.'; }
 
     let passBadge = '';
-    if (COURSE.passThreshold != null) {
-      const pass = pct >= COURSE.passThreshold;
-      passBadge = `<div class="pass-badge ${pass ? 'pass' : 'fail'}">${pass ? `ZALICZONE — próg ${COURSE.passThreshold}%` : `PONIŻEJ PROGU ${COURSE.passThreshold}%`}</div>`;
+    if (item.passThreshold != null) {
+      const pass = pct >= item.passThreshold;
+      passBadge = `<div class="pass-badge ${pass ? 'pass' : 'fail'}">${pass ? `ZALICZONE — próg ${item.passThreshold}%` : `PONIŻEJ PROGU ${item.passThreshold}%`}</div>`;
     }
 
     const reviewHtml = QUIZ_SESSION.questions.map((q, i) => {
@@ -672,7 +665,7 @@
         </div>
         <div class="result-actions">
           <button class="course-btn" onclick="retryQuizSession()">🔄 Powtórz</button>
-          <button class="btn-secondary" onclick="${FINAL_QUIZ_ACTIVE ? "exitFinalQuiz()" : `navigate('${backUrl}')`}">← Wróć</button>
+          <button class="btn-secondary" onclick="navigate('${backUrl}')">← Wróć</button>
         </div>
         <div class="review-section">
           <h3>📋 Przegląd odpowiedzi</h3>
@@ -684,44 +677,10 @@
 
   function retryQuizSession() {
     QUIZ_SESSION = null;
-    rerenderInPlace();
-    window.scrollTo({ top: 0 });
-  }
-  window.retryQuizSession = retryQuizSession;
-
-  // ---------------- Final quiz (course-wide, in-page state, no dedicated URL) ----------------
-
-  function openFinalQuiz() {
-    FINAL_QUIZ_ACTIVE = true;
-    if (!QUIZ_SESSION || QUIZ_SESSION.itemId !== 'final-quiz') {
-      const pool = questionPoolFor(null, { id: 'final-quiz' });
-      SETUP = { max: pool.length, selected: pool.length };
-      QUIZ_SESSION = null;
-    }
-    renderFinalQuizInPlace();
-    window.scrollTo({ top: 0 });
-  }
-  window.openFinalQuiz = openFinalQuiz;
-
-  function exitFinalQuiz() {
-    FINAL_QUIZ_ACTIVE = false;
-    QUIZ_SESSION = null;
     renderRoute();
     window.scrollTo({ top: 0 });
   }
-  window.exitFinalQuiz = exitFinalQuiz;
-
-  function renderFinalQuizInPlace() {
-    const crumbs = breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: COURSE.finalQuizTitle || 'Egzamin końcowy' }]);
-    const item = { id: 'final-quiz', title: COURSE.finalQuizTitle || 'Egzamin końcowy' };
-    if (!QUIZ_SESSION) {
-      app.innerHTML = crumbs + renderQuizSetup(null, item, courseUrl());
-    } else if (QUIZ_SESSION.phase === 'run') {
-      app.innerHTML = crumbs + renderQuizRun(null, item, courseUrl());
-    } else {
-      app.innerHTML = crumbs + renderQuizResults(null, item, courseUrl());
-    }
-  }
+  window.retryQuizSession = retryQuizSession;
 
   // ---------------- Markdown (subset: #, ##, ###, >, lists incl. 1-level nesting, tables, bold/italic/code, hr) ----------------
 

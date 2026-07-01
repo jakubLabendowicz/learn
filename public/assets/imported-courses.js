@@ -66,34 +66,62 @@ function learnValidateCourseData(data) {
   const c = data.course;
   if (!c || typeof c !== 'object') return { ok: false, error: 'Brakuje pola "course".' };
   if (!learnIsUuid(c.id)) return { ok: false, error: 'Pole "course.id" musi być identyfikatorem UUID.' };
-  for (const field of ['slug', 'title']) {
+  for (const field of ['slug', 'title', 'shortTitle', 'description', 'icon', 'accent']) {
     if (!c[field] || typeof c[field] !== 'string') return { ok: false, error: `Pole "course.${field}" jest wymagane i musi być tekstem.` };
   }
   if (!Array.isArray(data.modules) || data.modules.length === 0) {
     return { ok: false, error: 'Pole "modules" musi być niepustą tablicą.' };
   }
+
+  // First pass: collect every quiz item's id, since exam items reference quizzes
+  // that may live in other modules.
+  const quizIds = new Set();
+  for (const m of data.modules) {
+    if (!Array.isArray(m.items)) continue;
+    for (const it of m.items) {
+      if (it.type === 'quiz' && learnIsUuid(it.id)) quizIds.add(it.id);
+    }
+  }
+
   const moduleSlugs = new Set();
   for (const m of data.modules) {
     if (!learnIsUuid(m.id)) return { ok: false, error: `Pole "id" modułu "${m.slug || m.title || '?'}" musi być identyfikatorem UUID.` };
-    if (!m.slug || !m.title) return { ok: false, error: `Każdy moduł wymaga pól "slug" i "title" (błąd w module o id: ${m.id}).` };
+    for (const field of ['slug', 'title', 'shortTitle', 'description', 'icon', 'accent']) {
+      if (!m[field] || typeof m[field] !== 'string') return { ok: false, error: `Moduł "${m.slug || m.title || m.id}" wymaga pola "${field}" (tekst).` };
+    }
     if (moduleSlugs.has(m.slug)) return { ok: false, error: `Zduplikowany slug modułu: "${m.slug}".` };
     moduleSlugs.add(m.slug);
     if (!Array.isArray(m.items) || m.items.length === 0) return { ok: false, error: `Moduł "${m.slug}" musi mieć niepustą listę "items".` };
-    const itemSlugs = new Set(); // unique per module across both articles and quizzes
+    const itemSlugs = new Set(); // unique per module across article/quiz/exam
     for (const it of m.items) {
-      if (it.type !== 'article' && it.type !== 'quiz') return { ok: false, error: `Nieprawidłowy typ elementu "${it.type}" w module "${m.slug}" (dozwolone: article, quiz).` };
+      if (it.type !== 'article' && it.type !== 'quiz' && it.type !== 'exam') return { ok: false, error: `Nieprawidłowy typ elementu "${it.type}" w module "${m.slug}" (dozwolone: article, quiz, exam).` };
       if (!learnIsUuid(it.id)) return { ok: false, error: `Pole "id" elementu "${it.slug || it.title || '?'}" w module "${m.slug}" musi być identyfikatorem UUID.` };
-      if (!it.slug || !it.title) return { ok: false, error: `Element w module "${m.slug}" wymaga pól "slug" i "title" (błąd w elemencie o id: ${it.id}).` };
+      for (const field of ['slug', 'title', 'shortTitle', 'description']) {
+        if (!it[field] || typeof it[field] !== 'string') return { ok: false, error: `Element "${it.slug || it.id}" w module "${m.slug}" wymaga pola "${field}" (tekst).` };
+      }
       if (itemSlugs.has(it.slug)) return { ok: false, error: `Zduplikowany slug elementu "${it.slug}" w module "${m.slug}" (slug musi być unikalny w obrębie modułu, niezależnie od typu).` };
       itemSlugs.add(it.slug);
       if (it.type === 'article' && typeof it.content !== 'string') return { ok: false, error: `Artykuł "${it.slug}" wymaga pola "content" (tekst markdown).` };
       if (it.type === 'quiz') {
+        if (!('passThreshold' in it) || (it.passThreshold !== null && typeof it.passThreshold !== 'number')) {
+          return { ok: false, error: `Quiz "${it.slug}" wymaga pola "passThreshold" (liczba lub null).` };
+        }
         if (!Array.isArray(it.questions) || it.questions.length === 0) return { ok: false, error: `Quiz "${it.slug}" musi mieć niepustą listę "questions".` };
         for (const q of it.questions) {
           if (!learnIsUuid(q.id)) return { ok: false, error: `Pole "id" pytania w quizie "${it.slug}" musi być identyfikatorem UUID.` };
           if (!q.question || !Array.isArray(q.options) || !Array.isArray(q.answer) || q.answer.length === 0) {
             return { ok: false, error: `Nieprawidłowe pytanie w quizie "${it.slug}" — wymagane: "question", "options"[], "answer"[].` };
           }
+        }
+      }
+      if (it.type === 'exam') {
+        if (!('passThreshold' in it) || (it.passThreshold !== null && typeof it.passThreshold !== 'number')) {
+          return { ok: false, error: `Element egzaminacyjny "${it.slug}" wymaga pola "passThreshold" (liczba lub null).` };
+        }
+        if (!Array.isArray(it.quizes) || it.quizes.length === 0) return { ok: false, error: `Element egzaminacyjny "${it.slug}" musi mieć niepustą listę "quizes".` };
+        for (const ref of it.quizes) {
+          if (!learnIsUuid(ref.id) || !quizIds.has(ref.id)) return { ok: false, error: `Element "quizes" w "${it.slug}" zawiera nieprawidłowe lub nieistniejące "id" quizu: "${ref.id}".` };
+          if (typeof ref.weight !== 'number') return { ok: false, error: `Każdy wpis w "quizes" elementu "${it.slug}" wymaga liczbowego pola "weight".` };
         }
       }
     }
