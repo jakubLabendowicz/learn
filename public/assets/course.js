@@ -107,16 +107,6 @@
     return '✅'; // quiz
   }
 
-  function itemCountsLabel(mod) {
-    const counts = {};
-    mod.items.forEach(it => { counts[it.type] = (counts[it.type] || 0) + 1; });
-    const labels = [];
-    if (counts.article) labels.push(`${counts.article} art.`);
-    if (counts.quiz) labels.push(`${counts.quiz} quiz${counts.quiz === 1 ? '' : 'ów'}`);
-    if (counts.exam) labels.push(`${counts.exam} egzamin${counts.exam === 1 ? '' : 'y'}`);
-    return labels.join(' · ');
-  }
-
   // ---------------- URLs ----------------
 
   const courseUrl = () => `/courses/${COURSE.slug}`;
@@ -194,10 +184,29 @@
     if (!attempts.length) return null;
     return attempts.reduce((best, a) => (!best || a.pct > best.pct ? a : best), null);
   }
-  function pillFor(best, passThreshold) {
-    if (!best) return `<span class="pct-pill">— %</span>`;
-    const cls = passThreshold != null ? (best.pct >= passThreshold ? 'good' : 'bad') : (best.pct >= 70 ? 'good' : '');
+  // Right-side status shown on item rows only: ✓ (green) for read articles,
+  // n% (green/red vs. passThreshold) for attempted quizzes/exams. Nothing is
+  // shown when there's no read/attempt yet.
+  function itemStatus(entry, it) {
+    if (it.type === 'article') {
+      if (!entry.articlesRead[it.id]) return '';
+      return `<span class="pct-pill good">✓</span>`;
+    }
+    const best = bestAttempt(moduleQuizAttempts(entry, it.id));
+    if (!best) return '';
+    const cls = it.passThreshold != null ? (best.pct >= it.passThreshold ? 'good' : 'bad') : '';
     return `<span class="pct-pill ${cls}">${best.pct}%</span>`;
+  }
+
+  function moduleRow(m, idx) {
+    return `
+      <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
+        <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
+        <div class="module-row-body">
+          <div class="module-row-title">${escapeHtml(m.shortTitle || m.title)}</div>
+          <div class="module-row-desc">${escapeHtml(m.description || '')}</div>
+        </div>
+      </div>`;
   }
 
   // ---------------- Course page (modules + nested items) ----------------
@@ -208,21 +217,11 @@
     const rows = MODULES.map((m, idx) => {
       const nested = `
         <div class="nested-items">
-          ${m.items.map(it => `<a class="nested-link" href="${itemUrl(m, it)}" onclick="navigate('${itemUrl(m, it)}');return false;">${iconForType(it.type)} ${escapeHtml(it.shortTitle || it.title)}</a>`).join('')}
+          ${m.items.map(it => itemRow(m, entry, it)).join('')}
         </div>`;
-      const graded = m.items.filter(it => it.type !== 'article');
-      const best = bestAttempt(graded.flatMap(it => moduleQuizAttempts(entry, it.id)));
-      const threshold = graded.length === 1 ? graded[0].passThreshold : null;
       return `
         <div class="module-row-wrap">
-          <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
-            <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
-            <div class="module-row-body">
-              <div class="module-row-title">${escapeHtml(m.title)}</div>
-              <div class="module-row-meta"><span>${itemCountsLabel(m)}</span></div>
-            </div>
-            <div class="module-row-status">${pillFor(best, threshold)}</div>
-          </div>
+          ${moduleRow(m, idx)}
           ${nested}
         </div>`;
     }).join('');
@@ -244,21 +243,7 @@
   // ---------------- Modules list ----------------
 
   function renderModulesList() {
-    const entry = stateEntry();
-    const rows = MODULES.map((m, idx) => {
-      const graded = m.items.filter(it => it.type !== 'article');
-      const best = bestAttempt(graded.flatMap(it => moduleQuizAttempts(entry, it.id)));
-      const threshold = graded.length === 1 ? graded[0].passThreshold : null;
-      return `
-        <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
-          <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
-          <div class="module-row-body">
-            <div class="module-row-title">${escapeHtml(m.title)}</div>
-            <div class="module-row-meta"><span>${itemCountsLabel(m)}</span></div>
-          </div>
-          <div class="module-row-status">${pillFor(best, threshold)}</div>
-        </div>`;
-    }).join('');
+    const rows = MODULES.map((m, idx) => moduleRow(m, idx)).join('');
 
     return `
       ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły' }])}
@@ -269,27 +254,14 @@
   // ---------------- Module page ----------------
 
   function itemRow(mod, entry, it) {
-    if (it.type === 'article') {
-      const read = entry.articlesRead[it.id];
-      return `
-        <a class="item-row" href="${itemUrl(mod, it)}" onclick="navigate('${itemUrl(mod, it)}');return false;">
-          <span class="item-row-icon">${iconForType(it.type)}</span>
-          <span class="item-row-body">
-            <span class="item-row-title">${escapeHtml(it.title)}</span>
-            <span class="item-row-meta">${read ? 'Przeczytane' : 'Nieprzeczytane'}</span>
-          </span>
-        </a>`;
-    }
-    const best = bestAttempt(moduleQuizAttempts(entry, it.id));
-    const meta = it.type === 'exam' ? `${examMaxQuestions(it)} pytań` : `${it.questions.length} pytań`;
     return `
       <a class="item-row" href="${itemUrl(mod, it)}" onclick="navigate('${itemUrl(mod, it)}');return false;">
         <span class="item-row-icon">${iconForType(it.type)}</span>
         <span class="item-row-body">
-          <span class="item-row-title">${escapeHtml(it.title)}</span>
-          <span class="item-row-meta">${meta}</span>
+          <span class="item-row-title">${escapeHtml(it.shortTitle || it.title)}</span>
+          <span class="item-row-desc">${escapeHtml(it.description || '')}</span>
         </span>
-        ${pillFor(best, it.passThreshold)}
+        ${itemStatus(entry, it)}
       </a>`;
   }
 
