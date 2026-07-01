@@ -16,6 +16,7 @@
     </a>
     <div class="nav-links">
       <a href="/courses">Kursy</a>
+      <a href="/profile">Profil</a>
     </div>
   </div>
 </nav>
@@ -44,7 +45,7 @@
 <script>
 (async () => {
   await learnEnsureSeeded();
-  const state = learnLoadState();
+  const user = learnCurrentUser();
   const all = learnListCourses();
   const grid = document.getElementById('course-grid');
 
@@ -54,16 +55,16 @@
   }
 
   grid.innerHTML = all.map(c => {
-    const entry = state.courses[c.id];
-    const pct = entry ? learnCourseProgress(entry) : 0;
+    const visited = learnUserCourseRow(user.id, c.id);
+    const pct = visited ? learnCourseProgress(user.id, c.id) : 0;
     return `
       <div class="course-card">
         <a class="course-card-link" href="/courses/${c.slug}">
           <div class="course-card-icon">${c.icon || '📘'}</div>
           <h2>${c.shortTitle || c.title}</h2>
           <p>${c.shortDescription || ''}</p>
-          ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
-          <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
+          ${visited ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
+          <span class="course-card-cta">${visited ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
         </a>
         <div class="course-card-footer">
           <button class="course-card-export" onclick="learnExportCourse('${c.slug}')">⬇ Eksportuj</button>

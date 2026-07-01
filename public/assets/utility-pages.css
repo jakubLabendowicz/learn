@@ -156,3 +156,130 @@
 
 .icon-btn:hover { border-color: var(--accent); }
 .icon-btn.danger:hover { border-color: #dc2626; color: #dc2626; }
+
+/* ---------- Profile page ---------- */
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.profile-body { flex-grow: 1; min-width: 0; }
+.profile-name { font-size: 1.15rem; font-weight: 800; }
+.profile-email { font-size: 0.88rem; color: var(--text-muted); margin-top: 0.1rem; }
+.profile-bio { font-size: 0.88rem; color: var(--text); margin-top: 0.5rem; }
+.profile-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+.profile-edit-form {
+  display: grid;
+  gap: 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.profile-edit-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.profile-edit-field input, .profile-edit-field textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.9rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.profile-edit-field input:focus, .profile-edit-field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.profile-edit-field textarea { resize: vertical; min-height: 4.5rem; }
+.profile-edit-actions { display: flex; gap: 0.6rem; }
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.profile-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  text-align: center;
+}
+
+.profile-stat-val { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+.profile-stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+.attempt-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.attempt-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.attempt-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1.1rem;
+  cursor: pointer;
+}
+
+.attempt-row-head:hover { border-color: var(--accent); }
+.attempt-row-title { font-size: 0.88rem; font-weight: 600; }
+.attempt-row-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.1rem; }
+.attempt-row-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+.attempt-row-toggle { font-size: 0.75rem; color: var(--text-muted); }
+
+.attempt-review {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 0.9rem 1.1rem;
+  background: var(--bg);
+}
+
+.attempt-review.open { display: block; }
+
+.attempt-q { font-size: 0.85rem; margin-bottom: 0.8rem; }
+.attempt-q:last-child { margin-bottom: 0; }
+.attempt-q-text { font-weight: 600; margin-bottom: 0.25rem; }
+.attempt-q-ans { font-size: 0.8rem; color: var(--text-muted); }
+.attempt-q-ans .your-ans { color: #b91c1c; font-weight: 600; }
+.attempt-q-ans .correct-ans { color: #15803d; font-weight: 600; }
