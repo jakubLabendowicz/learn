@@ -43,7 +43,7 @@ function learnListImportedCourses() {
     slug: data.course.slug,
     title: data.course.title,
     shortTitle: data.course.shortTitle,
-    description: data.course.description,
+    shortDescription: data.course.shortDescription,
     icon: data.course.icon,
     accent: data.course.accent,
     moduleCount: data.modules.length,
@@ -66,7 +66,7 @@ function learnValidateCourseData(data) {
   const c = data.course;
   if (!c || typeof c !== 'object') return { ok: false, error: 'Brakuje pola "course".' };
   if (!learnIsUuid(c.id)) return { ok: false, error: 'Pole "course.id" musi być identyfikatorem UUID.' };
-  for (const field of ['slug', 'title', 'shortTitle', 'description', 'icon', 'accent']) {
+  for (const field of ['slug', 'title', 'shortTitle', 'description', 'shortDescription', 'icon', 'accent']) {
     if (!c[field] || typeof c[field] !== 'string') return { ok: false, error: `Pole "course.${field}" jest wymagane i musi być tekstem.` };
   }
   if (!Array.isArray(data.modules) || data.modules.length === 0) {
@@ -86,7 +86,7 @@ function learnValidateCourseData(data) {
   const moduleSlugs = new Set();
   for (const m of data.modules) {
     if (!learnIsUuid(m.id)) return { ok: false, error: `Pole "id" modułu "${m.slug || m.title || '?'}" musi być identyfikatorem UUID.` };
-    for (const field of ['slug', 'title', 'shortTitle', 'description', 'icon', 'accent']) {
+    for (const field of ['slug', 'title', 'shortTitle', 'description', 'shortDescription', 'icon', 'accent']) {
       if (!m[field] || typeof m[field] !== 'string') return { ok: false, error: `Moduł "${m.slug || m.title || m.id}" wymaga pola "${field}" (tekst).` };
     }
     if (moduleSlugs.has(m.slug)) return { ok: false, error: `Zduplikowany slug modułu: "${m.slug}".` };
@@ -96,7 +96,7 @@ function learnValidateCourseData(data) {
     for (const it of m.items) {
       if (it.type !== 'article' && it.type !== 'quiz' && it.type !== 'exam') return { ok: false, error: `Nieprawidłowy typ elementu "${it.type}" w module "${m.slug}" (dozwolone: article, quiz, exam).` };
       if (!learnIsUuid(it.id)) return { ok: false, error: `Pole "id" elementu "${it.slug || it.title || '?'}" w module "${m.slug}" musi być identyfikatorem UUID.` };
-      for (const field of ['slug', 'title', 'shortTitle', 'description']) {
+      for (const field of ['slug', 'title', 'shortTitle', 'description', 'shortDescription']) {
         if (!it[field] || typeof it[field] !== 'string') return { ok: false, error: `Element "${it.slug || it.id}" w module "${m.slug}" wymaga pola "${field}" (tekst).` };
       }
       if (itemSlugs.has(it.slug)) return { ok: false, error: `Zduplikowany slug elementu "${it.slug}" w module "${m.slug}" (slug musi być unikalny w obrębie modułu, niezależnie od typu).` };

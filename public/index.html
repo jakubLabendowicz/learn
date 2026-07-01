@@ -53,7 +53,7 @@
       <a class="dash-card" href="/courses/${c.slug}">
         <div class="dash-card-icon">${c.icon || ''}</div>
         <div class="dash-card-body">
-          <div class="dash-card-title">${c.title}</div>
+          <div class="dash-card-title">${c.shortTitle || c.title}</div>
           <div class="dash-card-pct">${pct}% ukończone</div>
         </div>
       </a>`;
@@ -62,8 +62,8 @@
   const moduleRows = modules.length ? modules.map(m => `
       <a class="dash-row" href="/courses/${m.courseSlug}">
         <div class="dash-row-body">
-          <div class="dash-row-title">${m.itemTitle}</div>
-          <div class="dash-row-sub">${m.courseTitle}</div>
+          <div class="dash-row-title">${m.itemShortTitle || m.itemTitle}</div>
+          <div class="dash-row-sub">${m.courseShortTitle || m.courseTitle}</div>
         </div>
         <div class="dash-row-date">${fmtDate(m.date)}</div>
       </a>`).join('') : `<p class="dash-empty">Brak jeszcze przeczytanych artykułów.</p>`;
@@ -73,8 +73,8 @@
     return `
       <a class="dash-row" href="/courses/${r.courseSlug}">
         <div class="dash-row-body">
-          <div class="dash-row-title">${r.itemTitle}</div>
-          <div class="dash-row-sub">${r.courseTitle}</div>
+          <div class="dash-row-title">${r.itemShortTitle || r.itemTitle}</div>
+          <div class="dash-row-sub">${r.courseShortTitle || r.courseTitle}</div>
         </div>
         <span class="pct-pill ${cls}">${r.pct}%</span>
       </a>`;

@@ -108,8 +108,8 @@ function renderImportedList() {
     <div class="imported-card">
       <div class="imported-card-icon">${c.icon || '📘'}</div>
       <div class="imported-card-body">
-        <div class="imported-card-title">${c.title}</div>
-        <div class="imported-card-meta">${c.moduleCount} modułów${c.description ? ' · ' + c.description : ''}</div>
+        <div class="imported-card-title">${c.shortTitle || c.title}</div>
+        <div class="imported-card-meta">${c.moduleCount} modułów${c.shortDescription ? ' · ' + c.shortDescription : ''}</div>
       </div>
       <div class="imported-card-actions">
         <a class="icon-btn" href="/courses/${c.slug}">Otwórz</a>
