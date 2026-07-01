@@ -354,7 +354,13 @@
   font-size: clamp(1.4rem, 4vw, 1.8rem);
   font-weight: 800;
   letter-spacing: -0.02em;
-  margin: 0 0 1rem;
+  margin: 0 0 0.6rem;
+}
+
+.module-head > a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--course-accent);
 }
 
 /* ---------- Article ---------- */

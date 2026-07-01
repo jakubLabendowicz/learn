@@ -48,6 +48,17 @@ z modułów, artykułów i quizów, a następnie zwrócić WYŁĄCZNIE poprawny 
 (bez dodatkowego tekstu, bez bloku markdown ```` ``` ````) gotowy do zapisania
 jako plik `.json`.
 
+## Identyfikatory (`id`) muszą być UUID
+
+Każde pole `id` w tym pliku — `course.id`, `module.id`, `item.id` oraz
+`question.id` — MUSI być losowo wygenerowanym identyfikatorem UUID w
+standardowym formacie `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` (32 znaki
+szesnastkowe podzielone myślnikami na grupy 8-4-4-4-12), np.
+`"e3b0c442-98fc-4e1b-8b6d-2c1e6f7a9d3b"`. Wygeneruj OSOBNY, unikalny UUID
+dla każdego elementu — nie kopiuj tego samego identyfikatora w dwóch
+miejscach. `id` NIE jest używane w adresach URL (nie musi być czytelne) —
+do tego służy osobne pole `slug`.
+
 ## Struktura pliku
 
 Plik to pojedynczy obiekt JSON z dwoma polami najwyższego poziomu: `course`
@@ -57,7 +68,7 @@ i `modules`.
 
 | Pole                 | Typ             | Wymagane | Opis |
 |----------------------|-----------------|----------|------|
-| `id`                 | string          | tak      | Unikalny, stabilny identyfikator kursu (np. `"python-dla-poczatkujacych"`). Używany jako klucz postępu w local storage — nie zmieniaj go po imporcie. |
+| `id`                  | string (UUID)   | tak      | Unikalny, stabilny identyfikator kursu. Używany jako klucz postępu w local storage — nie zmieniaj go po imporcie. |
 | `slug`                | string          | tak      | Slug używany w adresie URL: `/courses/{slug}`. Musi być unikalny wśród zaimportowanych kursów. |
 | `title`               | string          | tak      | Pełny tytuł kursu. |
 | `shortTitle`          | string          | nie      | Krótka nazwa wyświetlana w górnym pasku postępu. |
@@ -74,7 +85,7 @@ Każdy moduł:
 
 | Pole      | Typ             | Wymagane | Opis |
 |-----------|-----------------|----------|------|
-| `id`      | string          | tak      | Unikalny identyfikator modułu w obrębie kursu. |
+| `id`       | string (UUID)   | tak      | Unikalny identyfikator modułu. |
 | `slug`     | string          | tak      | Slug modułu w URL: `/courses/{course}/modules/{slug}`. Unikalny w obrębie kursu. |
 | `order`    | number          | nie      | Kolejność wyświetlania. |
 | `title`    | string          | tak      | Tytuł modułu. |
@@ -85,33 +96,35 @@ Każdy moduł:
 
 ### Elementy modułu (`items[]`)
 
-Każdy element ma pole `type`: `"article"` albo `"quiz"`.
+Artykuły i quizy są traktowane jednolicie — mają wspólną przestrzeń adresów
+URL: `/courses/{course}/modules/{module}/items/{slug}`. Każdy element ma
+pole `type`: `"article"` albo `"quiz"`.
 
 **Artykuł:**
 
-| Pole      | Typ        | Wymagane | Opis |
-|-----------|------------|----------|------|
-| `type`    | `"article"`| tak      | |
-| `id`      | string     | tak      | Unikalny w obrębie kursu. |
-| `slug`     | string     | tak      | Unikalny wśród artykułów TEGO modułu. URL: `/courses/{course}/modules/{module}/articles/{slug}`. |
-| `title`    | string     | tak      | Tytuł artykułu. |
-| `content`  | string     | tak      | Treść w Markdown (patrz obsługiwana składnia niżej). |
+| Pole      | Typ            | Wymagane | Opis |
+|-----------|----------------|----------|------|
+| `type`    | `"article"`    | tak      | |
+| `id`      | string (UUID)  | tak      | Unikalny identyfikator elementu. |
+| `slug`     | string        | tak      | Unikalny WŚRÓD WSZYSTKICH ELEMENTÓW tego modułu (artykułów i quizów razem). URL: `/courses/{course}/modules/{module}/items/{slug}`. |
+| `title`    | string        | tak      | Tytuł artykułu. |
+| `content`  | string        | tak      | Treść w Markdown (patrz obsługiwana składnia niżej). |
 
 **Quiz:**
 
-| Pole        | Typ      | Wymagane | Opis |
-|-------------|----------|----------|------|
-| `type`      | `"quiz"` | tak      | |
-| `id`        | string   | tak      | Unikalny w obrębie kursu. |
-| `slug`       | string   | tak      | Unikalny wśród quizów TEGO modułu. URL: `/courses/{course}/modules/{module}/quizes/{slug}`. |
-| `title`      | string   | tak      | Tytuł quizu (konwencja: `"Quiz: {temat}"`). |
-| `questions`  | tablica  | tak, min. 1 | Lista pytań — patrz niżej. |
+| Pole        | Typ           | Wymagane | Opis |
+|-------------|---------------|----------|------|
+| `type`      | `"quiz"`      | tak      | |
+| `id`        | string (UUID) | tak      | Unikalny identyfikator elementu. |
+| `slug`       | string       | tak      | Unikalny WŚRÓD WSZYSTKICH ELEMENTÓW tego modułu (artykułów i quizów razem). URL: `/courses/{course}/modules/{module}/items/{slug}`. |
+| `title`      | string       | tak      | Tytuł quizu (konwencja: `"Quiz: {temat}"`). |
+| `questions`  | tablica      | tak, min. 1 | Lista pytań — patrz niżej. |
 
 ### Pytania (`questions[]`)
 
 | Pole          | Typ                       | Wymagane   | Opis |
 |---------------|---------------------------|------------|------|
-| `id`          | string                    | tak        | Unikalny identyfikator pytania w obrębie quizu, np. `"q1"`. |
+| `id`          | string (UUID)             | tak        | Unikalny identyfikator pytania. |
 | `question`    | string                    | tak        | Treść pytania (zwykły tekst, bez markdown). |
 | `options`     | tablica `{key, text}`      | tak, min. 2 | Klucze zwykle `"A"`, `"B"`, `"C"`, `"D"`… `text` to zwykły tekst odpowiedzi. |
 | `answer`      | tablica kluczy (string[])  | tak, min. 1 | Klucze poprawnych odpowiedzi. Jedna wartość = pytanie jednokrotnego wyboru. Więcej niż jedna = pytanie wielokrotnego wyboru (checkboxy). |
@@ -133,7 +146,10 @@ Każdy element ma pole `type`: `"article"` albo `"quiz"`.
 
 - `course.slug` musi być unikalny wśród wszystkich zaimportowanych kursów.
 - `module.slug` musi być unikalny w obrębie kursu.
-- `item.slug` musi być unikalny w obrębie pary (moduł, typ) — artykuł i quiz w tym samym module MOGĄ mieć ten sam slug, ale dwa artykuły w tym samym module — nie.
+- `item.slug` musi być unikalny w obrębie CAŁEGO modułu, niezależnie od
+  typu — artykuł i quiz w tym samym module NIE MOGĄ mieć tego samego
+  sluga. Dobra konwencja: dla quizu użyj sluga poprzedzonego `quiz-`
+  (np. artykuł `wprowadzenie`, jego quiz `quiz-wprowadzenie`).
 - Używaj tylko małych liter, cyfr i myślników w slugach, np. `"wprowadzenie-do-tematu"`.
 
 ## Minimalny, poprawny przykład
@@ -141,7 +157,7 @@ Każdy element ma pole `type`: `"article"` albo `"quiz"`.
 ```json
 {
   "course": {
-    "id": "przyklad-kurs",
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "slug": "Przyklad-Kurs",
     "title": "Przykładowy kurs demonstracyjny",
     "shortTitle": "Przykład",
@@ -154,7 +170,7 @@ Każdy element ma pole `type`: `"article"` albo `"quiz"`.
   },
   "modules": [
     {
-      "id": "modul-1",
+      "id": "6b1f2e3a-8c4d-4a6e-9f0b-1d2e3f4a5b6c",
       "slug": "modul-1",
       "order": 1,
       "title": "Wprowadzenie",
@@ -163,19 +179,19 @@ Każdy element ma pole `type`: `"article"` albo `"quiz"`.
       "items": [
         {
           "type": "article",
-          "id": "modul-1-artykul",
+          "id": "9c8b7a6f-5e4d-4c3b-8a29-1f0e9d8c7b6a",
           "slug": "wprowadzenie",
           "title": "Wprowadzenie do tematu",
           "content": "# Wprowadzenie\n\nTo jest przykładowy akapit z **pogrubieniem** i *kursywą*.\n\n## Kluczowe pojęcia\n\n- Pierwszy punkt\n- Drugi punkt\n  - Punkt zagnieżdżony\n\n> Ważna uwaga w formie cytatu."
         },
         {
           "type": "quiz",
-          "id": "modul-1-quiz",
-          "slug": "sprawdzian",
+          "id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6",
+          "slug": "quiz-wprowadzenie",
           "title": "Quiz: Wprowadzenie",
           "questions": [
             {
-              "id": "q1",
+              "id": "f0e1d2c3-b4a5-4968-8778-9a0b1c2d3e4f",
               "question": "Które stwierdzenie jest prawdziwe?",
               "options": [
                 { "key": "A", "text": "Odpowiedź A" },
@@ -186,7 +202,7 @@ Każdy element ma pole `type`: `"article"` albo `"quiz"`.
               "explanation": "<strong>Poprawna odpowiedź: B.</strong> Krótkie wyjaśnienie dlaczego."
             },
             {
-              "id": "q2",
+              "id": "2b3c4d5e-6f70-4819-9a0b-c1d2e3f4a5b7",
               "question": "Które dwie odpowiedzi są poprawne? (pytanie wielokrotnego wyboru)",
               "options": [
                 { "key": "A", "text": "Odpowiedź poprawna nr 1" },
