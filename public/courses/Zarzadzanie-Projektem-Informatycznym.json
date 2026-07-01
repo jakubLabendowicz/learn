@@ -55,7 +55,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Tylko Product Owner</strong><br><br>Zgodnie ze <strong>Scrum Guide 2020</strong>, Sprint może zostać anulowany wyłącznie przez Product Ownera — i tylko wtedy, gdy Cel Sprintu stał się nieaktualny.<br><br><strong>Dlaczego inne odpowiedzi są błędne?</strong><ul><li><span class=\"exp-wrong\">SM</span>: usuwa blokery, ale nie ma uprawnień do przerywania Sprintu.</li><li><span class=\"exp-wrong\">Developerzy</span>: realizują Sprint Backlog, mogą renegocjować zakres, ale nie przerywają Sprintu.</li><li><span class=\"exp-wrong\">Komitet Sterujący</span>: nie istnieje jako decydent w Scrum Guide.</li></ul><span class=\"exp-tip\">⚠️ Pułapka Żmigrodzkiego: TYLKO PO, ZAWSZE PO, BEZ WYJĄTKÓW!</span>"
+              "explanation": "**Poprawna odpowiedź: C — Tylko Product Owner**\n\nZgodnie ze **Scrum Guide 2020**, Sprint może zostać anulowany wyłącznie przez Product Ownera — i tylko wtedy, gdy Cel Sprintu stał się nieaktualny.\n\n**Dlaczego inne odpowiedzi są błędne?**\n- **SM**: usuwa blokery, ale nie ma uprawnień do przerywania Sprintu.\n- **Developerzy**: realizują Sprint Backlog, mogą renegocjować zakres, ale nie przerywają Sprintu.\n- **Komitet Sterujący**: nie istnieje jako decydent w Scrum Guide.\n\n> ⚠️ Pułapka Żmigrodzkiego: TYLKO PO, ZAWSZE PO, BEZ WYJĄTKÓW!"
             },
             {
               "id": "f1419bc6-3c0a-4628-9c08-f99271a9396f",
@@ -81,7 +81,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Scrum Guide definiuje dokładnie trzy artefakty: <strong>Product Backlog</strong> (zarządza PO), <strong>Sprint Backlog</strong> (tworzą Developerzy), <strong>Increment</strong> (suma ukończonych PBI spełniających DoD).<br><br><span class=\"exp-tip\">⚠️ Burndown Chart i Impediment List NIE są artefaktami — to narzędzia monitorowania!</span>"
+              "explanation": "**Poprawna odpowiedź: B**\n\nScrum Guide definiuje dokładnie trzy artefakty: **Product Backlog** (zarządza PO), **Sprint Backlog** (tworzą Developerzy), **Increment** (suma ukończonych PBI spełniających DoD).\n\n> ⚠️ Burndown Chart i Impediment List NIE są artefaktami — to narzędzia monitorowania!"
             },
             {
               "id": "ef8192a8-ede4-4089-b75f-542c113c6a7f",
@@ -107,7 +107,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D — Cały Zespół Deweloperski</strong><br><br>Estymacja to zbiorowe działanie eliminujące anchoring bias (Planning Poker — anonimowe karty Fibonacciego odkrywane jednocześnie).<br><br><span class=\"exp-tip\">⚠️ PO definiuje priorytet i wartość, NIE estymuje pracochłonności.</span>"
+              "explanation": "**Poprawna odpowiedź: D — Cały Zespół Deweloperski**\n\nEstymacja to zbiorowe działanie eliminujące anchoring bias (Planning Poker — anonimowe karty Fibonacciego odkrywane jednocześnie).\n\n> ⚠️ PO definiuje priorytet i wartość, NIE estymuje pracochłonności."
             },
             {
               "id": "d88cfa86-b546-4de4-ae68-990730ce4497",
@@ -133,7 +133,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Product Backlog jest priorytetyzowany wg wartości biznesowej, ryzyka, kosztu opóźnienia i zależności — decyduje PO.<br><br><span class=\"exp-tip\">⚠️ Nie wg rozmiaru czy trudności technicznej!</span>"
+              "explanation": "**Poprawna odpowiedź: C**\n\nProduct Backlog jest priorytetyzowany wg wartości biznesowej, ryzyka, kosztu opóźnienia i zależności — decyduje PO.\n\n> ⚠️ Nie wg rozmiaru czy trudności technicznej!"
             },
             {
               "id": "c8f45d50-c8da-4a97-a4ac-6160939406e6",
@@ -159,7 +159,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D</strong><br><br>Scrum Guide nie definiuje budżetu — to framework dostarczania produktu, nie zarządzania finansami.<br><br><span class=\"exp-tip\">⚠️ Ulubiona pułapka egzaminacyjna!</span>"
+              "explanation": "**Poprawna odpowiedź: D**\n\nScrum Guide nie definiuje budżetu — to framework dostarczania produktu, nie zarządzania finansami.\n\n> ⚠️ Ulubiona pułapka egzaminacyjna!"
             },
             {
               "id": "57a66527-e4b6-416f-83d0-b7106ad9cf07",
@@ -185,7 +185,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>PO odpowiada za zarządzanie PB, ale współpracuje z Developerami (szacowanie) i SM (techniki zarządzania backlogiem)."
+              "explanation": "**Poprawna odpowiedź: C**\n\nPO odpowiada za zarządzanie PB, ale współpracuje z Developerami (szacowanie) i SM (techniki zarządzania backlogiem)."
             },
             {
               "id": "5f3cb416-4403-4cad-b2cb-41d578a30605",
@@ -211,7 +211,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Scrum Guide 2020: max 10 osób łącznie (PO + SM + Developerzy). Mniejszy zespół = mniej kanałów komunikacji = większa zwinność."
+              "explanation": "**Poprawna odpowiedź: B**\n\nScrum Guide 2020: max 10 osób łącznie (PO + SM + Developerzy). Mniejszy zespół = mniej kanałów komunikacji = większa zwinność."
             },
             {
               "id": "5c925729-ca8c-4ba3-9d56-eeb6a7565d2d",
@@ -237,7 +237,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — TIA</strong><br><br>Transparency (Przejrzystość), Inspection (Inspekcja), Adaptation (Adaptacja). Nie mylić z 5 wartościami Scrum (CFORC)!"
+              "explanation": "**Poprawna odpowiedź: B — TIA**\n\nTransparency (Przejrzystość), Inspection (Inspekcja), Adaptation (Adaptacja). Nie mylić z 5 wartościami Scrum (CFORC)!"
             },
             {
               "id": "a519c352-a536-4cef-be3a-dae9b80acd6a",
@@ -263,7 +263,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>DoD tworzy cały Scrum Team, jest jednolite dla całego produktu. Increment niespełniający DoD nie jest Incrementem."
+              "explanation": "**Poprawna odpowiedź: B**\n\nDoD tworzy cały Scrum Team, jest jednolite dla całego produktu. Increment niespełniający DoD nie jest Incrementem."
             },
             {
               "id": "2a4a89ee-8158-417f-8a3e-b2fcf2ed95d5",
@@ -289,7 +289,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — 5 wartości (CFORC)</strong><br><br>Nie mylić z 3 filarami empiryzmu (TIA) — to inny zestaw pojęć!"
+              "explanation": "**Poprawna odpowiedź: B — 5 wartości (CFORC)**\n\nNie mylić z 3 filarami empiryzmu (TIA) — to inny zestaw pojęć!"
             },
             {
               "id": "ba75e284-d080-42c6-87c3-830b7408ea34",
@@ -315,7 +315,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Cel Produktu</strong><br><br>Trzy zobowiązania: Product Backlog→Cel Produktu, Sprint Backlog→Cel Sprintu, Increment→Definition of Done. Wzmacniają przejrzystość i empiryzm."
+              "explanation": "**Poprawna odpowiedź: C — Cel Produktu**\n\nTrzy zobowiązania: Product Backlog→Cel Produktu, Sprint Backlog→Cel Sprintu, Increment→Definition of Done. Wzmacniają przejrzystość i empiryzm."
             },
             {
               "id": "6017b2a2-0bbd-4b8b-9ad6-23e9f7176ded",
@@ -341,7 +341,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>SM nie zarządza pracą zespołu jak tradycyjny manager. Co realizować decyduje PO (priorytet), jak realizować decydują Developerzy.<br><br><span class=\"exp-tip\">⚠️ SM to lider służebny, nie osoba zarządzająca zadaniami.</span>"
+              "explanation": "**Poprawna odpowiedź: B**\n\nSM nie zarządza pracą zespołu jak tradycyjny manager. Co realizować decyduje PO (priorytet), jak realizować decydują Developerzy.\n\n> ⚠️ SM to lider służebny, nie osoba zarządzająca zadaniami."
             },
             {
               "id": "f2282c88-35c8-4d17-8ca0-1334f9a001af",
@@ -367,7 +367,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Zarządzanie priorytetami Product Backlogu to wyłączna odpowiedzialność PO. Nikt nie może go zastąpić w tej roli bez formalnej delegacji."
+              "explanation": "**Poprawna odpowiedź: C**\n\nZarządzanie priorytetami Product Backlogu to wyłączna odpowiedzialność PO. Nikt nie może go zastąpić w tej roli bez formalnej delegacji."
             },
             {
               "id": "0a03fce3-06bc-4316-a8e4-ab204ab1c470",
@@ -393,7 +393,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Scrum Guide dopuszcza renegocjację zakresu (liczby elementów) w trakcie Sprintu między Developerami a PO, dopóki nie zagraża to osiągnięciu Celu Sprintu. To różni się od przerwania Sprintu, które robi wyłącznie PO."
+              "explanation": "**Poprawna odpowiedź: B**\n\nScrum Guide dopuszcza renegocjację zakresu (liczby elementów) w trakcie Sprintu między Developerami a PO, dopóki nie zagraża to osiągnięciu Celu Sprintu. To różni się od przerwania Sprintu, które robi wyłącznie PO."
             }
           ],
           "slug": "quiz-scrum-role-i-artefakty",
@@ -453,7 +453,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — 1 miesiąc</strong><br><br>Scrum Guide: maksymalna długość Sprintu to 1 miesiąc (4 tygodnie). Minimum nie jest formalnie zdefiniowane, typowo 1-4 tygodnie.<br><br><span class=\"exp-tip\">⚠️ Pytanie dotyczy MAKSIMUM, które jest jasno określone na 1 miesiąc.</span>"
+              "explanation": "**Poprawna odpowiedź: C — 1 miesiąc**\n\nScrum Guide: maksymalna długość Sprintu to 1 miesiąc (4 tygodnie). Minimum nie jest formalnie zdefiniowane, typowo 1-4 tygodnie.\n\n> ⚠️ Pytanie dotyczy MAKSIMUM, które jest jasno określone na 1 miesiąc."
             },
             {
               "id": "8f4abe04-d6e3-4a29-a23a-88c580726a94",
@@ -479,7 +479,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Scrum Guide 2020 zmienił nacisk z \"trzech pytań\" na inspekcję postępu wobec <strong>Celu Sprintu</strong>. Max 15 minut, dla Developerów.<br><br><span class=\"exp-tip\">⚠️ Odpowiedź B to stara wersja (sprzed 2020)!</span>"
+              "explanation": "**Poprawna odpowiedź: C**\n\nScrum Guide 2020 zmienił nacisk z \"trzech pytań\" na inspekcję postępu wobec **Celu Sprintu**. Max 15 minut, dla Developerów.\n\n> ⚠️ Odpowiedź B to stara wersja (sprzed 2020)!"
             },
             {
               "id": "b915d7c1-4c96-4107-a7cc-eb220861a865",
@@ -505,7 +505,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Retro = analiza PROCESU, bez interesariuszy zewnętrznych. Sprint Review = PRODUKT, z interesariuszami.<br><br><span class=\"exp-tip\">⚠️ Klasyczna pułapka — nie myl tych dwóch zdarzeń!</span>"
+              "explanation": "**Poprawna odpowiedź: B**\n\nRetro = analiza PROCESU, bez interesariuszy zewnętrznych. Sprint Review = PRODUKT, z interesariuszami.\n\n> ⚠️ Klasyczna pułapka — nie myl tych dwóch zdarzeń!"
             },
             {
               "id": "04b5441d-649f-4f80-9021-021b8a5a3f4a",
@@ -531,7 +531,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Analiza procesu pracy to Sprint Retrospective. Review dotyczy PRODUKTU."
+              "explanation": "**Poprawna odpowiedź: C**\n\nAnaliza procesu pracy to Sprint Retrospective. Review dotyczy PRODUKTU."
             },
             {
               "id": "6116a5cb-08d3-4bf4-9873-536e4eda6a2c",
@@ -557,7 +557,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Trzy tematy: Dlaczego (Cel Sprintu), Co (wybór PBI), Jak (plan realizacji). Scrum NIE zarządza kosztami!"
+              "explanation": "**Poprawna odpowiedź: B**\n\nTrzy tematy: Dlaczego (Cel Sprintu), Co (wybór PBI), Jak (plan realizacji). Scrum NIE zarządza kosztami!"
             },
             {
               "id": "da72b513-fa6d-4c31-918a-d1808ca6a2a7",
@@ -583,7 +583,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Velocity to miara historyczna, służy do prognozowania, NIE jest celem do wymuszenia (presja = inflacja SP)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nVelocity to miara historyczna, służy do prognozowania, NIE jest celem do wymuszenia (presja = inflacja SP)."
             },
             {
               "id": "096137f8-dabf-45b3-97da-3232d09e4c61",
@@ -609,7 +609,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Burndown = wykres opadający pokazujący ile pracy zostało. Sprint Burndown (w Sprincie) vs Release Burndown (do wydania)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nBurndown = wykres opadający pokazujący ile pracy zostało. Sprint Burndown (w Sprincie) vs Release Burndown (do wydania)."
             },
             {
               "id": "e4deedc2-f4b1-4610-8814-c644eb0be70d",
@@ -635,7 +635,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Independent</strong><br><br>INVEST: Independent, Negotiable, Valuable, Estimable, Small, Testable."
+              "explanation": "**Poprawna odpowiedź: B — Independent**\n\nINVEST: Independent, Negotiable, Valuable, Estimable, Small, Testable."
             },
             {
               "id": "e253a5cc-9e92-49c2-a361-95acdce09bfb",
@@ -661,7 +661,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>WIP Limit = max zadań w kolumnie. Zasada: Stop Starting, Start Finishing. Kluczowy mechanizm Kanbana, odróżniający go od zwykłej tablicy."
+              "explanation": "**Poprawna odpowiedź: B**\n\nWIP Limit = max zadań w kolumnie. Zasada: Stop Starting, Start Finishing. Kluczowy mechanizm Kanbana, odróżniający go od zwykłej tablicy."
             },
             {
               "id": "0eef869d-77f5-434d-8b60-3d0aa7df947c",
@@ -687,7 +687,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Anonimowe karty Fibonacciego odkrywane jednocześnie eliminują anchoring bias — wycena zbiorowa całego zespołu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nAnonimowe karty Fibonacciego odkrywane jednocześnie eliminują anchoring bias — wycena zbiorowa całego zespołu."
             },
             {
               "id": "77ca7d55-d180-4fea-914d-6681e9446af4",
@@ -713,7 +713,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Refinement to NIE formalne zdarzenie Scrum — to ciągła aktywność całego zespołu, polegająca na uszczegóławianiu i szacowaniu elementów backlogu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nRefinement to NIE formalne zdarzenie Scrum — to ciągła aktywność całego zespołu, polegająca na uszczegóławianiu i szacowaniu elementów backlogu."
             },
             {
               "id": "cbeb4f5f-e8b1-428b-821d-720866dbf974",
@@ -739,7 +739,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — 8 godzin</strong><br><br>Dla krótszych Sprintów timebox jest proporcjonalnie krótszy (np. 4h dla 2-tygodniowego Sprintu)."
+              "explanation": "**Poprawna odpowiedź: C — 8 godzin**\n\nDla krótszych Sprintów timebox jest proporcjonalnie krótszy (np. 4h dla 2-tygodniowego Sprintu)."
             },
             {
               "id": "3e650f24-9468-4f4b-9a8a-ddb071d3b671",
@@ -765,7 +765,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Burndown = wykres opadający (pozostała praca). Burnup = wykres rosnący (wykonana praca), często pokazuje też zmieniający się total scope."
+              "explanation": "**Poprawna odpowiedź: B**\n\nBurndown = wykres opadający (pozostała praca). Burnup = wykres rosnący (wykonana praca), często pokazuje też zmieniający się total scope."
             },
             {
               "id": "01e16721-be42-483f-b488-e8b2ff2cf536",
@@ -791,7 +791,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Scrumban zachowuje część ról i praktyk Scrum, ale zamiast Sprintów wprowadza ciągły przepływ pracy ograniczony WIP Limits, charakterystyczny dla Kanbana."
+              "explanation": "**Poprawna odpowiedź: B**\n\nScrumban zachowuje część ról i praktyk Scrum, ale zamiast Sprintów wprowadza ciągły przepływ pracy ograniczony WIP Limits, charakterystyczny dla Kanbana."
             }
           ],
           "slug": "quiz-scrum-zdarzenia-i-metryki",
@@ -851,7 +851,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>CPI = EV/AC. CPI<1 = przekroczenie budżetu. CPI=0,75 → za 1 zł wydany = 0,75 zł wartości.<br><br><span class=\"exp-tip\">⚠️ CPI dotyczy ZAWSZE kosztów, SPI ZAWSZE czasu — nie myl!</span>"
+              "explanation": "**Poprawna odpowiedź: C**\n\nCPI = EV/AC. CPI<1 = przekroczenie budżetu. CPI=0,75 → za 1 zł wydany = 0,75 zł wartości.\n\n> ⚠️ CPI dotyczy ZAWSZE kosztów, SPI ZAWSZE czasu — nie myl!"
             },
             {
               "id": "cec6cdb0-46f7-40b4-9f43-78dcf50d08fe",
@@ -877,7 +877,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>CPI = EV/AC = 120 000/160 000 = <strong>0,75</strong>. EAC = BAC/CPI = 300 000/0,75 = <strong>400 000 zł</strong>.<br><br><span class=\"exp-tip\">⚠️ EV zawsze w liczniku!</span>"
+              "explanation": "**Poprawna odpowiedź: C**\n\nCPI = EV/AC = 120 000/160 000 = **0,75**. EAC = BAC/CPI = 300 000/0,75 = **400 000 zł**.\n\n> ⚠️ EV zawsze w liczniku!"
             },
             {
               "id": "a9860d38-57ae-481a-8e16-eac935ce2267",
@@ -903,7 +903,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — EAC = BAC / CPI</strong><br><br>Podzielić przez CPI (NIE pomnożyć!). Jeśli CPI<1 (problem), EAC>BAC (gorsza prognoza) — to ma sens logiczny."
+              "explanation": "**Poprawna odpowiedź: B — EAC = BAC / CPI**\n\nPodzielić przez CPI (NIE pomnożyć!). Jeśli CPI<1 (problem), EAC>BAC (gorsza prognoza) — to ma sens logiczny."
             },
             {
               "id": "74a4bbc8-90ce-46be-888e-2efa9aee1472",
@@ -929,7 +929,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>SPI = EV/PV. SPI>1 = przed harmonogramem (więcej wykonano niż planowano)."
+              "explanation": "**Poprawna odpowiedź: C**\n\nSPI = EV/PV. SPI>1 = przed harmonogramem (więcej wykonano niż planowano)."
             },
             {
               "id": "a3e292d9-bb6c-485d-bcb6-c47d6c099656",
@@ -955,7 +955,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D</strong><br><br>SPI = EV/PV = 3000/2500 = <strong>1,2</strong> > 1 = przed harmonogramem.<br>(CPI = 3000/2200 = 1,36 — to inny wskaźnik, dotyczy kosztów!)"
+              "explanation": "**Poprawna odpowiedź: D**\n\nSPI = EV/PV = 3000/2500 = **1,2** > 1 = przed harmonogramem.\n\n(CPI = 3000/2200 = 1,36 — to inny wskaźnik, dotyczy kosztów!)"
             },
             {
               "id": "e56bf24b-d7f8-4e55-839f-aba62f67182b",
@@ -981,7 +981,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — AC (Actual Cost)</strong><br><br>AC = rzeczywiste wydatki. EV i AC są wyceniane inaczej: EV wg planu, AC wg rzeczywistości."
+              "explanation": "**Poprawna odpowiedź: C — AC (Actual Cost)**\n\nAC = rzeczywiste wydatki. EV i AC są wyceniane inaczej: EV wg planu, AC wg rzeczywistości."
             },
             {
               "id": "89d8ae82-1fb3-4a84-80e4-a3349f283336",
@@ -1007,7 +1007,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>EVM integruje 3 wymiary: zakres, harmonogram, koszty — jednocześnie. To NIE narzędzie do jakości."
+              "explanation": "**Poprawna odpowiedź: C**\n\nEVM integruje 3 wymiary: zakres, harmonogram, koszty — jednocześnie. To NIE narzędzie do jakości."
             },
             {
               "id": "eebf90d5-301c-4ec4-86dd-ac3348f3bf29",
@@ -1033,7 +1033,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>TCPI=(BAC−EV)/(BAC−AC). >1 oznacza konieczność poprawy efektywności do końca projektu, by zmieścić się w budżecie."
+              "explanation": "**Poprawna odpowiedź: C**\n\nTCPI=(BAC−EV)/(BAC−AC). >1 oznacza konieczność poprawy efektywności do końca projektu, by zmieścić się w budżecie."
             },
             {
               "id": "910954a4-ca5f-425a-b528-56ea9908d973",
@@ -1059,7 +1059,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Cost Baseline = suma kosztów pakietów roboczych + Contingency Reserve. Budżet całkowity = Cost Baseline + Management Reserve (poza baseline)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nCost Baseline = suma kosztów pakietów roboczych + Contingency Reserve. Budżet całkowity = Cost Baseline + Management Reserve (poza baseline)."
             },
             {
               "id": "e575fbbf-7966-47af-b506-61a2347c6b36",
@@ -1085,7 +1085,7 @@
               "answer": [
                 "A"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: A</strong><br><br>CV = EV - AC = 50 000 - 40 000 = <strong>+10 000 zł</strong> (oszczędność — projekt poniżej budżetu)."
+              "explanation": "**Poprawna odpowiedź: A**\n\nCV = EV - AC = 50 000 - 40 000 = **+10 000 zł** (oszczędność — projekt poniżej budżetu)."
             },
             {
               "id": "f07972b2-d393-45e2-b242-a854bdebb422",
@@ -1111,7 +1111,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — ETC = EAC − AC</strong><br><br>ETC mówi ile jeszcze trzeba wydać do końca projektu, licząc od obecnego momentu."
+              "explanation": "**Poprawna odpowiedź: B — ETC = EAC − AC**\n\nETC mówi ile jeszcze trzeba wydać do końca projektu, licząc od obecnego momentu."
             },
             {
               "id": "35aa7692-4366-493a-a367-943f4ee6b31a",
@@ -1137,7 +1137,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>VAC ujemne oznacza, że EAC > BAC, czyli prognozowany koszt końcowy przewyższa budżet — przekroczenie."
+              "explanation": "**Poprawna odpowiedź: B**\n\nVAC ujemne oznacza, że EAC > BAC, czyli prognozowany koszt końcowy przewyższa budżet — przekroczenie."
             },
             {
               "id": "7ca6b05b-fb03-4da3-b618-eb499a77f8b1",
@@ -1163,7 +1163,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — EV</strong><br><br>BCWS=PV, BCWP=EV, ACWP=AC. Te stare skróty mogą pojawić się w starszych materiałach lub na egzaminie jako \"ciekawostka\"."
+              "explanation": "**Poprawna odpowiedź: C — EV**\n\nBCWS=PV, BCWP=EV, ACWP=AC. Te stare skróty mogą pojawić się w starszych materiałach lub na egzaminie jako \"ciekawostka\"."
             }
           ],
           "slug": "quiz-evm-metryki-i-wzory",
@@ -1223,7 +1223,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>NPV>0 = AKCEPTUJ. Słabość (brak uwzględnienia ryzyka) NIE jest powodem odrzucenia projektu!"
+              "explanation": "**Poprawna odpowiedź: C**\n\nNPV>0 = AKCEPTUJ. Słabość (brak uwzględnienia ryzyka) NIE jest powodem odrzucenia projektu!"
             },
             {
               "id": "16b65946-9432-48ae-a0da-399def6dc172",
@@ -1249,7 +1249,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — OPEX</strong><br><br>Płatność cykliczna = zawsze OPEX. Zakup jednorazowy środka trwałego = CAPEX."
+              "explanation": "**Poprawna odpowiedź: B — OPEX**\n\nPłatność cykliczna = zawsze OPEX. Zakup jednorazowy środka trwałego = CAPEX."
             },
             {
               "id": "e1168d98-c958-443c-8ffd-30bda36f8c9e",
@@ -1275,7 +1275,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — IRR</strong><br><br>IRR wyrażony w % pozwala porównać projekty różnej skali. NPV i ROI to wartości bezwzględne/proste, mniej porównywalne."
+              "explanation": "**Poprawna odpowiedź: C — IRR**\n\nIRR wyrażony w % pozwala porównać projekty różnej skali. NPV i ROI to wartości bezwzględne/proste, mniej porównywalne."
             },
             {
               "id": "e99d1bb0-3437-455a-bd77-4e4131967c31",
@@ -1301,7 +1301,7 @@
               "answer": [
                 "A"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: A — IRR</strong><br><br>IRR = maksymalna stopa oprocentowania kredytu bez generowania straty na projekcie."
+              "explanation": "**Poprawna odpowiedź: A — IRR**\n\nIRR = maksymalna stopa oprocentowania kredytu bez generowania straty na projekcie."
             },
             {
               "id": "1f467caa-00fa-4f4a-a200-e58c92a41a7a",
@@ -1327,7 +1327,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Payback Period traktuje 10 000 zł dziś tak samo jak za 5 lat — to jego główna wada. NPV uwzględnia wartość pieniądza w czasie."
+              "explanation": "**Poprawna odpowiedź: C**\n\nPayback Period traktuje 10 000 zł dziś tak samo jak za 5 lat — to jego główna wada. NPV uwzględnia wartość pieniądza w czasie."
             },
             {
               "id": "4e21687c-3d4c-4662-bb1f-d4f54d9f03e5",
@@ -1353,7 +1353,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — (Zysk/Koszt)×100%</strong><br><br>Prosta miara rentowności, NIE uwzględnia czasu ani ryzyka."
+              "explanation": "**Poprawna odpowiedź: B — (Zysk/Koszt)×100%**\n\nProsta miara rentowności, NIE uwzględnia czasu ani ryzyka."
             },
             {
               "id": "cbfd7002-bdb6-4999-a46f-e38367508799",
@@ -1379,7 +1379,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — CAPEX</strong><br><br>Jednorazowy zakup środka trwałego, podlega amortyzacji w czasie."
+              "explanation": "**Poprawna odpowiedź: B — CAPEX**\n\nJednorazowy zakup środka trwałego, podlega amortyzacji w czasie."
             },
             {
               "id": "f38200bc-51e3-4f69-95a6-a540e9e071e7",
@@ -1405,7 +1405,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — IRR</strong><br><br>Te same NPV przy różnej skali inwestycji to klasyczny przypadek, gdzie IRR (wyrażony w %) ujawnia różnicę w efektywności — mniejsza inwestycja z tym samym NPV ma wyższe IRR."
+              "explanation": "**Poprawna odpowiedź: B — IRR**\n\nTe same NPV przy różnej skali inwestycji to klasyczny przypadek, gdzie IRR (wyrażony w %) ujawnia różnicę w efektywności — mniejsza inwestycja z tym samym NPV ma wyższe IRR."
             },
             {
               "id": "713f27f2-fb6c-45ff-ae53-0aceb14b4193",
@@ -1431,7 +1431,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Stopa dyskontowa odzwierciedla koszt kapitału (np. WACC) — minimalną stopę zwrotu, jakiej oczekuje inwestor/organizacja."
+              "explanation": "**Poprawna odpowiedź: B**\n\nStopa dyskontowa odzwierciedla koszt kapitału (np. WACC) — minimalną stopę zwrotu, jakiej oczekuje inwestor/organizacja."
             },
             {
               "id": "6bf76ad3-75a7-42a3-9853-a48e73b43a33",
@@ -1457,7 +1457,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Długoterminowe kontrakty (np. 3-letnie) często klasyfikuje się jako CAPEX, w przeciwieństwie do krótkoterminowych subskrypcji (miesięcznych/rocznych) = OPEX."
+              "explanation": "**Poprawna odpowiedź: B**\n\nDługoterminowe kontrakty (np. 3-letnie) często klasyfikuje się jako CAPEX, w przeciwieństwie do krótkoterminowych subskrypcji (miesięcznych/rocznych) = OPEX."
             },
             {
               "id": "e416b86e-35e3-46c7-b381-6cdd5627a057",
@@ -1483,7 +1483,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>IRR (12%) > WACC (8%) oznacza, że projekt generuje zwrot wyższy niż koszt pozyskania kapitału — jest opłacalny."
+              "explanation": "**Poprawna odpowiedź: B**\n\nIRR (12%) > WACC (8%) oznacza, że projekt generuje zwrot wyższy niż koszt pozyskania kapitału — jest opłacalny."
             },
             {
               "id": "21d05be8-f7da-4899-a181-3dbb8e9c1753",
@@ -1509,7 +1509,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>To ilustruje słabość ROI — nie uwzględnia czasu. Ten sam ROI osiągnięty szybciej (Projekt A) jest zazwyczaj bardziej atrakcyjny, bo kapitał szybciej \"pracuje\" dalej."
+              "explanation": "**Poprawna odpowiedź: B**\n\nTo ilustruje słabość ROI — nie uwzględnia czasu. Ten sam ROI osiągnięty szybciej (Projekt A) jest zazwyczaj bardziej atrakcyjny, bo kapitał szybciej \"pracuje\" dalej."
             }
           ],
           "slug": "quiz-wskazniki-finansowe-npv-irr-roi",
@@ -1569,7 +1569,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Ryzyko = CIĄGŁY PROCES przez cały projekt. Nowe ryzyka pojawiają się wraz z postępem prac."
+              "explanation": "**Poprawna odpowiedź: C**\n\nRyzyko = CIĄGŁY PROCES przez cały projekt. Nowe ryzyka pojawiają się wraz z postępem prac."
             },
             {
               "id": "e3af98ad-313b-4e7b-878d-9cfd5cad50b0",
@@ -1595,7 +1595,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Definicja PMBOK: ryzyko = zagrożenie (−) LUB okazja (+). Obie strony są ważne!"
+              "explanation": "**Poprawna odpowiedź: C**\n\nDefinicja PMBOK: ryzyko = zagrożenie (−) LUB okazja (+). Obie strony są ważne!"
             },
             {
               "id": "dab54f73-6a13-4207-9577-a5eac4d5bc69",
@@ -1621,7 +1621,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>EMV = P × Wpływ = 0,30 × (−20 000) = <strong>−6 000 zł</strong>. Ujemne EMV = zagrożenie."
+              "explanation": "**Poprawna odpowiedź: C**\n\nEMV = P × Wpływ = 0,30 × (−20 000) = **−6 000 zł**. Ujemne EMV = zagrożenie."
             },
             {
               "id": "cec65c26-4ad5-480e-853d-86ce961fb19d",
@@ -1647,7 +1647,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Eskalacja (NOWA strategia PMBOK 8) = ryzyko wychodzi poza projekt → eskaluj do Sponsora/portfela."
+              "explanation": "**Poprawna odpowiedź: C**\n\nEskalacja (NOWA strategia PMBOK 8) = ryzyko wychodzi poza projekt → eskaluj do Sponsora/portfela."
             },
             {
               "id": "0d6b2a2d-ba71-47bd-849a-529b9889cb5c",
@@ -1673,7 +1673,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D — Unikanie</strong><br><br>Unikanie = eliminujemy ryzyko zmieniając plan. Łagodzenie tylko redukuje (ryzyko może nadal wystąpić)."
+              "explanation": "**Poprawna odpowiedź: D — Unikanie**\n\nUnikanie = eliminujemy ryzyko zmieniając plan. Łagodzenie tylko redukuje (ryzyko może nadal wystąpić)."
             },
             {
               "id": "c4038226-8de9-47eb-af11-1a79b1b4c9c1",
@@ -1699,7 +1699,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Transfer przenosi finansowe konsekwencje na stronę trzecią. Ryzyko nadal istnieje — tylko ktoś inny ponosi koszty."
+              "explanation": "**Poprawna odpowiedź: B**\n\nTransfer przenosi finansowe konsekwencje na stronę trzecią. Ryzyko nadal istnieje — tylko ktoś inny ponosi koszty."
             },
             {
               "id": "9454fa1a-96c4-4bbd-9e95-fc1c26957b0f",
@@ -1725,7 +1725,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Eksploracja</strong><br><br>Eksploracja (Exploit) = odpowiednik Unikania dla okazji — zmieniamy plan, by okazja na pewno wystąpiła."
+              "explanation": "**Poprawna odpowiedź: B — Eksploracja**\n\nEksploracja (Exploit) = odpowiednik Unikania dla okazji — zmieniamy plan, by okazja na pewno wystąpiła."
             },
             {
               "id": "011d1234-c566-4843-a3fe-a7d3c28935a1",
@@ -1751,7 +1751,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Łagodzenie REDUKUJE ryzyko (może nadal wystąpić), w przeciwieństwie do Unikania, które je ELIMINUJE."
+              "explanation": "**Poprawna odpowiedź: C**\n\nŁagodzenie REDUKUJE ryzyko (może nadal wystąpić), w przeciwieństwie do Unikania, które je ELIMINUJE."
             },
             {
               "id": "12e98761-89c8-486d-b920-25cabbd57729",
@@ -1777,7 +1777,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Transfer</strong><br><br>Łańcuch transferu — każde ogniwo przenosi odpowiedzialność/ryzyko dalej."
+              "explanation": "**Poprawna odpowiedź: C — Transfer**\n\nŁańcuch transferu — każde ogniwo przenosi odpowiedzialność/ryzyko dalej."
             },
             {
               "id": "55d4e39b-7a45-41c4-91da-029cf4fec3d6",
@@ -1803,7 +1803,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Eskalacja</strong><br><br>Wpływ wykracza poza kompetencje KP → eskaluj do Sponsora/organizacji. Nowy kontrakt = zawsze eskalacja!"
+              "explanation": "**Poprawna odpowiedź: C — Eskalacja**\n\nWpływ wykracza poza kompetencje KP → eskaluj do Sponsora/organizacji. Nowy kontrakt = zawsze eskalacja!"
             },
             {
               "id": "7b73a4b4-a51a-4fd4-823c-b4b66370a4ff",
@@ -1829,7 +1829,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Łagodzenie</strong><br><br>Pary: Unikanie↔Eksploracja, Transfer↔Dzielenie się, Łagodzenie↔Wzmacnianie, Eskalacja↔Eskalacja, Akceptacja↔Akceptacja."
+              "explanation": "**Poprawna odpowiedź: C — Łagodzenie**\n\nPary: Unikanie↔Eksploracja, Transfer↔Dzielenie się, Łagodzenie↔Wzmacnianie, Eskalacja↔Eskalacja, Akceptacja↔Akceptacja."
             },
             {
               "id": "51714595-eeae-4a32-bad7-d184d31db0b1",
@@ -1855,7 +1855,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Akceptacja aktywna = świadomie tworzymy rezerwę (np. contingency reserve) na wypadek, gdyby ryzyko się zmaterializowało. Akceptacja pasywna = tylko monitorujemy, bez rezerwy."
+              "explanation": "**Poprawna odpowiedź: B**\n\nAkceptacja aktywna = świadomie tworzymy rezerwę (np. contingency reserve) na wypadek, gdyby ryzyko się zmaterializowało. Akceptacja pasywna = tylko monitorujemy, bez rezerwy."
             },
             {
               "id": "bdecb5ee-58ae-40ef-a1ab-8e5a48ab7f35",
@@ -1881,7 +1881,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Unikanie</strong><br><br>Zmiana planu (wybór innej technologii) eliminuje ryzyko związane z niesprawdzonym rozwiązaniem — to definicja Unikania."
+              "explanation": "**Poprawna odpowiedź: B — Unikanie**\n\nZmiana planu (wybór innej technologii) eliminuje ryzyko związane z niesprawdzonym rozwiązaniem — to definicja Unikania."
             }
           ],
           "slug": "quiz-ryzyko-strategie-odpowiedzi",
@@ -1941,7 +1941,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — KP</strong><br><br>Contingency = znane ryzyka, w baseline, zarządza KP. Management Reserve = nieznane, poza baseline, zarządza Sponsor."
+              "explanation": "**Poprawna odpowiedź: C — KP**\n\nContingency = znane ryzyka, w baseline, zarządza KP. Management Reserve = nieznane, poza baseline, zarządza Sponsor."
             },
             {
               "id": "31f81a86-5239-4780-b4ff-1c5fda3aa852",
@@ -1967,7 +1967,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Pełny zestaw pól. Rejestr ryzyk to \"żywy dokument\" zawierający OBIE kategorie ryzyk (zagrożenia i okazje)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPełny zestaw pól. Rejestr ryzyk to \"żywy dokument\" zawierający OBIE kategorie ryzyk (zagrożenia i okazje)."
             },
             {
               "id": "45139972-b374-431b-a8f6-0df80cac1696",
@@ -1993,7 +1993,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Sponsor</strong><br><br>Nieznane ryzyka (unknown-unknowns), poza baseline, dostęp wymaga zgody Sponsora/KS."
+              "explanation": "**Poprawna odpowiedź: C — Sponsor**\n\nNieznane ryzyka (unknown-unknowns), poza baseline, dostęp wymaga zgody Sponsora/KS."
             },
             {
               "id": "07f9905a-3f99-472a-9108-0bb3cd541b6d",
@@ -2019,7 +2019,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Ryzyko pozostające po zastosowaniu środków bezpieczeństwa zależy od JAKOŚCI KONTROLI, nie strategii czy nastawienia."
+              "explanation": "**Poprawna odpowiedź: C**\n\nRyzyko pozostające po zastosowaniu środków bezpieczeństwa zależy od JAKOŚCI KONTROLI, nie strategii czy nastawienia."
             },
             {
               "id": "354f10c1-4b01-4742-b4bb-c36eb03a72c8",
@@ -2045,7 +2045,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Cost Baseline = praca + Contingency Reserve. Management Reserve jest POZA baseline — to osobny dodatkowy bufor."
+              "explanation": "**Poprawna odpowiedź: B**\n\nCost Baseline = praca + Contingency Reserve. Management Reserve jest POZA baseline — to osobny dodatkowy bufor."
             },
             {
               "id": "06282ecb-7e9a-4b88-b8ee-df0565e79c90",
@@ -2071,7 +2071,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Jakościowa = szybka, dla wszystkich ryzyk, zawsze wykonywana. Ilościowa = szczegółowa, dla najważniejszych ryzyk, opcjonalna, zawsze PO jakościowej."
+              "explanation": "**Poprawna odpowiedź: B**\n\nJakościowa = szybka, dla wszystkich ryzyk, zawsze wykonywana. Ilościowa = szczegółowa, dla najważniejszych ryzyk, opcjonalna, zawsze PO jakościowej."
             },
             {
               "id": "9a88b608-caad-47fa-b207-430aab0f9f3a",
@@ -2097,7 +2097,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Przykład: outsourcing (transfer ryzyka A) tworzy nowe ryzyko zależności od dostawcy (ryzyko wtórne)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPrzykład: outsourcing (transfer ryzyka A) tworzy nowe ryzyko zależności od dostawcy (ryzyko wtórne)."
             },
             {
               "id": "7c73054e-cd05-4335-9735-1c64766ab139",
@@ -2123,7 +2123,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Znane ryzyko (było w Rejestrze) = Contingency Reserve, którą KP zarządza samodzielnie, bez konieczności pytania Sponsora."
+              "explanation": "**Poprawna odpowiedź: B**\n\nZnane ryzyko (było w Rejestrze) = Contingency Reserve, którą KP zarządza samodzielnie, bez konieczności pytania Sponsora."
             },
             {
               "id": "b765bdf5-ec5d-4afb-b480-531dfe354ab6",
@@ -2149,7 +2149,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Trigger (wyzwalacz) to wczesny sygnał ostrzegawczy, że ryzyko zaczyna się materializować — pozwala na szybszą reakcję."
+              "explanation": "**Poprawna odpowiedź: B**\n\nTrigger (wyzwalacz) to wczesny sygnał ostrzegawczy, że ryzyko zaczyna się materializować — pozwala na szybszą reakcję."
             }
           ],
           "slug": "quiz-ryzyko-rejestr-i-rezerwy",
@@ -2209,7 +2209,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>PMBOK: TYMCZASOWY + UNIKALNY + PROGRESYWNIE PLANOWANY. Złożoność NIE jest cechą projektu!"
+              "explanation": "**Poprawna odpowiedź: B**\n\nPMBOK: TYMCZASOWY + UNIKALNY + PROGRESYWNIE PLANOWANY. Złożoność NIE jest cechą projektu!"
             },
             {
               "id": "676974d9-8e37-4a41-94a3-685f96548456",
@@ -2235,7 +2235,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Sponsor</strong><br><br>Na etapie Inicjacji, zanim pojawi się KP!"
+              "explanation": "**Poprawna odpowiedź: C — Sponsor**\n\nNa etapie Inicjacji, zanim pojawi się KP!"
             },
             {
               "id": "9088b42c-8998-4c34-b7db-41eb2d3b6e13",
@@ -2261,7 +2261,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Mnemonik: Program = Powiązane Projekty."
+              "explanation": "**Poprawna odpowiedź: B**\n\nMnemonik: Program = Powiązane Projekty."
             },
             {
               "id": "dc43ff81-54db-43ea-af5e-a5df300063b1",
@@ -2287,7 +2287,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Tymczasowy</strong><br><br>NIE Trwały, NIE Techniczny!"
+              "explanation": "**Poprawna odpowiedź: C — Tymczasowy**\n\nNIE Trwały, NIE Techniczny!"
             },
             {
               "id": "6ca5ff66-b617-4d4f-8deb-bdbeac516201",
@@ -2313,7 +2313,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Zasoby mają dwóch szefów: KP i przełożonego liniowego."
+              "explanation": "**Poprawna odpowiedź: B**\n\nZasoby mają dwóch szefów: KP i przełożonego liniowego."
             },
             {
               "id": "90a51bb7-a091-4b0c-930e-fd6a2f91b888",
@@ -2339,7 +2339,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Inicjacja</strong><br><br>To pierwszy formalny dokument, zanim zaczniemy szczegółowo planować."
+              "explanation": "**Poprawna odpowiedź: C — Inicjacja**\n\nTo pierwszy formalny dokument, zanim zaczniemy szczegółowo planować."
             },
             {
               "id": "c516c77e-33cf-43b3-b65c-a0cb5affdae2",
@@ -2365,7 +2365,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Incremental = narzucony termin + elastyczny zakres + backlog."
+              "explanation": "**Poprawna odpowiedź: B**\n\nIncremental = narzucony termin + elastyczny zakres + backlog."
             },
             {
               "id": "9c2b65c5-4a56-4534-b859-da1bc0a29ced",
@@ -2391,7 +2391,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Koszt i liczba zasobów NIE są kryterium różnicującym!"
+              "explanation": "**Poprawna odpowiedź: B**\n\nKoszt i liczba zasobów NIE są kryterium różnicującym!"
             },
             {
               "id": "5f1ca797-2a71-462e-95ee-0bc2a1bde525",
@@ -2417,7 +2417,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Formalne zamknięcie zatwierdza Sponsor/KS, nie sam KP."
+              "explanation": "**Poprawna odpowiedź: B**\n\nFormalne zamknięcie zatwierdza Sponsor/KS, nie sam KP."
             },
             {
               "id": "05e28248-cd51-4f49-8e61-a46595b81add",
@@ -2443,7 +2443,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Projektowa</strong><br><br>W strukturze projektowej zasoby są dedykowane wyłącznie projektowi, KP ma pełną kontrolę. To najdroższa, ale najefektywniejsza dla KP struktura."
+              "explanation": "**Poprawna odpowiedź: C — Projektowa**\n\nW strukturze projektowej zasoby są dedykowane wyłącznie projektowi, KP ma pełną kontrolę. To najdroższa, ale najefektywniejsza dla KP struktura."
             },
             {
               "id": "cc177afd-2387-4304-bb68-f702933f227d",
@@ -2469,7 +2469,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Proces</strong><br><br>Stała, powtarzalna działalność operacyjna z przewidywalnym wynikiem — klasyczny proces, nie projekt."
+              "explanation": "**Poprawna odpowiedź: B — Proces**\n\nStała, powtarzalna działalność operacyjna z przewidywalnym wynikiem — klasyczny proces, nie projekt."
             },
             {
               "id": "a8c126cd-9c8e-4f81-86c9-885250d0871f",
@@ -2495,7 +2495,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Projekt</strong><br><br>Robimy to po raz pierwszy (unikalność), ma określony początek i koniec (tymczasowość) — klasyczny projekt."
+              "explanation": "**Poprawna odpowiedź: B — Projekt**\n\nRobimy to po raz pierwszy (unikalność), ma określony początek i koniec (tymczasowość) — klasyczny projekt."
             }
           ],
           "slug": "quiz-pmbok-definicje-podstawowe",
@@ -2555,7 +2555,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D — 7 domen</strong><br><br>Governance, Scope, Schedule, Finance, Stakeholders, Resources, Risk."
+              "explanation": "**Poprawna odpowiedź: D — 7 domen**\n\nGovernance, Scope, Schedule, Finance, Stakeholders, Resources, Risk."
             },
             {
               "id": "08176445-1672-44d9-8683-2b97743dc5e5",
@@ -2581,7 +2581,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Finance Management</strong>"
+              "explanation": "**Poprawna odpowiedź: C — Finance Management**"
             },
             {
               "id": "b5bd2763-f70c-44f3-ae03-432824b87b6e",
@@ -2607,7 +2607,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Quality → Zasada \"Embed Quality\". Procurement → Zasada \"Accountable Leader\"."
+              "explanation": "**Poprawna odpowiedź: C**\n\nQuality → Zasada \"Embed Quality\". Procurement → Zasada \"Accountable Leader\"."
             },
             {
               "id": "77d9e484-8af5-4e63-bd40-fc800f736552",
@@ -2633,7 +2633,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>WBS = TYLKO produkty. NIE daty, NIE koszty, NIE osoby!"
+              "explanation": "**Poprawna odpowiedź: B**\n\nWBS = TYLKO produkty. NIE daty, NIE koszty, NIE osoby!"
             },
             {
               "id": "fa5297e8-1293-4b1a-9c12-28e587a7e855",
@@ -2659,7 +2659,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Kluczowa cecha: ILOŚĆ zmian, nie rozmiar jednej."
+              "explanation": "**Poprawna odpowiedź: B**\n\nKluczowa cecha: ILOŚĆ zmian, nie rozmiar jednej."
             },
             {
               "id": "b299ced1-285f-48dd-9712-0ef787f4d32d",
@@ -2685,7 +2685,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Plan bazowy MOŻNA zmieniać (re-baselining). Plan rzeczywisty NIE — to przeszłość."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPlan bazowy MOŻNA zmieniać (re-baselining). Plan rzeczywisty NIE — to przeszłość."
             },
             {
               "id": "195b16c5-3fbf-44a0-85fd-736dd3decdb0",
@@ -2711,7 +2711,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>PMO = element governance, NIE decydent."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPMO = element governance, NIE decydent."
             },
             {
               "id": "f517de34-03bc-44d6-921f-aba2652a0ddf",
@@ -2737,7 +2737,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>1 wymiar nienaruszalny, 1 optymalizowany, 2 elastyczne."
+              "explanation": "**Poprawna odpowiedź: B**\n\n1 wymiar nienaruszalny, 1 optymalizowany, 2 elastyczne."
             },
             {
               "id": "466fc0d9-67b3-4c75-bb32-7da32b239061",
@@ -2763,7 +2763,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Governance = nadzór organizacyjny NAD projektami, różny od operacyjnego zarządzania przez KP."
+              "explanation": "**Poprawna odpowiedź: B**\n\nGovernance = nadzór organizacyjny NAD projektami, różny od operacyjnego zarządzania przez KP."
             },
             {
               "id": "cd3e4bf8-88ec-400c-945f-d56977508950",
@@ -2789,7 +2789,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Directive PMO</strong><br><br>Supportive = niski poziom kontroli (doradczy). Controlling = średni (wymaga zgodności). Directive = wysoki (bezpośrednio zarządza)."
+              "explanation": "**Poprawna odpowiedź: C — Directive PMO**\n\nSupportive = niski poziom kontroli (doradczy). Controlling = średni (wymaga zgodności). Directive = wysoki (bezpośrednio zarządza)."
             },
             {
               "id": "8cd03e17-d7c9-4e06-b00c-fe2e539f568b",
@@ -2815,7 +2815,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Work Package to najniższy poziom WBS — nadal opisuje PRODUKT, ale na tyle szczegółowy, że można dla niego wiarygodnie estymować."
+              "explanation": "**Poprawna odpowiedź: B**\n\nWork Package to najniższy poziom WBS — nadal opisuje PRODUKT, ale na tyle szczegółowy, że można dla niego wiarygodnie estymować."
             },
             {
               "id": "aa9da645-d3d8-40e4-82ba-ad963cb1b6cf",
@@ -2841,7 +2841,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Governance</strong><br><br>Governance jako osobna domena to nowość PMBOK 8 — w PMBOK 6 elementy governance były rozproszone (np. w Integration Management)."
+              "explanation": "**Poprawna odpowiedź: C — Governance**\n\nGovernance jako osobna domena to nowość PMBOK 8 — w PMBOK 6 elementy governance były rozproszone (np. w Integration Management)."
             }
           ],
           "slug": "quiz-pmbok-8-domeny-i-governance",
@@ -2901,7 +2901,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Dokładnie jedna</strong><br><br>Zasada jednoosobowej odpowiedzialności. R może być wiele, A zawsze jedno!"
+              "explanation": "**Poprawna odpowiedź: C — Dokładnie jedna**\n\nZasada jednoosobowej odpowiedzialności. R może być wiele, A zawsze jedno!"
             },
             {
               "id": "75678f56-d11f-4ea2-ad7b-721b481ab7f8",
@@ -2927,7 +2927,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>R wykonuje pracę (może być wiele osób), podlega A."
+              "explanation": "**Poprawna odpowiedź: B**\n\nR wykonuje pracę (może być wiele osób), podlega A."
             },
             {
               "id": "46558105-6c01-46f0-ab4b-a7c5ab943b52",
@@ -2953,7 +2953,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Kartę projektu autoryzuje SPONSOR, nie KP."
+              "explanation": "**Poprawna odpowiedź: C**\n\nKartę projektu autoryzuje SPONSOR, nie KP."
             },
             {
               "id": "6fcc1af4-8732-4a93-a20b-40cf4d10b0dd",
@@ -2979,7 +2979,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>I = jednostronna komunikacja, bez konieczności działania."
+              "explanation": "**Poprawna odpowiedź: C**\n\nI = jednostronna komunikacja, bez konieczności działania."
             },
             {
               "id": "f39abb61-2be9-49c4-9b94-e3734dc26cae",
@@ -3005,7 +3005,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Dwustronna komunikacja (R↔C), ekspert dziedzinowy."
+              "explanation": "**Poprawna odpowiedź: C**\n\nDwustronna komunikacja (R↔C), ekspert dziedzinowy."
             },
             {
               "id": "240ba217-755d-47f1-8e38-785f34d7b5e6",
@@ -3031,7 +3031,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Sponsor = strategia/zasoby/decyzje. KP = realizacja operacyjna."
+              "explanation": "**Poprawna odpowiedź: B**\n\nSponsor = strategia/zasoby/decyzje. KP = realizacja operacyjna."
             },
             {
               "id": "6075859b-f64f-4962-82db-afb2a853ddc8",
@@ -3057,7 +3057,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>PMO pełni funkcję doradczą, NIE jest standardowym członkiem KS."
+              "explanation": "**Poprawna odpowiedź: C**\n\nPMO pełni funkcję doradczą, NIE jest standardowym członkiem KS."
             },
             {
               "id": "20bcaefa-5ea6-462f-bbf0-64ccdd8b5fdf",
@@ -3083,7 +3083,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — A</strong><br><br>Osoba wykonująca pracę (R) raportuje do osoby ostatecznie odpowiedzialnej za wynik (A)."
+              "explanation": "**Poprawna odpowiedź: C — A**\n\nOsoba wykonująca pracę (R) raportuje do osoby ostatecznie odpowiedzialnej za wynik (A)."
             },
             {
               "id": "8ada70c4-0ff3-4abe-bcaa-ae7502a33f08",
@@ -3109,7 +3109,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Nadmiar konsultacji (zbyt wielu C) prowadzi do paraliżu decyzyjnego — projekt zwalnia, bo każda decyzja wymaga zgody zbyt wielu osób."
+              "explanation": "**Poprawna odpowiedź: B**\n\nNadmiar konsultacji (zbyt wielu C) prowadzi do paraliżu decyzyjnego — projekt zwalnia, bo każda decyzja wymaga zgody zbyt wielu osób."
             },
             {
               "id": "e028097b-85b1-4b88-9566-3cf84b803238",
@@ -3135,7 +3135,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Jedna osoba może pełnić obie role jednocześnie (wykonuje i odpowiada za wynik) — to częste w małych zespołach. Kluczowa zasada to JEDEN A na zadanie (nie dwóch różnych A), a nie zakaz łączenia R z A."
+              "explanation": "**Poprawna odpowiedź: B**\n\nJedna osoba może pełnić obie role jednocześnie (wykonuje i odpowiada za wynik) — to częste w małych zespołach. Kluczowa zasada to JEDEN A na zadanie (nie dwóch różnych A), a nie zakaz łączenia R z A."
             },
             {
               "id": "78f4a03c-2283-46b6-bf6c-a7ed39041d45",
@@ -3161,7 +3161,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>RACI najlepiej ustalić na etapie planowania, by uniknąć niejasności odpowiedzialności podczas realizacji — szczególnie istotne w złożonych, wieloosobowych projektach."
+              "explanation": "**Poprawna odpowiedź: B**\n\nRACI najlepiej ustalić na etapie planowania, by uniknąć niejasności odpowiedzialności podczas realizacji — szczególnie istotne w złożonych, wieloosobowych projektach."
             },
             {
               "id": "8b3b292b-5f2a-4b0b-991e-4d556e1cfb6a",
@@ -3187,7 +3187,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Brak roli A dla zadania to błąd w konstrukcji macierzy — bez wyraźnie określonej odpowiedzialności za wynik, zadanie ryzykuje brakiem nadzoru i odpowiedzialności."
+              "explanation": "**Poprawna odpowiedź: B**\n\nBrak roli A dla zadania to błąd w konstrukcji macierzy — bez wyraźnie określonej odpowiedzialności za wynik, zadanie ryzykuje brakiem nadzoru i odpowiedzialności."
             }
           ],
           "slug": "quiz-macierz-raci-i-role-decyzyjne",
@@ -3247,7 +3247,7 @@
               "answer": [
                 "A"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: A</strong><br><br>F-S-N-P (+Adjourning jako 5. etap)."
+              "explanation": "**Poprawna odpowiedź: A**\n\nF-S-N-P (+Adjourning jako 5. etap)."
             },
             {
               "id": "96b3bce0-c754-46b0-8e83-e998c84a46da",
@@ -3273,7 +3273,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Servant Leader</strong><br><br>Lider służy zespołowi, usuwa przeszkody. Zasada PMBOK 8: \"Be an Accountable Leader\"."
+              "explanation": "**Poprawna odpowiedź: B — Servant Leader**\n\nLider służy zespołowi, usuwa przeszkody. Zasada PMBOK 8: \"Be an Accountable Leader\"."
             },
             {
               "id": "8ac0eafa-88d9-4591-aac7-5e21e12bb06d",
@@ -3299,7 +3299,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Anonimowe karty Fibonacciego, jednoczesne odkrywanie eliminuje anchoring bias."
+              "explanation": "**Poprawna odpowiedź: B**\n\nAnonimowe karty Fibonacciego, jednoczesne odkrywanie eliminuje anchoring bias."
             },
             {
               "id": "35956b3a-db64-40c1-ab9d-2ffd049f1f34",
@@ -3325,7 +3325,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Storming to trudny, ale konieczny etap — bez przejścia przez konflikty zespół nie dotrze do Norming i Performing."
+              "explanation": "**Poprawna odpowiedź: B**\n\nStorming to trudny, ale konieczny etap — bez przejścia przez konflikty zespół nie dotrze do Norming i Performing."
             },
             {
               "id": "12827265-a0e7-4c66-8178-c04270fa5bab",
@@ -3351,7 +3351,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Współpraca dąży do rozwiązania satysfakcjonującego obie strony (win-win), choć jest najbardziej czasochłonna."
+              "explanation": "**Poprawna odpowiedź: C**\n\nWspółpraca dąży do rozwiązania satysfakcjonującego obie strony (win-win), choć jest najbardziej czasochłonna."
             },
             {
               "id": "249fbcb5-d931-4235-aa90-7f96809d26a3",
@@ -3377,7 +3377,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Mikrozarządzanie niszczy autonomię zespołu — formalnie deleguje się decyzje, ale w praktyce menedżer kontroluje każdy szczegół."
+              "explanation": "**Poprawna odpowiedź: B**\n\nMikrozarządzanie niszczy autonomię zespołu — formalnie deleguje się decyzje, ale w praktyce menedżer kontroluje każdy szczegół."
             },
             {
               "id": "c7c1fa2a-6bc5-4698-9e7e-0268b95ba0ec",
@@ -3403,7 +3403,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Interactive</strong><br><br>Dwustronna, natychmiastowa komunikacja pozwala wyjaśnić wątpliwości na bieżąco — kluczowe dla złożonych tematów."
+              "explanation": "**Poprawna odpowiedź: C — Interactive**\n\nDwustronna, natychmiastowa komunikacja pozwala wyjaśnić wątpliwości na bieżąco — kluczowe dla złożonych tematów."
             },
             {
               "id": "ba2f4104-7ef9-4cb9-9d09-d93086c01ff8",
@@ -3429,7 +3429,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Laissez-faire (minimalna interwencja) działa dobrze z ekspertami, którzy nie potrzebują nadzoru — ale jest ryzykowny dla nowych, niedoświadczonych zespołów."
+              "explanation": "**Poprawna odpowiedź: B**\n\nLaissez-faire (minimalna interwencja) działa dobrze z ekspertami, którzy nie potrzebują nadzoru — ale jest ryzykowny dla nowych, niedoświadczonych zespołów."
             },
             {
               "id": "7d5e016e-740a-463d-9971-81d5272da0b3",
@@ -3455,7 +3455,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>W fazie Performing zespół osiąga pełną efektywność i samoorganizację — KP może bezpiecznie delegować więcej odpowiedzialności, ograniczając mikrozarządzanie."
+              "explanation": "**Poprawna odpowiedź: B**\n\nW fazie Performing zespół osiąga pełną efektywność i samoorganizację — KP może bezpiecznie delegować więcej odpowiedzialności, ograniczając mikrozarządzanie."
             },
             {
               "id": "3e91555e-b411-450f-80b6-8293505d7d72",
@@ -3481,7 +3481,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Unikanie bywa pomocne jako tymczasowa strategia — daje czas na ochłonięcie, zanim podejmie się próbę bardziej konstruktywnego rozwiązania (np. współpracy lub kompromisu)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nUnikanie bywa pomocne jako tymczasowa strategia — daje czas na ochłonięcie, zanim podejmie się próbę bardziej konstruktywnego rozwiązania (np. współpracy lub kompromisu)."
             }
           ],
           "slug": "quiz-przywodztwo-i-dynamika-zespo-u",
@@ -3541,7 +3541,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Najdłuższy ciąg zależnych zadań wyznacza najkrótszy możliwy czas projektu. Zadania na niej mają Float=0."
+              "explanation": "**Poprawna odpowiedź: B**\n\nNajdłuższy ciąg zależnych zadań wyznacza najkrótszy możliwy czas projektu. Zadania na niej mają Float=0."
             },
             {
               "id": "246d8a9b-eba0-4214-a788-0ba72acc52c5",
@@ -3567,7 +3567,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Zero</strong><br><br>Każde opóźnienie zadania na ścieżce krytycznej = opóźnienie całego projektu."
+              "explanation": "**Poprawna odpowiedź: C — Zero**\n\nKażde opóźnienie zadania na ścieżce krytycznej = opóźnienie całego projektu."
             },
             {
               "id": "5ecca7bd-a45e-446f-8864-cccebf9ef049",
@@ -3593,7 +3593,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>WBS = wyłącznie produkty (rzeczowniki). Daty, koszty, kolejność i osoby to elementy innych dokumentów (harmonogram, RACI)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nWBS = wyłącznie produkty (rzeczowniki). Daty, koszty, kolejność i osoby to elementy innych dokumentów (harmonogram, RACI)."
             },
             {
               "id": "4d45fe28-5406-4b6d-9dd2-a1c0baea698c",
@@ -3619,7 +3619,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Krzywa S</strong><br><br>Pokazuje narastające koszty planowane w czasie, umożliwia porównanie z rzeczywistymi wydatkami."
+              "explanation": "**Poprawna odpowiedź: B — Krzywa S**\n\nPokazuje narastające koszty planowane w czasie, umożliwia porównanie z rzeczywistymi wydatkami."
             },
             {
               "id": "15bcfb84-89a6-4ace-b6aa-a978197e51fd",
@@ -3645,7 +3645,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Work Package to najniższy poziom WBS, na którym możliwe jest wiarygodne oszacowanie czasu, kosztu i odpowiedzialności."
+              "explanation": "**Poprawna odpowiedź: B**\n\nWork Package to najniższy poziom WBS, na którym możliwe jest wiarygodne oszacowanie czasu, kosztu i odpowiedzialności."
             },
             {
               "id": "fbb5815b-44f5-4f19-9602-853bdb2f4445",
@@ -3671,7 +3671,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Jeśli dwie lub więcej ścieżek w sieci zadań mają identyczną, najdłuższą długość, projekt ma więcej niż jedną ścieżkę krytyczną — co zwiększa ryzyko opóźnienia."
+              "explanation": "**Poprawna odpowiedź: B**\n\nJeśli dwie lub więcej ścieżek w sieci zadań mają identyczną, najdłuższą długość, projekt ma więcej niż jedną ścieżkę krytyczną — co zwiększa ryzyko opóźnienia."
             },
             {
               "id": "dc627fe3-b602-4698-afc7-51ce34512ea9",
@@ -3697,7 +3697,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Forward Pass liczy najwcześniejsze terminy (Early Start/Finish). Backward Pass liczy najpóźniejsze dopuszczalne terminy (Late Start/Finish) — różnica między nimi to Float."
+              "explanation": "**Poprawna odpowiedź: B**\n\nForward Pass liczy najwcześniejsze terminy (Early Start/Finish). Backward Pass liczy najpóźniejsze dopuszczalne terminy (Late Start/Finish) — różnica między nimi to Float."
             },
             {
               "id": "e369d370-3e2a-4abc-942a-44b5d352061e",
@@ -3723,7 +3723,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Zasada 100% to fundamentalna reguła tworzenia WBS — struktura musi pokrywać cały zakres zdefiniowany w projekcie, bez luk i bez nadmiarowych elementów."
+              "explanation": "**Poprawna odpowiedź: B**\n\nZasada 100% to fundamentalna reguła tworzenia WBS — struktura musi pokrywać cały zakres zdefiniowany w projekcie, bez luk i bez nadmiarowych elementów."
             },
             {
               "id": "7892e479-4ded-4bc7-85bd-680ff43838ff",
@@ -3749,7 +3749,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Diagram sieciowy (najczęściej metodą PDM) pokazuje zależności między zadaniami i jest punktem wyjścia do obliczenia ścieżki krytycznej."
+              "explanation": "**Poprawna odpowiedź: B**\n\nDiagram sieciowy (najczęściej metodą PDM) pokazuje zależności między zadaniami i jest punktem wyjścia do obliczenia ścieżki krytycznej."
             },
             {
               "id": "c85f16ac-b312-4f9c-a82c-06254df4fd5d",
@@ -3775,7 +3775,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — PDM</strong><br><br>Precedence Diagramming Method — węzły reprezentują zadania, strzałki pokazują zależności (najczęściej typu FS)."
+              "explanation": "**Poprawna odpowiedź: B — PDM**\n\nPrecedence Diagramming Method — węzły reprezentują zadania, strzałki pokazują zależności (najczęściej typu FS)."
             }
           ],
           "slug": "quiz-wbs-i-sciezka-krytyczna",
@@ -3835,7 +3835,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Crashing ZAWSZE zwiększa koszty — to jego kluczowa cecha."
+              "explanation": "**Poprawna odpowiedź: C**\n\nCrashing ZAWSZE zwiększa koszty — to jego kluczowa cecha."
             },
             {
               "id": "3ddaeac3-20e7-482b-a80d-3a22fd6f5567",
@@ -3861,7 +3861,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Fast Tracking = parallelizacja, zwiększa ryzyko. Crashing = więcej zasobów, zwiększa koszty."
+              "explanation": "**Poprawna odpowiedź: B**\n\nFast Tracking = parallelizacja, zwiększa ryzyko. Crashing = więcej zasobów, zwiększa koszty."
             },
             {
               "id": "2d1fd4c6-0a97-470d-a5e5-b750c3c38f22",
@@ -3887,7 +3887,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>FS = najczęstsza relacja (~90% przypadków)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nFS = najczęstsza relacja (~90% przypadków)."
             },
             {
               "id": "5a173d59-8bbc-4ec1-88ec-01a22c9d3d7f",
@@ -3913,7 +3913,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Lead = wyprzedzenie = nakładanie. Lag = opóźnienie = przerwa. Lead skraca harmonogram, ale zwiększa ryzyko."
+              "explanation": "**Poprawna odpowiedź: B**\n\nLead = wyprzedzenie = nakładanie. Lag = opóźnienie = przerwa. Lead skraca harmonogram, ale zwiększa ryzyko."
             },
             {
               "id": "d3044346-989f-46bd-a5cb-01c2176bee27",
@@ -3939,7 +3939,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Przyspieszanie zadań poza ścieżką krytyczną NIE skraca czasu całego projektu — tylko zadania na ścieżce krytycznej mają na to wpływ."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPrzyspieszanie zadań poza ścieżką krytyczną NIE skraca czasu całego projektu — tylko zadania na ścieżce krytycznej mają na to wpływ."
             },
             {
               "id": "488ccd2e-4cff-4926-99af-6643dc0d3076",
@@ -3965,7 +3965,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>SS pozwala na rozpoczęcie obu zadań w tym samym momencie lub z określonym lagiem/leadem między startami."
+              "explanation": "**Poprawna odpowiedź: B**\n\nSS pozwala na rozpoczęcie obu zadań w tym samym momencie lub z określonym lagiem/leadem między startami."
             },
             {
               "id": "35412125-3622-40d7-9fb2-d83deb135502",
@@ -3991,7 +3991,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>CCPM zamiast rozpraszać marginesy bezpieczeństwa w każdym zadaniu, kumuluje je w jeden bufor na końcu ścieżki krytycznej — co jest statystycznie efektywniejsze."
+              "explanation": "**Poprawna odpowiedź: B**\n\nCCPM zamiast rozpraszać marginesy bezpieczeństwa w każdym zadaniu, kumuluje je w jeden bufor na końcu ścieżki krytycznej — co jest statystycznie efektywniejsze."
             },
             {
               "id": "7c57a9ce-a1ff-4145-88b2-4714f2b18fc7",
@@ -4017,7 +4017,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Rozpoczynanie kolejnego etapu przed zakończeniem poprzedniego oznacza pracę na niekompletnych założeniach — jeśli wcześniejszy etap się zmieni, konieczne będą poprawki (rework)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nRozpoczynanie kolejnego etapu przed zakończeniem poprzedniego oznacza pracę na niekompletnych założeniach — jeśli wcześniejszy etap się zmieni, konieczne będą poprawki (rework)."
             },
             {
               "id": "07de1004-ddef-42b3-97ba-a44315bdfd11",
@@ -4043,7 +4043,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>FF wiąże momenty ZAKOŃCZENIA obu zadań — np. dokumentacja końcowa kończy się równocześnie z testowaniem systemu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nFF wiąże momenty ZAKOŃCZENIA obu zadań — np. dokumentacja końcowa kończy się równocześnie z testowaniem systemu."
             },
             {
               "id": "50a7f43f-645c-45ee-af9e-b4c768930cb6",
@@ -4069,7 +4069,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Feeding buffers umieszczane są tam, gdzie ścieżki niekrytyczne łączą się ze ścieżką krytyczną — zapobiegają przenoszeniu opóźnień z bocznych ścieżek na główną ścieżkę krytyczną."
+              "explanation": "**Poprawna odpowiedź: B**\n\nFeeding buffers umieszczane są tam, gdzie ścieżki niekrytyczne łączą się ze ścieżką krytyczną — zapobiegają przenoszeniu opóźnień z bocznych ścieżek na główną ścieżkę krytyczną."
             }
           ],
           "slug": "quiz-kompresja-harmonogramu-i-relacje-zadan",
@@ -4129,7 +4129,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Diagram rybiej ości — identyfikacja przyczyn problemu wg kategorii 6M."
+              "explanation": "**Poprawna odpowiedź: B**\n\nDiagram rybiej ości — identyfikacja przyczyn problemu wg kategorii 6M."
             },
             {
               "id": "bfe6cfac-46a2-4005-a70d-5bf3c02275cf",
@@ -4155,7 +4155,7 @@
               "answer": [
                 "A"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: A</strong><br><br>\"Show\" NIE istnieje w cyklu Demminga — to klasyczna pułapka!"
+              "explanation": "**Poprawna odpowiedź: A**\n\n\"Show\" NIE istnieje w cyklu Demminga — to klasyczna pułapka!"
             },
             {
               "id": "aeb6c8e9-a1cf-4c68-b6e9-db4c2783f917",
@@ -4181,7 +4181,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Górna i dolna granica kontrolna. Przekroczenie = działania korygujące."
+              "explanation": "**Poprawna odpowiedź: B**\n\nGórna i dolna granica kontrolna. Przekroczenie = działania korygujące."
             },
             {
               "id": "825038e9-7fab-4305-a1cc-bddeb9cdce0d",
@@ -4207,7 +4207,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Inspekcja sprawdza fizyczny produkt. Audyt sprawdza procesy zarządzania jakością."
+              "explanation": "**Poprawna odpowiedź: B**\n\nInspekcja sprawdza fizyczny produkt. Audyt sprawdza procesy zarządzania jakością."
             },
             {
               "id": "0b986708-a469-433e-a38b-482e5013e828",
@@ -4233,7 +4233,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Gold Plating to patologia — dodawanie funkcji, o które nikt nie prosił. To naruszenie zakresu (scope), nie poprawa jakości!"
+              "explanation": "**Poprawna odpowiedź: B**\n\nGold Plating to patologia — dodawanie funkcji, o które nikt nie prosił. To naruszenie zakresu (scope), nie poprawa jakości!"
             },
             {
               "id": "7f086bcc-9bf3-4484-b4ab-dc6a90c1e9bc",
@@ -4259,7 +4259,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>1 zł zainwestowany w prewencję oszczędza 10-100 zł na naprawie błędów po ich wystąpieniu — stąd filozofia \"jakość się planuje, a nie kontroluje\"."
+              "explanation": "**Poprawna odpowiedź: B**\n\n1 zł zainwestowany w prewencję oszczędza 10-100 zł na naprawie błędów po ich wystąpieniu — stąd filozofia \"jakość się planuje, a nie kontroluje\"."
             },
             {
               "id": "79abd5e3-18ee-4a6b-9f68-dc0551939b68",
@@ -4285,7 +4285,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — 80/20</strong><br><br>Zasada Pareto pomaga priorytetyzować — skupiamy się na 20% przyczyn odpowiadających za 80% problemów."
+              "explanation": "**Poprawna odpowiedź: B — 80/20**\n\nZasada Pareto pomaga priorytetyzować — skupiamy się na 20% przyczyn odpowiadających za 80% problemów."
             },
             {
               "id": "0bbf1c8d-6a4b-42e3-a938-e2abc27efbb9",
@@ -4311,7 +4311,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Nawet bez przekroczenia granic kontrolnych, długi ciąg punktów po jednej stronie średniej wskazuje na systematyczne odchylenie (trend) — sygnał do analizy."
+              "explanation": "**Poprawna odpowiedź: B**\n\nNawet bez przekroczenia granic kontrolnych, długi ciąg punktów po jednej stronie średniej wskazuje na systematyczne odchylenie (trend) — sygnał do analizy."
             },
             {
               "id": "65d4c2f3-7dde-4920-9fea-15cf6d83d365",
@@ -4337,7 +4337,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Granice kontrolne (np. ±3σ) opisują naturalną zmienność procesu. Granice specyfikacji to wymagania kontraktowe/klienta — te dwa zestawy granic mogą się różnić i nie muszą się pokrywać."
+              "explanation": "**Poprawna odpowiedź: B**\n\nGranice kontrolne (np. ±3σ) opisują naturalną zmienność procesu. Granice specyfikacji to wymagania kontraktowe/klienta — te dwa zestawy granic mogą się różnić i nie muszą się pokrywać."
             }
           ],
           "slug": "quiz-narzedzia-zarzadzania-jakoscia",
@@ -4397,7 +4397,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Pełny zakres danych. To dokument POUFNY — nie udostępniamy wszystkim!"
+              "explanation": "**Poprawna odpowiedź: B**\n\nPełny zakres danych. To dokument POUFNY — nie udostępniamy wszystkim!"
             },
             {
               "id": "cc633d5d-53df-4425-b55e-0ae3eacdd67f",
@@ -4423,7 +4423,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>4 kwadraty: Zarządzaj aktywnie / Utrzymuj zadowolenie / Informuj / Monitoruj."
+              "explanation": "**Poprawna odpowiedź: B**\n\n4 kwadraty: Zarządzaj aktywnie / Utrzymuj zadowolenie / Informuj / Monitoruj."
             },
             {
               "id": "bc8b1d6a-baf6-4106-8a16-ad9090e75008",
@@ -4449,7 +4449,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Mix obu typów, dostosowany do kontekstu i odbiorców."
+              "explanation": "**Poprawna odpowiedź: C**\n\nMix obu typów, dostosowany do kontekstu i odbiorców."
             },
             {
               "id": "8951b683-6b16-4eaa-a258-343758d3411c",
@@ -4475,7 +4475,7 @@
               "answer": [
                 "A"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: A</strong><br><br>Narzędzie analizy i planowania zakresu procesu."
+              "explanation": "**Poprawna odpowiedź: A**\n\nNarzędzie analizy i planowania zakresu procesu."
             },
             {
               "id": "19a543e2-26ee-4703-9fdb-6cd4f965b9c8",
@@ -4501,7 +4501,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D — Kryteria</strong><br><br>SIPOC = S-I-P-O-C. Kryteria nie są jego częścią."
+              "explanation": "**Poprawna odpowiedź: D — Kryteria**\n\nSIPOC = S-I-P-O-C. Kryteria nie są jego częścią."
             },
             {
               "id": "fc3e5b64-1b8b-470c-946a-8b0feddb617c",
@@ -4527,7 +4527,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Mała grupa ekspertów, anonimowość, kilka rund do konsensusu. Nie dla mas!"
+              "explanation": "**Poprawna odpowiedź: B**\n\nMała grupa ekspertów, anonimowość, kilka rund do konsensusu. Nie dla mas!"
             },
             {
               "id": "49e12a72-b8bc-40b3-863b-bb4ec86ddbce",
@@ -4553,7 +4553,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Pełny obraz, podstawa uczenia się organizacji (Lessons Learned)."
+              "explanation": "**Poprawna odpowiedź: C**\n\nPełny obraz, podstawa uczenia się organizacji (Lessons Learned)."
             },
             {
               "id": "aff00748-d478-44f2-b9ea-ec3f49e1e0dc",
@@ -4579,7 +4579,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — 66</strong><br><br>n×(n-1)/2 = 12×11/2 = 66 kanałów. Ilustruje, jak szybko rośnie złożoność komunikacji wraz z wielkością zespołu."
+              "explanation": "**Poprawna odpowiedź: C — 66**\n\nn×(n-1)/2 = 12×11/2 = 66 kanałów. Ilustruje, jak szybko rośnie złożoność komunikacji wraz z wielkością zespołu."
             },
             {
               "id": "53c9b7a3-7b8f-4b40-b411-22afe9400623",
@@ -4605,7 +4605,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Utrzymuj zadowolenie</strong><br><br>Wysoki wpływ wymaga uwagi, ale niskie zainteresowanie oznacza, że nie trzeba angażować go w detale — wystarczy okresowo upewnić się, że jest zadowolony."
+              "explanation": "**Poprawna odpowiedź: B — Utrzymuj zadowolenie**\n\nWysoki wpływ wymaga uwagi, ale niskie zainteresowanie oznacza, że nie trzeba angażować go w detale — wystarczy okresowo upewnić się, że jest zadowolony."
             },
             {
               "id": "7c55fbcd-db32-4631-9f97-5ed9830e35fc",
@@ -4631,7 +4631,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Kluczowa cecha metody Delfickiej to anonimowa agregacja wyników między rundami — eksperci widzą zagregowane dane, ale nie wiedzą kto konkretnie co odpowiedział."
+              "explanation": "**Poprawna odpowiedź: B**\n\nKluczowa cecha metody Delfickiej to anonimowa agregacja wyników między rundami — eksperci widzą zagregowane dane, ale nie wiedzą kto konkretnie co odpowiedział."
             },
             {
               "id": "47f70c90-31b6-4e15-8267-664835dc0ab3",
@@ -4657,7 +4657,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Salience Model to bardziej rozbudowana alternatywa dla Power/Interest Grid — uwzględnia trzy wymiary: władzę, pilność żądań i zasadność roszczeń interesariusza."
+              "explanation": "**Poprawna odpowiedź: B**\n\nSalience Model to bardziej rozbudowana alternatywa dla Power/Interest Grid — uwzględnia trzy wymiary: władzę, pilność żądań i zasadność roszczeń interesariusza."
             },
             {
               "id": "cfd9d845-ac92-4945-b7eb-6c6a37482c56",
@@ -4683,7 +4683,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Plan komunikacji to dokument żywy — powinien być aktualizowany wraz ze zmianami interesariuszy, fazy projektu czy struktury zespołu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPlan komunikacji to dokument żywy — powinien być aktualizowany wraz ze zmianami interesariuszy, fazy projektu czy struktury zespołu."
             }
           ],
           "slug": "quiz-interesariusze-i-komunikacja",
@@ -4743,7 +4743,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>SAFe skaluje Agile na wiele zespołów Scrum pracujących nad jednym produktem."
+              "explanation": "**Poprawna odpowiedź: B**\n\nSAFe skaluje Agile na wiele zespołów Scrum pracujących nad jednym produktem."
             },
             {
               "id": "db0714f1-1683-44b1-9b77-fc93c6bbd8ce",
@@ -4769,7 +4769,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>5-12 zespołów (50-125 osób) pracujących synchronicznie."
+              "explanation": "**Poprawna odpowiedź: B**\n\n5-12 zespołów (50-125 osób) pracujących synchronicznie."
             },
             {
               "id": "9c7f365f-301e-42fb-9bd5-525f49971dad",
@@ -4795,7 +4795,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>RTE ≠ Scrum Master! RTE działa na poziomie całego ART, SM wewnątrz jednego zespołu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nRTE ≠ Scrum Master! RTE działa na poziomie całego ART, SM wewnątrz jednego zespołu."
             },
             {
               "id": "5ffefb8d-30ce-465f-9540-cc674ed4e5b6",
@@ -4821,7 +4821,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Stop Starting, Start Finishing — kluczowy mechanizm Kanbana."
+              "explanation": "**Poprawna odpowiedź: B**\n\nStop Starting, Start Finishing — kluczowy mechanizm Kanbana."
             },
             {
               "id": "ffc6e74b-1c6e-4af3-93bc-bb1b1004082a",
@@ -4847,7 +4847,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>2-dniowa ceremonia kwartalna dla całego ART."
+              "explanation": "**Poprawna odpowiedź: B**\n\n2-dniowa ceremonia kwartalna dla całego ART."
             },
             {
               "id": "071430a9-d9e7-4264-9fed-a636d398b7d4",
@@ -4873,7 +4873,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>PI to iteracja na poziomie ART, obejmująca ~5 Sprintów (8-12 tygodni), kończąca się PI Planning na kolejny okres."
+              "explanation": "**Poprawna odpowiedź: C**\n\nPI to iteracja na poziomie ART, obejmująca ~5 Sprintów (8-12 tygodni), kończąca się PI Planning na kolejny okres."
             },
             {
               "id": "f5ae9186-f401-4ae0-b4c8-b6763596165e",
@@ -4899,7 +4899,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Essential SAFe</strong><br><br>To bazowy poziom frameworku, punkt wyjścia dla organizacji wdrażających SAFe z jednym Agile Release Train."
+              "explanation": "**Poprawna odpowiedź: C — Essential SAFe**\n\nTo bazowy poziom frameworku, punkt wyjścia dla organizacji wdrażających SAFe z jednym Agile Release Train."
             },
             {
               "id": "8850c21c-b15c-45dd-ada3-d9f0161b6fe0",
@@ -4925,7 +4925,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — ROAM</strong><br><br>Resolved (rozwiązane), Owned (przypisany właściciel), Accepted (zaakceptowane), Mitigated (złagodzone) — kategorie ryzyk identyfikowanych podczas PI Planning."
+              "explanation": "**Poprawna odpowiedź: B — ROAM**\n\nResolved (rozwiązane), Owned (przypisany właściciel), Accepted (zaakceptowane), Mitigated (złagodzone) — kategorie ryzyk identyfikowanych podczas PI Planning."
             },
             {
               "id": "0779e523-9b4e-4091-b813-dd10a39a42bb",
@@ -4951,7 +4951,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Lead Time = od zgłoszenia (wejścia do kolejki) do dostarczenia. Cycle Time = od faktycznego rozpoczęcia pracy do dostarczenia — Cycle Time jest zwykle krótszy."
+              "explanation": "**Poprawna odpowiedź: B**\n\nLead Time = od zgłoszenia (wejścia do kolejki) do dostarczenia. Cycle Time = od faktycznego rozpoczęcia pracy do dostarczenia — Cycle Time jest zwykle krótszy."
             },
             {
               "id": "d3a80aaf-9aae-452c-b655-9bb39f0ad81a",
@@ -4977,7 +4977,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Pod koniec PI Planning zespoły głosują (np. 1-5 palców), jak bardzo są pewne, że zrealizują zaplanowane zobowiązania — niska pewność wymaga dyskusji i korekt planu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPod koniec PI Planning zespoły głosują (np. 1-5 palców), jak bardzo są pewne, że zrealizują zaplanowane zobowiązania — niska pewność wymaga dyskusji i korekt planu."
             },
             {
               "id": "3b1a3c75-b985-4a3b-b09c-392b6ff1e51a",
@@ -5003,7 +5003,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Scrumban łączy część ról/zdarzeń Scrum z wizualizacją i WIP Limits Kanbana — przepływ ciągły zamiast sztywnych Sprintów."
+              "explanation": "**Poprawna odpowiedź: B**\n\nScrumban łączy część ról/zdarzeń Scrum z wizualizacją i WIP Limits Kanbana — przepływ ciągły zamiast sztywnych Sprintów."
             },
             {
               "id": "cdb4413e-999d-4828-a7ea-9c54a7177101",
@@ -5029,7 +5029,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Business Owners to kluczowi interesariusze biznesowi obecni podczas PI Planning, oceniający realność planów i głosujący w Confidence Vote."
+              "explanation": "**Poprawna odpowiedź: B**\n\nBusiness Owners to kluczowi interesariusze biznesowi obecni podczas PI Planning, oceniający realność planów i głosujący w Confidence Vote."
             },
             {
               "id": "9c5b3946-279e-4356-8754-d466fa627f2c",
@@ -5055,7 +5055,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Poszerzające się pasmo na CFD wskazuje na gromadzenie się zadań na danym etapie — sygnał wąskiego gardła wymagającego interwencji (np. obniżenia WIP Limit gdzie indziej)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nPoszerzające się pasmo na CFD wskazuje na gromadzenie się zadań na danym etapie — sygnał wąskiego gardła wymagającego interwencji (np. obniżenia WIP Limit gdzie indziej)."
             },
             {
               "id": "e4619209-16ec-4179-b0fd-9e90d2abb903",
@@ -5081,7 +5081,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>System Architect/Engineer zapewnia, że techniczne decyzje podejmowane niezależnie przez różne zespoły w ramach ART pozostają spójne na poziomie całego rozwiązania."
+              "explanation": "**Poprawna odpowiedź: B**\n\nSystem Architect/Engineer zapewnia, że techniczne decyzje podejmowane niezależnie przez różne zespoły w ramach ART pozostają spójne na poziomie całego rozwiązania."
             }
           ],
           "slug": "quiz-safe-skalowanie-agile",
@@ -5141,7 +5141,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Wartość #4 Manifestu. Plan jest ważny, ale adaptacja ważniejsza."
+              "explanation": "**Poprawna odpowiedź: B**\n\nWartość #4 Manifestu. Plan jest ważny, ale adaptacja ważniejsza."
             },
             {
               "id": "2c537742-146a-4733-91e8-2b047edc443c",
@@ -5167,7 +5167,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Relatywne porównanie złożoności, NIE czas absolutny."
+              "explanation": "**Poprawna odpowiedź: C**\n\nRelatywne porównanie złożoności, NIE czas absolutny."
             },
             {
               "id": "c4f3c039-cbcb-4160-b73e-f6ae18bb3568",
@@ -5193,7 +5193,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Sprawdzenie CZY warto budować, PRZED wydaniem pieniędzy na development."
+              "explanation": "**Poprawna odpowiedź: B**\n\nSprawdzenie CZY warto budować, PRZED wydaniem pieniędzy na development."
             },
             {
               "id": "17e9ca5e-480f-402c-ba77-0c27a68cc3cd",
@@ -5219,7 +5219,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B — Prostota</strong><br><br>Jedna z 12 zasad Manifestu Agile: \"Prostota — sztuka maksymalizowania ilości pracy niewykonanej — jest kluczowa.\""
+              "explanation": "**Poprawna odpowiedź: B — Prostota**\n\nJedna z 12 zasad Manifestu Agile: \"Prostota — sztuka maksymalizowania ilości pracy niewykonanej — jest kluczowa.\""
             },
             {
               "id": "eb43cd93-ac65-44a6-beab-453f74c324de",
@@ -5245,7 +5245,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>T-shirt sizing daje szybkie, przybliżone kategorie złożoności — przydatne przy dużych elementach (Epics) na wczesnym etapie, zanim dokładniejsza estymacja (Planning Poker) ma sens."
+              "explanation": "**Poprawna odpowiedź: B**\n\nT-shirt sizing daje szybkie, przybliżone kategorie złożoności — przydatne przy dużych elementach (Epics) na wczesnym etapie, zanim dokładniejsza estymacja (Planning Poker) ma sens."
             },
             {
               "id": "208b4542-02b9-495a-aa3f-f7b19c3bbb1f",
@@ -5271,7 +5271,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Epic (wielosprintowy) → Feature (kilka sprintów) → User Story (jeden Sprint) → Task (techniczny krok realizacji)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nEpic (wielosprintowy) → Feature (kilka sprintów) → User Story (jeden Sprint) → Task (techniczny krok realizacji)."
             },
             {
               "id": "e699cb15-d262-4407-b3ce-7160c6af9a6a",
@@ -5297,7 +5297,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Fake door testing pokazuje użytkownikom przycisk/funkcję, która jeszcze nie istnieje, by zmierzyć realne zainteresowanie przed inwestycją w development."
+              "explanation": "**Poprawna odpowiedź: B**\n\nFake door testing pokazuje użytkownikom przycisk/funkcję, która jeszcze nie istnieje, by zmierzyć realne zainteresowanie przed inwestycją w development."
             },
             {
               "id": "bf9552ce-7eb4-4b63-a736-c1a1c1c4bc5a",
@@ -5323,7 +5323,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Affinity Estimation pozwala szybko oszacować wiele elementów naraz poprzez ich relatywne grupowanie, bez szczegółowej dyskusji każdego pojedynczo — szybsze niż Planning Poker dla dużych backlogów."
+              "explanation": "**Poprawna odpowiedź: B**\n\nAffinity Estimation pozwala szybko oszacować wiele elementów naraz poprzez ich relatywne grupowanie, bez szczegółowej dyskusji każdego pojedynczo — szybsze niż Planning Poker dla dużych backlogów."
             },
             {
               "id": "60d8f8a4-f1d2-4ae9-9c5d-b1c5c634c1d5",
@@ -5349,7 +5349,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>ICE pomaga ocenić, które hipotezy/pomysły warto testować najpierw w fazie Discovery, łącząc potencjalny wpływ, pewność i łatwość realizacji."
+              "explanation": "**Poprawna odpowiedź: B**\n\nICE pomaga ocenić, które hipotezy/pomysły warto testować najpierw w fazie Discovery, łącząc potencjalny wpływ, pewność i łatwość realizacji."
             },
             {
               "id": "3f69c8b3-eb1e-4f94-98ec-7740d3ca886e",
@@ -5375,7 +5375,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Jedna z 12 zasad Agile — sponsorzy, deweloperzy i użytkownicy powinni móc utrzymać stałe tempo bez wypalenia zawodowego."
+              "explanation": "**Poprawna odpowiedź: B**\n\nJedna z 12 zasad Agile — sponsorzy, deweloperzy i użytkownicy powinni móc utrzymać stałe tempo bez wypalenia zawodowego."
             }
           ],
           "slug": "quiz-agile-manifesto-i-estymacja",
@@ -5435,7 +5435,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C — Najpierw analiza wpływu na projekt</strong><br><br>Procedura Change Request: najpierw analiza wpływu, potem formalizacja, decyzja, komunikacja klientowi.<br><br><span class=\"exp-tip\">⚠️ Klasyczne pytanie egzaminacyjne! Odruch \"klient chce, to dajemy\" jest błędem.</span>"
+              "explanation": "**Poprawna odpowiedź: C — Najpierw analiza wpływu na projekt**\n\nProcedura Change Request: najpierw analiza wpływu, potem formalizacja, decyzja, komunikacja klientowi.\n\n> ⚠️ Klasyczne pytanie egzaminacyjne! Odruch \"klient chce, to dajemy\" jest błędem."
             },
             {
               "id": "1b4d7920-ddc1-47d5-86bb-c1b1ec99ae8c",
@@ -5461,7 +5461,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>CCB analizuje i rekomenduje decyzje dot. zmian: zatwierdzić/odrzucić/odroczyć."
+              "explanation": "**Poprawna odpowiedź: B**\n\nCCB analizuje i rekomenduje decyzje dot. zmian: zatwierdzić/odrzucić/odroczyć."
             },
             {
               "id": "d42d8d30-7d4d-496d-acef-a8d2b3df2ad1",
@@ -5487,7 +5487,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>CCB obsługuje bieżące, częstsze wnioski o zmiany. KS podejmuje strategiczne decyzje, w tym duże zmiany przekraczające tolerancję KP/CCB."
+              "explanation": "**Poprawna odpowiedź: B**\n\nCCB obsługuje bieżące, częstsze wnioski o zmiany. KS podejmuje strategiczne decyzje, w tym duże zmiany przekraczające tolerancję KP/CCB."
             },
             {
               "id": "ef6b1775-febd-4e2b-a0cf-3a2fa5781c62",
@@ -5513,7 +5513,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Configuration Management śledzi wersje i zapewnia spójność komponentów projektu — ściśle powiązane z formalnym procesem zmian."
+              "explanation": "**Poprawna odpowiedź: B**\n\nConfiguration Management śledzi wersje i zapewnia spójność komponentów projektu — ściśle powiązane z formalnym procesem zmian."
             },
             {
               "id": "234d5016-5b64-48f0-b2b0-0929523782d5",
@@ -5539,7 +5539,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Klasyczna pułapka! Project success (czas/budżet/zakres) ≠ Product success (użytkownicy, ROI, realne wykorzystanie). Oba aspekty są ważne i mogą być od siebie niezależne."
+              "explanation": "**Poprawna odpowiedź: B**\n\nKlasyczna pułapka! Project success (czas/budżet/zakres) ≠ Product success (użytkownicy, ROI, realne wykorzystanie). Oba aspekty są ważne i mogą być od siebie niezależne."
             },
             {
               "id": "89c0da1b-4461-4ee1-9701-91326f557198",
@@ -5565,7 +5565,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D</strong><br><br>Identyfikacja ryzyk to proces realizowany PRZEZ CAŁY projekt (głównie w fazach planowania i wykonania), nie element zamknięcia. Pozostałe trzy to standardowe kroki Closing."
+              "explanation": "**Poprawna odpowiedź: D**\n\nIdentyfikacja ryzyk to proces realizowany PRZEZ CAŁY projekt (głównie w fazach planowania i wykonania), nie element zamknięcia. Pozostałe trzy to standardowe kroki Closing."
             },
             {
               "id": "43b876c8-6e35-4951-979c-1856b7a2e0e9",
@@ -5591,7 +5591,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Formalne zamknięcie uwalnia zasoby (zespół wraca do innych zadań), zapewnia jasność dla klienta i zabezpiecza wiedzę zdobytą podczas projektu (Lessons Learned)."
+              "explanation": "**Poprawna odpowiedź: B**\n\nFormalne zamknięcie uwalnia zasoby (zespół wraca do innych zadań), zapewnia jasność dla klienta i zabezpiecza wiedzę zdobytą podczas projektu (Lessons Learned)."
             },
             {
               "id": "5259b3e9-d310-4f41-adc1-8841a58cb034",
@@ -5617,7 +5617,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Procurement Closure dla danego dostawcy może nastąpić, gdy jego część prac jest zakończona — niekoniecznie czekając na zamknięcie całego, dłuższego projektu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nProcurement Closure dla danego dostawcy może nastąpić, gdy jego część prac jest zakończona — niekoniecznie czekając na zamknięcie całego, dłuższego projektu."
             },
             {
               "id": "caf8d800-d6f5-44ed-9f14-1887cb234dc7",
@@ -5643,7 +5643,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Gdy zmiana zostanie formalnie zatwierdzona (np. przez CCB/KS), plan bazowy (Baseline) może zostać zaktualizowany — to właśnie re-baselining."
+              "explanation": "**Poprawna odpowiedź: B**\n\nGdy zmiana zostanie formalnie zatwierdzona (np. przez CCB/KS), plan bazowy (Baseline) może zostać zaktualizowany — to właśnie re-baselining."
             },
             {
               "id": "222df694-9dcb-42c5-9ef5-452c676c0d0e",
@@ -5669,7 +5669,7 @@
               "answer": [
                 "D"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: D — Zamknięcie</strong><br><br>Adjourning to formalne rozwiązanie zespołu po zakończeniu projektu — odpowiada fazie Closing w cyklu życia projektu."
+              "explanation": "**Poprawna odpowiedź: D — Zamknięcie**\n\nAdjourning to formalne rozwiązanie zespołu po zakończeniu projektu — odpowiada fazie Closing w cyklu życia projektu."
             },
             {
               "id": "892b5edc-5085-40ed-95c7-2df3f84b0b64",
@@ -5695,7 +5695,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Baseline konfiguracji to formalnie zatwierdzona wersja (np. dokumentacji v1.0), względem której śledzone są kolejne zmiany."
+              "explanation": "**Poprawna odpowiedź: B**\n\nBaseline konfiguracji to formalnie zatwierdzona wersja (np. dokumentacji v1.0), względem której śledzone są kolejne zmiany."
             },
             {
               "id": "69668b3b-1608-49f8-8ac3-a9ed07918e7e",
@@ -5721,7 +5721,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Project Charter formalizuje uruchomienie projektu i rzadko jest modyfikowana — w przeciwieństwie do planu bazowego, harmonogramu czy rejestru zmian, które są regularnie aktualizowane."
+              "explanation": "**Poprawna odpowiedź: C**\n\nProject Charter formalizuje uruchomienie projektu i rzadko jest modyfikowana — w przeciwieństwie do planu bazowego, harmonogramu czy rejestru zmian, które są regularnie aktualizowane."
             },
             {
               "id": "a222afc9-b163-44ad-bfb7-8322a2c13922",
@@ -5747,7 +5747,7 @@
               "answer": [
                 "C"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: C</strong><br><br>Zmiany wykraczające poza tolerancję KP muszą zostać eskalowane do wyższego organu decyzyjnego — KS lub bezpośrednio Sponsora."
+              "explanation": "**Poprawna odpowiedź: C**\n\nZmiany wykraczające poza tolerancję KP muszą zostać eskalowane do wyższego organu decyzyjnego — KS lub bezpośrednio Sponsora."
             },
             {
               "id": "f869e6ce-5cad-4367-bc09-d53cbc9049c7",
@@ -5773,7 +5773,7 @@
               "answer": [
                 "B"
               ],
-              "explanation": "<strong>Poprawna odpowiedź: B</strong><br><br>Bez zarządzania konfiguracją zespół traci kontrolę nad tym, która wersja komponentu/dokumentu jest aktualna, co prowadzi do błędów wdrożeniowych i chaosu."
+              "explanation": "**Poprawna odpowiedź: B**\n\nBez zarządzania konfiguracją zespół traci kontrolę nad tym, która wersja komponentu/dokumentu jest aktualna, co prowadzi do błędów wdrożeniowych i chaosu."
             }
           ],
           "slug": "quiz-zarzadzanie-zmiana-i-zamkniecie-projektu",

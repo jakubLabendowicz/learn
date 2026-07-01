@@ -501,7 +501,7 @@
       explanationHtml = `
         <div class="explanation" style="display:block">
           <h4>${isCorrect ? '✓ Poprawna odpowiedź' : '✗ Niepoprawna — prawidłowa odpowiedź: ' + q.answer.join(', ')}</h4>
-          <div class="exp-body">${q.explanation}</div>
+          <div class="exp-body">${renderMarkdown(q.explanation)}</div>
         </div>`;
     }
 
@@ -620,7 +620,7 @@
               ? '✅ Poprawnie: ' + escapeHtml(q.answer.map(optText).join(', '))
               : '❌ Twoja odpowiedź: <span class="your-ans">' + escapeHtml(ans.map(optText).join(', ') || '—') + '</span><br>✅ Poprawna: <span class="correct-ans">' + escapeHtml(q.answer.map(optText).join(', ')) + '</span>'}
           </div>
-          <div class="review-exp">${q.explanation}</div>
+          <div class="review-exp">${renderMarkdown(q.explanation)}</div>
         </div>`;
     }).join('');
 
@@ -657,10 +657,24 @@
   }
   window.retryQuizSession = retryQuizSession;
 
-  // ---------------- Markdown (subset: #, ##, ###, >, lists incl. 1-level nesting, tables, bold/italic/code, hr) ----------------
+  // ---------------- Markdown (subset: #, ##, ###, >, nested lists, tables, links, images, fenced code, bold/italic/code, hr) ----------------
+
+  // Blocks dangerous URL schemes (javascript:, data:, vbscript:) in links/images.
+  function safeUrl(url) {
+    const trimmed = url.trim();
+    return /^(javascript|data|vbscript):/i.test(trimmed) ? null : trimmed;
+  }
 
   function inlineMd(s) {
     s = escapeHtml(s);
+    s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, url) => {
+      const safe = safeUrl(url);
+      return safe ? `<img src="${safe}" alt="${alt}">` : m;
+    });
+    s = s.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (m, text, url) => {
+      const safe = safeUrl(url);
+      return safe ? `<a href="${safe}" target="_blank" rel="noopener noreferrer">${text}</a>` : m;
+    });
     s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     s = s.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
     s = s.replace(/`(.+?)`/g, '<code>$1</code>');
@@ -673,6 +687,8 @@
     let listStack = []; // stack of {type, indent}
     let inTable = false;
     let tableRows = [];
+    let inCode = false;
+    let codeLines = [];
 
     function closeLists(toIndent) {
       while (listStack.length && (toIndent === undefined || listStack[listStack.length - 1].indent >= toIndent)) {
@@ -692,10 +708,21 @@
       html += t;
       inTable = false; tableRows = [];
     }
+    function flushCode() {
+      html += `<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`;
+      inCode = false; codeLines = [];
+    }
 
     for (const raw of lines) {
       const trimmed = raw.trim();
       const indent = raw.length - raw.trimStart().length;
+
+      if (trimmed.startsWith('```')) {
+        if (inCode) flushCode();
+        else { closeLists(); if (inTable) flushTable(); inCode = true; codeLines = []; }
+        continue;
+      }
+      if (inCode) { codeLines.push(raw); continue; }
 
       if (trimmed.startsWith('|')) { inTable = true; tableRows.push(trimmed); continue; }
       else if (inTable) flushTable();
@@ -731,6 +758,7 @@
     }
     closeLists();
     flushTable();
+    if (inCode) flushCode();
     return html;
   }
 
