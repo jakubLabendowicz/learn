@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kurs — learn</title>
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/course.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <span class="logo-dot"></span>
+      learn
+    </a>
+    <div class="nav-links">
+      <a href="/courses">Kursy</a>
+    </div>
+  </div>
+</nav>
+
+<div class="course-topbar" id="course-topbar" style="display:none">
+  <div class="course-topbar-inner">
+    <div class="course-topbar-title" id="course-topbar-title"></div>
+    <div class="course-topbar-progress">
+      <span id="course-topbar-pct">0% ukończone</span>
+      <div class="course-topbar-bar"><span id="course-topbar-bar-fill"></span></div>
+    </div>
+  </div>
+</div>
+
+<main class="course-main" id="course-app">
+  <p class="course-loading">Wczytywanie kursu…</p>
+</main>
+
+<footer class="site-footer" id="course-footer" style="display:none">
+  learn — platforma kursów · <a id="course-archive-link" href="#">zobacz archiwalną wersję tego kursu</a>
+</footer>
+
+<script src="/assets/state.js"></script>
+<script src="/assets/course.js"></script>
+</body>
+</html>
