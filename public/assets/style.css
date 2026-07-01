@@ -220,6 +220,129 @@ main {
   color: var(--accent);
 }
 
+/* ---------- Dashboard (homepage: recent courses/modules/results) ---------- */
+
+.dash-section {
+  padding: 1.5rem 0;
+}
+
+.dash-section h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 1rem;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.dash-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.dash-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.dash-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dash-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.dash-card-pct {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+.dash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dash-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem 1.1rem;
+}
+
+.dash-row:hover {
+  border-color: var(--accent);
+}
+
+.dash-row-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.dash-row-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+.dash-row-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.dash-empty {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.pct-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.pct-pill.good {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pct-pill.bad {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer {

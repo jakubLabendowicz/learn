@@ -26,26 +26,36 @@
     <p>Wybierz kurs, aby rozpocząć naukę.</p>
   </div>
 
-  <div class="course-grid">
-    <a class="course-card" href="/courses/Salesforce-Certified-Platform-Administrator">
-      <div class="course-card-icon">SF</div>
-      <h2>ADM-201 — Salesforce Certified Platform Administrator</h2>
-      <p>Kurs przygotowawczy do egzaminu Salesforce Certified Platform Administrator.</p>
-      <span class="course-card-cta">Rozpocznij kurs →</span>
-    </a>
-
-    <a class="course-card" href="/courses/Zarzadzanie-Projektem-Informatycznym">
-      <div class="course-card-icon">ZP</div>
-      <h2>Zarządzanie Projektem Informatycznym</h2>
-      <p>Ścieżka nauki obejmująca Scrum, Kanban, EVM i wskaźniki finansowe projektu.</p>
-      <span class="course-card-cta">Rozpocznij kurs →</span>
-    </a>
+  <div class="course-grid" id="course-grid">
+    <p style="color:var(--text-muted)">Wczytywanie…</p>
   </div>
 </main>
 
 <footer class="site-footer">
   learn — platforma kursów
 </footer>
+
+<script src="/assets/state.js"></script>
+<script>
+fetch('/courses/manifest.json')
+  .then(r => r.json())
+  .then(courses => {
+    const state = learnLoadState();
+    const grid = document.getElementById('course-grid');
+    grid.innerHTML = courses.map(c => {
+      const entry = state.courses[c.id];
+      const pct = entry ? learnCourseProgress(entry) : 0;
+      return `
+        <a class="course-card" href="/courses/${c.slug}">
+          <div class="course-card-icon">${c.icon}</div>
+          <h2>${c.title}</h2>
+          <p>${c.description}</p>
+          ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
+          <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
+        </a>`;
+    }).join('');
+  });
+</script>
 
 </body>
 </html>
