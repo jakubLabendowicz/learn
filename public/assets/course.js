@@ -1,18 +1,27 @@
-/* Generic course engine: renders /courses/{slug} from /courses/{slug}.json */
+/* Generic course engine + router.
+ * Routes (all served by /courses/course.html via the worker):
+ *   /courses/{course}
+ *   /courses/{course}/modules
+ *   /courses/{course}/modules/{module}
+ *   /courses/{course}/modules/{module}/articles
+ *   /courses/{course}/modules/{module}/articles/{article}
+ *   /courses/{course}/modules/{module}/quizes
+ *   /courses/{course}/modules/{module}/quizes/{quiz}
+ */
 (function () {
   const app = document.getElementById('course-app');
   const topbar = document.getElementById('course-topbar');
   const footer = document.getElementById('course-footer');
 
-  const slug = decodeURIComponent(location.pathname.replace(/^\/courses\//, '').replace(/\/$/, ''));
+  const courseSlug = decodeURIComponent(location.pathname.replace(/^\/courses\//, '').split('/')[0]);
 
   let COURSE = null;
   let MODULES = null;
-  let ROUTE = { view: 'overview' };
-  let QUIZ_STATE = null;
-  let SETUP = { scope: null, max: 0, selected: 0, isFinal: false };
+  let SETUP = null;
+  let QUIZ_SESSION = null; // { itemId, phase: 'run'|'results', ...quiz state }
+  let FINAL_QUIZ_ACTIVE = false;
 
-  fetch(`/courses/${slug}.json`)
+  fetch(`/courses/${courseSlug}.json`)
     .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
     .then(data => { boot(data); })
     .catch(() => {
@@ -24,7 +33,6 @@
     MODULES = data.modules;
     document.title = `${COURSE.title} — learn`;
     document.documentElement.style.setProperty('--course-accent', COURSE.accent || '#4f46e5');
-
     document.getElementById('course-topbar-title').textContent = COURSE.shortTitle || COURSE.title;
     document.getElementById('course-archive-link').href = `/archive/${COURSE.slug}`;
     topbar.style.display = 'block';
@@ -41,12 +49,11 @@
     });
     learnSaveState(state);
 
-    render();
+    window.addEventListener('popstate', () => renderRoute());
+    renderRoute();
   }
 
-  function stateEntry() {
-    return learnLoadState().courses[COURSE.id];
-  }
+  function stateEntry() { return learnLoadState().courses[COURSE.id]; }
 
   function updateTopbar() {
     const pct = learnCourseProgress(stateEntry());
@@ -54,44 +61,101 @@
     document.getElementById('course-topbar-bar-fill').style.width = pct + '%';
   }
 
-  function moduleById(id) { return MODULES.find(m => m.id === id); }
+  function moduleBySlug(slug) { return MODULES.find(m => m.slug === slug); }
+  function articlesOf(mod) { return mod.items.filter(i => i.type === 'article'); }
+  function quizzesOf(mod) { return mod.items.filter(i => i.type === 'quiz'); }
+  function articleBySlug(mod, slug) { return articlesOf(mod).find(i => i.slug === slug); }
+  function quizBySlug(mod, slug) { return quizzesOf(mod).find(i => i.slug === slug); }
 
-  function findItem(itemId) {
-    for (const m of MODULES) {
-      for (const it of m.items) {
-        if (it.id === itemId) return { module: m, item: it };
-      }
-    }
-    return null;
+  // ---------------- URLs ----------------
+
+  const courseUrl = () => `/courses/${COURSE.slug}`;
+  const modulesUrl = () => `${courseUrl()}/modules`;
+  const moduleUrl = m => `${modulesUrl()}/${m.slug}`;
+  const articlesUrl = m => `${moduleUrl(m)}/articles`;
+  const articleUrl = (m, it) => `${articlesUrl(m)}/${it.slug}`;
+  const quizzesUrl = m => `${moduleUrl(m)}/quizes`;
+  const quizUrl = (m, it) => `${quizzesUrl(m)}/${it.slug}`;
+
+  // ---------------- Router ----------------
+
+  function navigate(path) {
+    FINAL_QUIZ_ACTIVE = false;
+    history.pushState(null, '', path);
+    renderRoute();
+    window.scrollTo({ top: 0 });
+  }
+  window.navigate = navigate;
+
+  function parsePath() {
+    const path = decodeURIComponent(location.pathname).replace(/\/$/, '');
+    const segs = path.replace(/^\/courses\//, '').split('/').filter(Boolean);
+    // segs[0] is the course slug
+    return {
+      moduleSlug: segs[2],
+      section: segs[3], // 'articles' | 'quizes'
+      itemSlug: segs[4],
+      depth: segs.length,
+      isModulesList: segs.length === 2 && segs[1] === 'modules',
+      isModule: segs.length === 3 && segs[1] === 'modules',
+      isArticlesList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'articles',
+      isArticle: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'articles',
+      isQuizzesList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'quizes',
+      isQuiz: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'quizes',
+    };
   }
 
-  function renderInPlace() {
-    if (ROUTE.view === 'overview') app.innerHTML = renderOverview();
-    else if (ROUTE.view === 'article') app.innerHTML = renderArticle(ROUTE.moduleId);
-    else if (ROUTE.view === 'quiz-setup') app.innerHTML = renderQuizSetup();
-    else if (ROUTE.view === 'quiz-run') app.innerHTML = renderQuizRun();
-    else if (ROUTE.view === 'quiz-results') app.innerHTML = renderQuizResults();
+  function renderRoute() {
+    if (FINAL_QUIZ_ACTIVE) {
+      renderFinalQuizInPlace();
+      updateTopbar();
+      return;
+    }
+
+    const r = parsePath();
+    if (r.depth === 1 || r.depth === 0) { app.innerHTML = renderCoursePage(); updateTopbar(); return; }
+    if (r.isModulesList) { app.innerHTML = renderModulesList(); updateTopbar(); return; }
+
+    const mod = r.moduleSlug ? moduleBySlug(r.moduleSlug) : null;
+    if (!mod) { app.innerHTML = renderNotFound('moduł'); updateTopbar(); return; }
+
+    if (r.isModule) { app.innerHTML = renderModulePage(mod); updateTopbar(); return; }
+    if (r.isArticlesList) { app.innerHTML = renderArticlesList(mod); updateTopbar(); return; }
+    if (r.isQuizzesList) { app.innerHTML = renderQuizzesList(mod); updateTopbar(); return; }
+
+    if (r.isArticle) {
+      const item = articleBySlug(mod, r.itemSlug);
+      if (!item) { app.innerHTML = renderNotFound('artykuł'); updateTopbar(); return; }
+      app.innerHTML = renderArticlePage(mod, item);
+      updateTopbar();
+      return;
+    }
+
+    if (r.isQuiz) {
+      const item = quizBySlug(mod, r.itemSlug);
+      if (!item) { app.innerHTML = renderNotFound('quiz'); updateTopbar(); return; }
+      renderQuizRoute(mod, item);
+      updateTopbar();
+      return;
+    }
+
+    app.innerHTML = renderNotFound('strona');
     updateTopbar();
   }
 
-  function render() {
-    renderInPlace();
-    window.scrollTo({ top: 0 });
+  function renderNotFound(what) {
+    return `<div class="course-hero"><h1>Nie znaleziono (${escapeHtml(what)})</h1><p><a href="${courseUrl()}">← Wróć do kursu</a></p></div>`;
   }
 
-  function goOverview() { ROUTE = { view: 'overview' }; render(); }
-  function goArticle(moduleId) { ROUTE = { view: 'article', moduleId }; render(); }
-  function goQuizTab(moduleId) { openQuizSetup(moduleId); }
-  function goFinalQuiz() { openQuizSetup(null); }
-  window.goOverview = goOverview;
-  window.goArticle = goArticle;
-  window.goQuizTab = goQuizTab;
-  window.goFinalQuiz = goFinalQuiz;
+  function breadcrumbs(parts) {
+    const items = parts.map((p, i) => {
+      if (i === parts.length - 1) return `<span>${escapeHtml(p.label)}</span>`;
+      return `<a href="${p.href}" onclick="navigate('${p.href}');return false;">${escapeHtml(p.label)}</a>`;
+    });
+    return `<div class="breadcrumbs">${items.join(' <span class="crumb-sep">/</span> ')}</div>`;
+  }
 
-  // ---------------- Overview ----------------
-
-  function quizItemOf(mod) { return mod.items.find(i => i.type === 'quiz'); }
-  function articleItemOf(mod) { return mod.items.find(i => i.type === 'article'); }
+  // ---------------- Progress helpers ----------------
 
   function moduleQuizAttempts(entry, quizId) {
     return (entry.quizAttempts || []).filter(a => a.itemId === quizId);
@@ -100,8 +164,15 @@
     if (!attempts.length) return null;
     return attempts.reduce((best, a) => (!best || a.pct > best.pct ? a : best), null);
   }
+  function pillFor(best) {
+    if (!best) return `<span class="pct-pill">— %</span>`;
+    const cls = COURSE.passThreshold ? (best.pct >= COURSE.passThreshold ? 'good' : 'bad') : (best.pct >= 70 ? 'good' : '');
+    return `<span class="pct-pill ${cls}">${best.pct}%</span>`;
+  }
 
-  function renderOverview() {
+  // ---------------- Course page (modules + nested articles/quizzes) ----------------
+
+  function renderCoursePage() {
     const entry = stateEntry();
     const hasWeights = MODULES.every(m => m.weight != null);
 
@@ -115,43 +186,42 @@
     }
 
     const rows = MODULES.map((m, idx) => {
-      const articleItem = articleItemOf(m);
-      const quizItem = quizItemOf(m);
-      const read = entry.articlesRead[articleItem.id];
-      const attempts = moduleQuizAttempts(entry, quizItem.id);
-      const best = bestAttempt(attempts);
-      const pillClass = best ? (COURSE.passThreshold ? (best.pct >= COURSE.passThreshold ? 'good' : 'bad') : (best.pct >= 70 ? 'good' : '')) : '';
+      const arts = articlesOf(m);
+      const quizzes = quizzesOf(m);
+      const nested = `
+        <div class="nested-items">
+          ${arts.map(a => `<a class="nested-link" href="${articleUrl(m, a)}" onclick="navigate('${articleUrl(m, a)}');return false;">📖 ${escapeHtml(a.title)}</a>`).join('')}
+          ${quizzes.map(q => `<a class="nested-link" href="${quizUrl(m, q)}" onclick="navigate('${quizUrl(m, q)}');return false;">✅ ${escapeHtml(q.title)}</a>`).join('')}
+        </div>`;
+      const bestQuiz = bestAttempt(quizzes.flatMap(q => moduleQuizAttempts(entry, q.id)));
       return `
-        <div class="module-row" onclick="goArticle('${m.id}')">
-          <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
-          <div class="module-row-body">
-            <div class="module-row-title">${escapeHtml(m.title)}</div>
-            <div class="module-row-meta">
-              ${m.weight != null ? `<span>Waga egzaminu: ${m.weight}%</span>` : ''}
-              <span>${quizItem.questions.length} pytań</span>
-              <span>${read ? 'Artykuł przeczytany' : 'Artykuł nieprzeczytany'}</span>
+        <div class="module-row-wrap">
+          <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
+            <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
+            <div class="module-row-body">
+              <div class="module-row-title">${escapeHtml(m.title)}</div>
+              <div class="module-row-meta">
+                ${m.weight != null ? `<span>Waga egzaminu: ${m.weight}%</span>` : ''}
+                <span>${arts.length} art. · ${quizzes.length} quiz${quizzes.length === 1 ? '' : 'ów'}</span>
+              </div>
             </div>
+            <div class="module-row-status">${pillFor(bestQuiz)}</div>
           </div>
-          <div class="module-row-status">
-            ${best ? `<span class="pct-pill ${pillClass}">${best.pct}%</span>` : `<span class="pct-pill">— %</span>`}
-          </div>
+          ${nested}
         </div>`;
     }).join('');
 
-    const totalFinalQ = MODULES.reduce((s, m) => s + quizItemOf(m).questions.length, 0);
-    const finalAttempts = moduleQuizAttempts(entry, 'final-quiz');
-    const finalBest = bestAttempt(finalAttempts);
-    const finalPillClass = finalBest ? (COURSE.passThreshold ? (finalBest.pct >= COURSE.passThreshold ? 'good' : 'bad') : (finalBest.pct >= 70 ? 'good' : '')) : '';
-
+    const totalFinalQ = MODULES.reduce((s, m) => s + quizzesOf(m).reduce((s2, q) => s2 + q.questions.length, 0), 0);
+    const finalBest = bestAttempt(moduleQuizAttempts(entry, 'final-quiz'));
     const finalRow = `
-      <div class="module-row final" onclick="goFinalQuiz()">
-        <div class="module-num">🏁</div>
-        <div class="module-row-body">
-          <div class="module-row-title">${escapeHtml(COURSE.finalQuizTitle || 'Egzamin końcowy')}</div>
-          <div class="module-row-meta"><span>${COURSE.finalQuizDescription || `${totalFinalQ} pytań ze wszystkich modułów`}</span></div>
-        </div>
-        <div class="module-row-status">
-          ${finalBest ? `<span class="pct-pill ${finalPillClass}">${finalBest.pct}%</span>` : `<span class="pct-pill">— %</span>`}
+      <div class="module-row-wrap">
+        <div class="module-row final" onclick="openFinalQuiz();return false;">
+          <div class="module-num">🏁</div>
+          <div class="module-row-body">
+            <div class="module-row-title">${escapeHtml(COURSE.finalQuizTitle || 'Egzamin końcowy')}</div>
+            <div class="module-row-meta"><span>${COURSE.finalQuizDescription || `${totalFinalQ} pytań ze wszystkich modułów`}</span></div>
+          </div>
+          <div class="module-row-status">${pillFor(finalBest)}</div>
         </div>
       </div>`;
 
@@ -162,73 +232,204 @@
         <p>${escapeHtml(COURSE.description || '')}</p>
         ${weightbar}
       </div>
+      <div class="module-list-header">
+        <h2>Moduły</h2>
+        <a href="${modulesUrl()}" onclick="navigate('${modulesUrl()}');return false;">Wszystkie moduły →</a>
+      </div>
       <div class="module-list">
         ${rows}
         ${finalRow}
       </div>`;
   }
 
-  // ---------------- Article ----------------
+  // ---------------- Modules list ----------------
 
-  function renderArticle(moduleId) {
-    const m = moduleById(moduleId);
-    const item = articleItemOf(m);
+  function renderModulesList() {
+    const entry = stateEntry();
+    const rows = MODULES.map((m, idx) => {
+      const quizzes = quizzesOf(m);
+      const bestQuiz = bestAttempt(quizzes.flatMap(q => moduleQuizAttempts(entry, q.id)));
+      return `
+        <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
+          <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
+          <div class="module-row-body">
+            <div class="module-row-title">${escapeHtml(m.title)}</div>
+            <div class="module-row-meta">
+              ${m.weight != null ? `<span>Waga egzaminu: ${m.weight}%</span>` : ''}
+              <span>${articlesOf(m).length} art. · ${quizzes.length} quiz${quizzes.length === 1 ? '' : 'ów'}</span>
+            </div>
+          </div>
+          <div class="module-row-status">${pillFor(bestQuiz)}</div>
+        </div>`;
+    }).join('');
+
+    return `
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły' }])}
+      <div class="course-hero"><h1>Moduły kursu</h1></div>
+      <div class="module-list">${rows}</div>`;
+  }
+
+  // ---------------- Module page ----------------
+
+  function renderModulePage(mod) {
+    const entry = stateEntry();
+    const arts = articlesOf(mod);
+    const quizzes = quizzesOf(mod);
+
+    const artRows = arts.map(a => {
+      const read = entry.articlesRead[a.id];
+      return `
+        <a class="item-row" href="${articleUrl(mod, a)}" onclick="navigate('${articleUrl(mod, a)}');return false;">
+          <span class="item-row-icon">📖</span>
+          <span class="item-row-body">
+            <span class="item-row-title">${escapeHtml(a.title)}</span>
+            <span class="item-row-meta">${read ? 'Przeczytane' : 'Nieprzeczytane'}</span>
+          </span>
+        </a>`;
+    }).join('') || `<p class="dash-empty">Brak artykułów w tym module.</p>`;
+
+    const quizRows = quizzes.map(q => {
+      const best = bestAttempt(moduleQuizAttempts(entry, q.id));
+      return `
+        <a class="item-row" href="${quizUrl(mod, q)}" onclick="navigate('${quizUrl(mod, q)}');return false;">
+          <span class="item-row-icon">✅</span>
+          <span class="item-row-body">
+            <span class="item-row-title">${escapeHtml(q.title)}</span>
+            <span class="item-row-meta">${q.questions.length} pytań</span>
+          </span>
+          ${pillFor(best)}
+        </a>`;
+    }).join('') || `<p class="dash-empty">Brak quizów w tym module.</p>`;
+
+    const idx = MODULES.indexOf(mod);
+
+    return `
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title }])}
+      <div class="module-head">
+        <div class="module-head-eyebrow">Moduł ${idx + 1} / ${MODULES.length}${mod.weight != null ? ` · Waga: ${mod.weight}%` : ''}</div>
+        <h1>${escapeHtml(mod.title)}</h1>
+      </div>
+      <div class="module-section">
+        <div class="module-list-header"><h2>Artykuły</h2><a href="${articlesUrl(mod)}" onclick="navigate('${articlesUrl(mod)}');return false;">Wszystkie artykuły →</a></div>
+        <div class="item-list">${artRows}</div>
+      </div>
+      <div class="module-section">
+        <div class="module-list-header"><h2>Quizy</h2><a href="${quizzesUrl(mod)}" onclick="navigate('${quizzesUrl(mod)}');return false;">Wszystkie quizy →</a></div>
+        <div class="item-list">${quizRows}</div>
+      </div>`;
+  }
+
+  // ---------------- Articles / quizzes list pages ----------------
+
+  function renderArticlesList(mod) {
+    const entry = stateEntry();
+    const arts = articlesOf(mod);
+    const rows = arts.map(a => {
+      const read = entry.articlesRead[a.id];
+      return `
+        <a class="item-row" href="${articleUrl(mod, a)}" onclick="navigate('${articleUrl(mod, a)}');return false;">
+          <span class="item-row-icon">📖</span>
+          <span class="item-row-body">
+            <span class="item-row-title">${escapeHtml(a.title)}</span>
+            <span class="item-row-meta">${read ? 'Przeczytane' : 'Nieprzeczytane'}</span>
+          </span>
+        </a>`;
+    }).join('') || `<p class="dash-empty">Brak artykułów w tym module.</p>`;
+
+    return `
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Artykuły' }])}
+      <div class="course-hero"><h1>Artykuły — ${escapeHtml(mod.title)}</h1></div>
+      <div class="item-list">${rows}</div>`;
+  }
+
+  function renderQuizzesList(mod) {
+    const entry = stateEntry();
+    const quizzes = quizzesOf(mod);
+    const rows = quizzes.map(q => {
+      const best = bestAttempt(moduleQuizAttempts(entry, q.id));
+      return `
+        <a class="item-row" href="${quizUrl(mod, q)}" onclick="navigate('${quizUrl(mod, q)}');return false;">
+          <span class="item-row-icon">✅</span>
+          <span class="item-row-body">
+            <span class="item-row-title">${escapeHtml(q.title)}</span>
+            <span class="item-row-meta">${q.questions.length} pytań</span>
+          </span>
+          ${pillFor(best)}
+        </a>`;
+    }).join('') || `<p class="dash-empty">Brak quizów w tym module.</p>`;
+
+    return `
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Quizy' }])}
+      <div class="course-hero"><h1>Quizy — ${escapeHtml(mod.title)}</h1></div>
+      <div class="item-list">${rows}</div>`;
+  }
+
+  // ---------------- Article page ----------------
+
+  function renderArticlePage(mod, item) {
     const entry = stateEntry();
     const alreadyRead = !!entry.articlesRead[item.id];
     if (!alreadyRead) {
-      const newState = learnMarkArticleRead(
+      learnMarkArticleRead(
         { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
-        m, item
+        mod, item
       );
     }
-    const idx = MODULES.indexOf(m);
     const html = renderMarkdown(item.content);
+    const quizzes = quizzesOf(mod);
+    const ctaUrl = quizzes.length === 1 ? quizUrl(mod, quizzes[0]) : quizzesUrl(mod);
+    const ctaLabel = quizzes.length === 1 ? 'Przejdź do quizu →' : 'Zobacz quizy modułu →';
 
     return `
-      <button class="back-link" onclick="goOverview()">← Wróć do planu kursu</button>
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Artykuły', href: articlesUrl(mod) }, { label: item.title }])}
       <div class="module-head">
-        <div class="module-head-eyebrow">Moduł ${idx + 1} / ${MODULES.length}${m.weight != null ? ` · Waga: ${m.weight}%` : ''}</div>
-        <h1>${escapeHtml(m.title)}</h1>
-        <div class="module-tabs">
-          <div class="module-tab active">Artykuł</div>
-          <div class="module-tab" onclick="goQuizTab('${m.id}')">Quiz</div>
-        </div>
+        <h1>${escapeHtml(item.title)}</h1>
       </div>
       <div class="article-card">
         <div class="article-body">${html}</div>
         <div class="article-footer">
           <div class="mark-read-note">✓ Artykuł oznaczony jako przeczytany</div>
-          <button class="course-btn" onclick="goQuizTab('${m.id}')">Przejdź do quizu →</button>
+          ${quizzes.length ? `<a class="course-btn" href="${ctaUrl}" onclick="navigate('${ctaUrl}');return false;">${ctaLabel}</a>` : ''}
         </div>
       </div>`;
   }
 
-  // ---------------- Quiz setup ----------------
+  // ---------------- Quiz: setup / run / results (scoped route version) ----------------
 
-  function getPool(moduleId) {
-    if (!moduleId) {
-      let pool = [];
-      MODULES.forEach(m => pool.push(...quizItemOf(m).questions));
-      return pool;
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
     }
-    const m = moduleById(moduleId);
-    return quizItemOf(m).questions.slice();
+    return a;
   }
 
-  function openQuizSetup(moduleId) {
-    const pool = getPool(moduleId);
-    SETUP = { scope: moduleId, max: pool.length, selected: pool.length, isFinal: !moduleId };
-    ROUTE = { view: 'quiz-setup' };
-    render();
+  function renderQuizRoute(mod, item) {
+    const crumbs = breadcrumbs([
+      { label: COURSE.shortTitle || COURSE.title, href: courseUrl() },
+      { label: 'Moduły', href: modulesUrl() },
+      { label: mod.title, href: moduleUrl(mod) },
+      { label: 'Quizy', href: quizzesUrl(mod) },
+      { label: item.title },
+    ]);
+    const backUrl = quizzesUrl(mod);
+
+    if (!QUIZ_SESSION || QUIZ_SESSION.itemId !== item.id) {
+      if (!SETUP || SETUP.itemId !== item.id) {
+        SETUP = { itemId: item.id, max: item.questions.length, selected: item.questions.length };
+      }
+      app.innerHTML = crumbs + renderQuizSetup(mod, item, backUrl);
+      return;
+    }
+    if (QUIZ_SESSION.phase === 'run') { app.innerHTML = crumbs + renderQuizRun(mod, item, backUrl); return; }
+    if (QUIZ_SESSION.phase === 'results') { app.innerHTML = crumbs + renderQuizResults(mod, item, backUrl); return; }
+    app.innerHTML = crumbs + renderQuizSetup(mod, item, backUrl);
   }
-  window.openQuizSetup = openQuizSetup;
 
-  function renderQuizSetup() {
-    const isFinal = SETUP.isFinal;
-    const mod = isFinal ? null : moduleById(SETUP.scope);
-    const icon = isFinal ? '🏁' : (mod.icon || '📝');
-    const title = isFinal ? (COURSE.finalQuizTitle || 'Egzamin końcowy') : `Quiz: ${mod.title}`;
-
+  function renderQuizSetup(mod, item, backUrl) {
+    const icon = mod ? (mod.icon || '📝') : '🏁';
+    const title = item.title;
     const presets = [5, 10, 15, 20, 25].filter(n => n < SETUP.max);
     const optionsHtml = presets.map(n => `
         <div class="setup-opt ${SETUP.selected === n ? 'selected' : ''}" onclick="selectSetupCount(${n})">${n}</div>
@@ -238,7 +439,7 @@
         </div>`;
 
     return `
-      <button class="back-link" onclick="goOverview()">← Wróć do planu kursu</button>
+      <button class="back-link" onclick="navigate('${backUrl}')">← Wróć</button>
       <div class="setup-card">
         <div class="setup-icon">${icon}</div>
         <div class="setup-title">${escapeHtml(title)}</div>
@@ -254,7 +455,7 @@
 
   function selectSetupCount(n) {
     SETUP.selected = n;
-    renderInPlace();
+    renderRoute();
   }
   window.selectSetupCount = selectSetupCount;
 
@@ -272,26 +473,31 @@
     const customVal = input ? parseInt(input.value, 10) : NaN;
     let count = (!isNaN(customVal) && customVal >= 1) ? Math.min(customVal, SETUP.max) : SETUP.selected;
     if (!count || count < 1) count = SETUP.max;
-    startQuiz(SETUP.scope, count, SETUP.isFinal);
+    startQuiz(count);
   }
   window.confirmStartQuiz = confirmStartQuiz;
 
-  // ---------------- Quiz run ----------------
-
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+  function questionPoolFor(mod, item) {
+    if (item.id === 'final-quiz') {
+      let pool = [];
+      MODULES.forEach(m => quizzesOf(m).forEach(q => pool.push(...q.questions)));
+      return pool;
     }
-    return a;
+    return item.questions;
   }
 
-  function startQuiz(moduleId, count, isFinal) {
-    const pool = getPool(moduleId);
+  function startQuiz(count) {
+    const r = parsePath();
+    const mod = FINAL_QUIZ_ACTIVE ? null : moduleBySlug(r.moduleSlug);
+    const item = FINAL_QUIZ_ACTIVE
+      ? { id: 'final-quiz', title: COURSE.finalQuizTitle || 'Egzamin końcowy', questions: questionPoolFor(null, { id: 'final-quiz' }) }
+      : quizBySlug(mod, r.itemSlug);
+
+    const pool = questionPoolFor(mod, item);
     const shuffled = shuffle(pool).slice(0, count);
-    QUIZ_STATE = {
-      moduleId, isFinal,
+    QUIZ_SESSION = {
+      itemId: item.id, moduleSlug: mod ? mod.slug : null, isFinal: !mod,
+      phase: 'run',
       questions: shuffled,
       index: 0,
       score: 0,
@@ -300,28 +506,29 @@
       optionOrder: {},
       multiSelection: [],
     };
-    shuffled.forEach(q => { QUIZ_STATE.optionOrder[q.id] = shuffle(q.options.map(o => o.key)); });
-    ROUTE = { view: 'quiz-run' };
-    render();
+    shuffled.forEach(q => { QUIZ_SESSION.optionOrder[q.id] = shuffle(q.options.map(o => o.key)); });
+
+    if (FINAL_QUIZ_ACTIVE) renderFinalQuizInPlace();
+    else renderRoute();
+    window.scrollTo({ top: 0 });
   }
 
-  function currentQuestion() { return QUIZ_STATE.questions[QUIZ_STATE.index]; }
+  function currentQuestion() { return QUIZ_SESSION.questions[QUIZ_SESSION.index]; }
 
-  function renderQuizRun() {
+  function renderQuizRun(mod, item, backUrl) {
     const q = currentQuestion();
-    const total = QUIZ_STATE.questions.length;
-    const idx = QUIZ_STATE.index;
-    const answered = QUIZ_STATE.answers[q.id];
+    const total = QUIZ_SESSION.questions.length;
+    const idx = QUIZ_SESSION.index;
+    const answered = QUIZ_SESSION.answers[q.id];
     const isMulti = q.answer.length > 1;
-    const keys = QUIZ_STATE.optionOrder[q.id];
+    const keys = QUIZ_SESSION.optionOrder[q.id];
     const pct = Math.round((idx / total) * 100);
-    const answeredCount = idx;
-    const scorePct = answeredCount > 0 ? Math.round((QUIZ_STATE.score / answeredCount) * 100) : 0;
+    const scorePct = idx > 0 ? Math.round((QUIZ_SESSION.score / idx) * 100) : 0;
 
     const optsHtml = keys.map(k => {
       const opt = q.options.find(o => o.key === k);
       let cls = 'opt';
-      const isSelected = answered ? answered.includes(k) : QUIZ_STATE.multiSelection.includes(k);
+      const isSelected = answered ? answered.includes(k) : QUIZ_SESSION.multiSelection.includes(k);
       const isCorrectKey = q.answer.includes(k);
       if (answered) {
         cls += ' disabled';
@@ -348,16 +555,16 @@
     }
 
     const nextLabel = idx + 1 < total ? 'Następne pytanie →' : 'Zobacz wyniki →';
-    const multiReady = QUIZ_STATE.multiSelection.length === q.answer.length;
+    const multiReady = QUIZ_SESSION.multiSelection.length === q.answer.length;
     const nextBtn = answered
       ? `<button class="course-btn" onclick="nextQuestion()">${nextLabel}</button>`
       : (isMulti ? `<button class="course-btn" id="confirm-multi-btn" onclick="confirmMulti()" ${multiReady ? '' : 'disabled'}>Zatwierdź odpowiedź (${q.answer.length})</button>` : '');
 
     return `
-      <button class="back-link" onclick="confirmExitQuiz()">← Przerwij quiz</button>
+      <button class="back-link" onclick="confirmExitQuiz('${backUrl}')">← Przerwij quiz</button>
       <div class="quiz-hud">
         <span>Pytanie <b>${idx + 1} / ${total}</b></span>
-        <span><span class="correct-c">Poprawne <b>${QUIZ_STATE.score}</b></span> &nbsp; <span class="wrong-c">Błędne <b>${QUIZ_STATE.wrong}</b></span> &nbsp; Wynik <b>${scorePct}%</b></span>
+        <span><span class="correct-c">Poprawne <b>${QUIZ_SESSION.score}</b></span> &nbsp; <span class="wrong-c">Błędne <b>${QUIZ_SESSION.wrong}</b></span> &nbsp; Wynik <b>${scorePct}%</b></span>
       </div>
       <div class="progress-track"><span style="width:${pct}%"></span></div>
       <div class="question-card">
@@ -371,71 +578,75 @@
 
   function selectOption(k) {
     const q = currentQuestion();
-    if (QUIZ_STATE.answers[q.id]) return;
+    if (QUIZ_SESSION.answers[q.id]) return;
     const isMulti = q.answer.length > 1;
-    if (!isMulti) {
-      submitAnswer([k]);
-      return;
-    }
-    const i = QUIZ_STATE.multiSelection.indexOf(k);
-    if (i > -1) QUIZ_STATE.multiSelection.splice(i, 1); else QUIZ_STATE.multiSelection.push(k);
-    renderInPlace();
+    if (!isMulti) { submitAnswer([k]); return; }
+    const i = QUIZ_SESSION.multiSelection.indexOf(k);
+    if (i > -1) QUIZ_SESSION.multiSelection.splice(i, 1); else QUIZ_SESSION.multiSelection.push(k);
+    rerenderInPlace();
   }
   window.selectOption = selectOption;
 
   function confirmMulti() {
-    submitAnswer(QUIZ_STATE.multiSelection.slice());
-    QUIZ_STATE.multiSelection = [];
+    submitAnswer(QUIZ_SESSION.multiSelection.slice());
+    QUIZ_SESSION.multiSelection = [];
   }
   window.confirmMulti = confirmMulti;
 
   function submitAnswer(selectedKeys) {
     const q = currentQuestion();
-    QUIZ_STATE.answers[q.id] = selectedKeys;
+    QUIZ_SESSION.answers[q.id] = selectedKeys;
     const userSet = new Set(selectedKeys);
     const correctSet = new Set(q.answer);
     const isCorrect = userSet.size === correctSet.size && [...userSet].every(k => correctSet.has(k));
-    if (isCorrect) QUIZ_STATE.score++; else QUIZ_STATE.wrong++;
-    render();
+    if (isCorrect) QUIZ_SESSION.score++; else QUIZ_SESSION.wrong++;
+    rerenderInPlace();
+    window.scrollTo({ top: 0 });
   }
 
   function nextQuestion() {
-    QUIZ_STATE.index++;
-    if (QUIZ_STATE.index >= QUIZ_STATE.questions.length) finishQuiz();
-    else render();
+    QUIZ_SESSION.index++;
+    if (QUIZ_SESSION.index >= QUIZ_SESSION.questions.length) finishQuiz();
+    else { rerenderInPlace(); window.scrollTo({ top: 0 }); }
   }
   window.nextQuestion = nextQuestion;
 
-  function confirmExitQuiz() {
+  function confirmExitQuiz(backUrl) {
     if (confirm('Czy na pewno chcesz przerwać quiz? Postęp tego podejścia nie zostanie zapisany.')) {
-      ROUTE = { view: 'overview' };
-      render();
+      QUIZ_SESSION = null;
+      if (FINAL_QUIZ_ACTIVE) { FINAL_QUIZ_ACTIVE = false; renderRoute(); }
+      else navigate(backUrl);
     }
   }
   window.confirmExitQuiz = confirmExitQuiz;
 
   function finishQuiz() {
-    const total = QUIZ_STATE.questions.length;
-    const pct = Math.round((QUIZ_STATE.score / total) * 100);
-    const mod = QUIZ_STATE.isFinal ? null : moduleById(QUIZ_STATE.moduleId);
-    const item = QUIZ_STATE.isFinal
-      ? { id: 'final-quiz', title: COURSE.finalQuizTitle || 'Egzamin końcowy' }
-      : quizItemOf(mod);
+    const total = QUIZ_SESSION.questions.length;
+    const pct = Math.round((QUIZ_SESSION.score / total) * 100);
+    const mod = QUIZ_SESSION.moduleSlug ? moduleBySlug(QUIZ_SESSION.moduleSlug) : null;
+    const title = QUIZ_SESSION.isFinal ? (COURSE.finalQuizTitle || 'Egzamin końcowy') : (mod ? quizzesOf(mod).find(q => q.id === QUIZ_SESSION.itemId).title : '');
 
     const entry = stateEntry();
     learnRecordQuizAttempt(
       { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
-      mod, item, { score: QUIZ_STATE.score, total, pct }
+      mod, { id: QUIZ_SESSION.itemId, title }, { score: QUIZ_SESSION.score, total, pct }
     );
 
-    ROUTE = { view: 'quiz-results' };
-    render();
+    QUIZ_SESSION.phase = 'results';
+    if (FINAL_QUIZ_ACTIVE) renderFinalQuizInPlace();
+    else renderRoute();
+    window.scrollTo({ top: 0 });
   }
 
-  function renderQuizResults() {
-    const total = QUIZ_STATE.questions.length;
-    const score = QUIZ_STATE.score;
-    const wrong = QUIZ_STATE.wrong;
+  function rerenderInPlace() {
+    if (FINAL_QUIZ_ACTIVE) { renderFinalQuizInPlace(); return; }
+    renderRoute();
+  }
+
+  function renderQuizResults(mod, item, backUrl) {
+    const total = QUIZ_SESSION.questions.length;
+    const score = QUIZ_SESSION.score;
+    const wrong = QUIZ_SESSION.wrong;
     const pct = Math.round((score / total) * 100);
 
     let color, grade, msg;
@@ -451,8 +662,8 @@
       passBadge = `<div class="pass-badge ${pass ? 'pass' : 'fail'}">${pass ? `ZALICZONE — próg ${COURSE.passThreshold}%` : `PONIŻEJ PROGU ${COURSE.passThreshold}%`}</div>`;
     }
 
-    const reviewHtml = QUIZ_STATE.questions.map((q, i) => {
-      const ans = QUIZ_STATE.answers[q.id] || [];
+    const reviewHtml = QUIZ_SESSION.questions.map((q, i) => {
+      const ans = QUIZ_SESSION.answers[q.id] || [];
       const userSet = new Set(ans);
       const correctSet = new Set(q.answer);
       const isCorrect = userSet.size === correctSet.size && [...userSet].every(k => correctSet.has(k));
@@ -469,8 +680,6 @@
         </div>`;
     }).join('');
 
-    const retryLabel = QUIZ_STATE.isFinal ? 'goFinalQuiz()' : `openQuizSetup('${QUIZ_STATE.moduleId}')`;
-
     return `
       <div class="result-card">
         ${passBadge}
@@ -486,14 +695,55 @@
           <div class="stat"><div class="stat-val">${pct}%</div><div class="stat-label">Wynik</div></div>
         </div>
         <div class="result-actions">
-          <button class="course-btn" onclick="${retryLabel}">🔄 Powtórz</button>
-          <button class="btn-secondary" onclick="goOverview()">← Wróć do planu kursu</button>
+          <button class="course-btn" onclick="retryQuizSession()">🔄 Powtórz</button>
+          <button class="btn-secondary" onclick="${FINAL_QUIZ_ACTIVE ? "exitFinalQuiz()" : `navigate('${backUrl}')`}">← Wróć</button>
         </div>
         <div class="review-section">
           <h3>📋 Przegląd odpowiedzi</h3>
           ${reviewHtml}
         </div>
       </div>`;
+  }
+
+  function retryQuizSession() {
+    QUIZ_SESSION = null;
+    rerenderInPlace();
+    window.scrollTo({ top: 0 });
+  }
+  window.retryQuizSession = retryQuizSession;
+
+  // ---------------- Final quiz (course-wide, in-page state, no dedicated URL) ----------------
+
+  function openFinalQuiz() {
+    FINAL_QUIZ_ACTIVE = true;
+    if (!QUIZ_SESSION || QUIZ_SESSION.itemId !== 'final-quiz') {
+      const pool = questionPoolFor(null, { id: 'final-quiz' });
+      SETUP = { max: pool.length, selected: pool.length };
+      QUIZ_SESSION = null;
+    }
+    renderFinalQuizInPlace();
+    window.scrollTo({ top: 0 });
+  }
+  window.openFinalQuiz = openFinalQuiz;
+
+  function exitFinalQuiz() {
+    FINAL_QUIZ_ACTIVE = false;
+    QUIZ_SESSION = null;
+    renderRoute();
+    window.scrollTo({ top: 0 });
+  }
+  window.exitFinalQuiz = exitFinalQuiz;
+
+  function renderFinalQuizInPlace() {
+    const crumbs = breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: COURSE.finalQuizTitle || 'Egzamin końcowy' }]);
+    const item = { id: 'final-quiz', title: COURSE.finalQuizTitle || 'Egzamin końcowy' };
+    if (!QUIZ_SESSION) {
+      app.innerHTML = crumbs + renderQuizSetup(null, item, courseUrl());
+    } else if (QUIZ_SESSION.phase === 'run') {
+      app.innerHTML = crumbs + renderQuizRun(null, item, courseUrl());
+    } else {
+      app.innerHTML = crumbs + renderQuizResults(null, item, courseUrl());
+    }
   }
 
   // ---------------- Markdown (subset: #, ##, ###, >, lists incl. 1-level nesting, tables, bold/italic/code, hr) ----------------
