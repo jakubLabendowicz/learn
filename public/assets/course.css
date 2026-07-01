@@ -250,6 +250,10 @@
   border-style: dashed;
 }
 
+.module-row-accent {
+  border-left-width: 4px;
+}
+
 .module-num {
   width: 34px;
   height: 34px;

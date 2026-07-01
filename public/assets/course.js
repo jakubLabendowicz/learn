@@ -198,10 +198,13 @@
     return `<span class="pct-pill ${cls}">${best.pct}%</span>`;
   }
 
-  function moduleRow(m, idx) {
+  function moduleRow(m, idx, highlightAccent) {
+    const accent = highlightAccent && /^#[0-9a-fA-F]{6}$/.test(m.accent || '') ? m.accent : null;
+    const rowStyle = accent ? ` style="border-left-color:${accent};"` : '';
+    const numStyle = accent ? ` style="background:${accent}1a;color:${accent};"` : '';
     return `
-      <div class="module-row" onclick="navigate('${moduleUrl(m)}');return false;">
-        <div class="module-num">${m.icon || String(idx + 1).padStart(2, '0')}</div>
+      <div class="module-row${accent ? ' module-row-accent' : ''}" onclick="navigate('${moduleUrl(m)}');return false;"${rowStyle}>
+        <div class="module-num"${numStyle}>${m.icon || String(idx + 1).padStart(2, '0')}</div>
         <div class="module-row-body">
           <div class="module-row-title">${escapeHtml(m.shortTitle || m.title)}</div>
           <div class="module-row-desc">${escapeHtml(m.description || '')}</div>
@@ -221,7 +224,7 @@
         </div>`;
       return `
         <div class="module-row-wrap">
-          ${moduleRow(m, idx)}
+          ${moduleRow(m, idx, true)}
           ${nested}
         </div>`;
     }).join('');
