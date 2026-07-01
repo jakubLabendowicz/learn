@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wygeneruj kurs (AI skill) — learn</title>
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/utility-pages.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <span class="logo-dot"></span>
+      learn
+    </a>
+    <div class="nav-links">
+      <a href="/courses">Kursy</a>
+      <a href="/courses/generate">Generuj</a>
+      <a href="/courses/import">Importuj</a>
+    </div>
+  </div>
+</nav>
+
+<main class="utility-main">
+  <div class="page-header">
+    <h1>Wygeneruj kurs za pomocą AI</h1>
+    <p>
+      Poniższy tekst to gotowa instrukcja ("skill") dla asystenta AI (np. Claude, ChatGPT).
+      Skopiuj ją, wklej na początku rozmowy razem ze swoim materiałem źródłowym (notatki,
+      artykuł, lista pytań egzaminacyjnych) i poproś o wygenerowanie pliku <code>course.json</code>.
+      Gotowy plik wgraj na stronie <a href="/courses/import">/courses/import</a>.
+    </p>
+    <div class="utility-actions">
+      <button class="course-btn" id="copy-btn">📋 Kopiuj skill do schowka</button>
+      <button class="btn-secondary" id="download-btn">⬇ Pobierz jako .md</button>
+      <a class="btn-secondary" href="/courses/import">Przejdź do importu →</a>
+    </div>
+    <p class="copy-feedback" id="copy-feedback" style="display:none">Skopiowano do schowka.</p>
+  </div>
+
+  <pre class="skill-block" id="skill-content"># Skill: Generowanie pliku course.json dla platformy „learn”
+
+Jesteś asystentem AI, którego zadaniem jest wygenerowanie pliku `course.json`
+zgodnego ze schematem platformy edukacyjnej „learn”. Użytkownik dostarczy Ci
+materiał źródłowy (notatki, artykuł, książkę, listę pytań egzaminacyjnych
+itp.) — Twoim zadaniem jest przekształcić go w ustrukturyzowany kurs złożony
+z modułów, artykułów i quizów, a następnie zwrócić WYŁĄCZNIE poprawny JSON
+(bez dodatkowego tekstu, bez bloku markdown ```` ``` ````) gotowy do zapisania
+jako plik `.json`.
+
+## Struktura pliku
+
+Plik to pojedynczy obiekt JSON z dwoma polami najwyższego poziomu: `course`
+i `modules`.
+
+### `course` (obiekt, wymagany)
+
+| Pole                 | Typ             | Wymagane | Opis |
+|----------------------|-----------------|----------|------|
+| `id`                 | string          | tak      | Unikalny, stabilny identyfikator kursu (np. `"python-dla-poczatkujacych"`). Używany jako klucz postępu w local storage — nie zmieniaj go po imporcie. |
+| `slug`                | string          | tak      | Slug używany w adresie URL: `/courses/{slug}`. Musi być unikalny wśród zaimportowanych kursów. |
+| `title`               | string          | tak      | Pełny tytuł kursu. |
+| `shortTitle`          | string          | nie      | Krótka nazwa wyświetlana w górnym pasku postępu. |
+| `description`         | string          | nie      | Krótki opis kursu (1 akapit). |
+| `icon`                 | string          | nie      | Krótki tekst odznaki (2–3 znaki), np. `"PY"`. |
+| `accent`               | string          | nie      | Kolor akcentu w formacie hex, np. `"#4f46e5"`. |
+| `passThreshold`        | number \| null  | nie      | Próg zaliczenia quizu w %. Jeśli brak/null, wynik pokazuje tylko ocenę opisową, bez odznaki zdane/niezdane. |
+| `finalQuizTitle`       | string          | nie      | Tytuł quizu końcowego (łączy pytania ze wszystkich modułów). |
+| `finalQuizDescription` | string          | nie      | Opis quizu końcowego. |
+
+### `modules` (tablica obiektów, wymagana, min. 1 element)
+
+Każdy moduł:
+
+| Pole      | Typ             | Wymagane | Opis |
+|-----------|-----------------|----------|------|
+| `id`      | string          | tak      | Unikalny identyfikator modułu w obrębie kursu. |
+| `slug`     | string          | tak      | Slug modułu w URL: `/courses/{course}/modules/{slug}`. Unikalny w obrębie kursu. |
+| `order`    | number          | nie      | Kolejność wyświetlania. |
+| `title`    | string          | tak      | Tytuł modułu. |
+| `icon`     | string \| null  | nie      | Emoji reprezentujące moduł. |
+| `weight`   | number \| null  | nie      | Waga modułu w % (np. udział w egzaminie). Jeśli WSZYSTKIE moduły w kursie mają wagę, strona kursu pokaże pasek proporcji. |
+| `accent`   | string \| null  | nie      | Nadpisuje kolor akcentu tylko dla tego modułu. |
+| `items`    | tablica         | tak, min. 1 | Lista artykułów i quizów należących do modułu — patrz niżej. Moduł MOŻE zawierać wiele artykułów i wiele quizów. |
+
+### Elementy modułu (`items[]`)
+
+Każdy element ma pole `type`: `"article"` albo `"quiz"`.
+
+**Artykuł:**
+
+| Pole      | Typ        | Wymagane | Opis |
+|-----------|------------|----------|------|
+| `type`    | `"article"`| tak      | |
+| `id`      | string     | tak      | Unikalny w obrębie kursu. |
+| `slug`     | string     | tak      | Unikalny wśród artykułów TEGO modułu. URL: `/courses/{course}/modules/{module}/articles/{slug}`. |
+| `title`    | string     | tak      | Tytuł artykułu. |
+| `content`  | string     | tak      | Treść w Markdown (patrz obsługiwana składnia niżej). |
+
+**Quiz:**
+
+| Pole        | Typ      | Wymagane | Opis |
+|-------------|----------|----------|------|
+| `type`      | `"quiz"` | tak      | |
+| `id`        | string   | tak      | Unikalny w obrębie kursu. |
+| `slug`       | string   | tak      | Unikalny wśród quizów TEGO modułu. URL: `/courses/{course}/modules/{module}/quizes/{slug}`. |
+| `title`      | string   | tak      | Tytuł quizu (konwencja: `"Quiz: {temat}"`). |
+| `questions`  | tablica  | tak, min. 1 | Lista pytań — patrz niżej. |
+
+### Pytania (`questions[]`)
+
+| Pole          | Typ                       | Wymagane   | Opis |
+|---------------|---------------------------|------------|------|
+| `id`          | string                    | tak        | Unikalny identyfikator pytania w obrębie quizu, np. `"q1"`. |
+| `question`    | string                    | tak        | Treść pytania (zwykły tekst, bez markdown). |
+| `options`     | tablica `{key, text}`      | tak, min. 2 | Klucze zwykle `"A"`, `"B"`, `"C"`, `"D"`… `text` to zwykły tekst odpowiedzi. |
+| `answer`      | tablica kluczy (string[])  | tak, min. 1 | Klucze poprawnych odpowiedzi. Jedna wartość = pytanie jednokrotnego wyboru. Więcej niż jedna = pytanie wielokrotnego wyboru (checkboxy). |
+| `explanation` | string (HTML)              | tak        | Wyjaśnienie poprawnej odpowiedzi. To pole jest wstawiane jako HTML (NIE markdown) — możesz użyć np. `<strong>`, `<br>`, `<ul><li>`. |
+
+## Obsługiwana składnia Markdown w polu `content`
+
+- Nagłówki: `#`, `##`, `###`
+- Cytat: `> tekst`
+- Listy: `- ` lub `* ` (nieuporządkowane), `1. ` (uporządkowane) — obsługiwany jeden poziom zagnieżdżenia przez wcięcie spacjami
+- Tabele: standardowa składnia `| a | b |` z wierszem separatora pod nagłówkiem
+- Pogrubienie: `**tekst**`
+- Kursywa: `*tekst*`
+- Kod inline: `` `kod` ``
+- Linia pozioma: `---`
+- NIEobsługiwane: linki `[]()`, obrazy, bloki kodu potrójnym backtickiem, zagnieżdżenie list głębsze niż 1 poziom
+
+## Zasady unikalności slugów
+
+- `course.slug` musi być unikalny wśród wszystkich zaimportowanych kursów.
+- `module.slug` musi być unikalny w obrębie kursu.
+- `item.slug` musi być unikalny w obrębie pary (moduł, typ) — artykuł i quiz w tym samym module MOGĄ mieć ten sam slug, ale dwa artykuły w tym samym module — nie.
+- Używaj tylko małych liter, cyfr i myślników w slugach, np. `"wprowadzenie-do-tematu"`.
+
+## Minimalny, poprawny przykład
+
+```json
+{
+  "course": {
+    "id": "przyklad-kurs",
+    "slug": "Przyklad-Kurs",
+    "title": "Przykładowy kurs demonstracyjny",
+    "shortTitle": "Przykład",
+    "description": "Krótki opis tego, czego dotyczy kurs.",
+    "icon": "PK",
+    "accent": "#4f46e5",
+    "passThreshold": 70,
+    "finalQuizTitle": "Egzamin końcowy",
+    "finalQuizDescription": "Wszystkie pytania z kursu."
+  },
+  "modules": [
+    {
+      "id": "modul-1",
+      "slug": "modul-1",
+      "order": 1,
+      "title": "Wprowadzenie",
+      "icon": "🚀",
+      "weight": null,
+      "items": [
+        {
+          "type": "article",
+          "id": "modul-1-artykul",
+          "slug": "wprowadzenie",
+          "title": "Wprowadzenie do tematu",
+          "content": "# Wprowadzenie\n\nTo jest przykładowy akapit z **pogrubieniem** i *kursywą*.\n\n## Kluczowe pojęcia\n\n- Pierwszy punkt\n- Drugi punkt\n  - Punkt zagnieżdżony\n\n> Ważna uwaga w formie cytatu."
+        },
+        {
+          "type": "quiz",
+          "id": "modul-1-quiz",
+          "slug": "sprawdzian",
+          "title": "Quiz: Wprowadzenie",
+          "questions": [
+            {
+              "id": "q1",
+              "question": "Które stwierdzenie jest prawdziwe?",
+              "options": [
+                { "key": "A", "text": "Odpowiedź A" },
+                { "key": "B", "text": "Odpowiedź B (poprawna)" },
+                { "key": "C", "text": "Odpowiedź C" }
+              ],
+              "answer": ["B"],
+              "explanation": "<strong>Poprawna odpowiedź: B.</strong> Krótkie wyjaśnienie dlaczego."
+            },
+            {
+              "id": "q2",
+              "question": "Które dwie odpowiedzi są poprawne? (pytanie wielokrotnego wyboru)",
+              "options": [
+                { "key": "A", "text": "Odpowiedź poprawna nr 1" },
+                { "key": "B", "text": "Odpowiedź błędna" },
+                { "key": "C", "text": "Odpowiedź poprawna nr 2" }
+              ],
+              "answer": ["A", "C"],
+              "explanation": "Poprawne są A i C, ponieważ..."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Co zrobić z wygenerowanym plikiem
+
+1. Zapisz odpowiedź AI jako plik `.json` (dowolna nazwa, np. `moj-kurs.json`).
+2. Przejdź na stronę **/courses/import** platformy learn.
+3. Wgraj plik — kurs zostanie zapisany lokalnie w przeglądarce (local storage)
+   i natychmiast dostępny pod adresem `/courses/{slug}` z pełną
+   funkcjonalnością: przeglądanie modułów, artykuły, quizy jedno- i
+   wielokrotnego wyboru, quiz końcowy oraz śledzenie postępu.
+</pre>
+</main>
+
+<footer class="site-footer">
+  learn — platforma kursów
+</footer>
+
+<script>
+const skillEl = document.getElementById('skill-content');
+document.getElementById('copy-btn').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(skillEl.textContent);
+    const fb = document.getElementById('copy-feedback');
+    fb.style.display = 'block';
+    setTimeout(() => { fb.style.display = 'none'; }, 2500);
+  } catch (e) {
+    alert('Nie udało się skopiować automatycznie — zaznacz tekst ręcznie.');
+  }
+});
+document.getElementById('download-btn').addEventListener('click', () => {
+  const blob = new Blob([skillEl.textContent], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'generate-course-json.skill.md';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+
+</body>
+</html>

@@ -16,6 +16,8 @@
     </a>
     <div class="nav-links">
       <a href="/courses">Kursy</a>
+      <a href="/courses/generate">Generuj</a>
+      <a href="/courses/import">Importuj</a>
     </div>
   </div>
 </nav>
@@ -23,7 +25,7 @@
 <main>
   <div class="page-header">
     <h1>Dostępne kursy</h1>
-    <p>Wybierz kurs, aby rozpocząć naukę.</p>
+    <p>Wybierz kurs, aby rozpocząć naukę, albo <a href="/courses/generate">wygeneruj</a> i <a href="/courses/import">zaimportuj</a> własny.</p>
   </div>
 
   <div class="course-grid" id="course-grid">
@@ -36,20 +38,29 @@
 </footer>
 
 <script src="/assets/state.js"></script>
+<script src="/assets/imported-courses.js"></script>
 <script>
 fetch('/courses/manifest.json')
   .then(r => r.json())
-  .then(courses => {
+  .then(builtIn => {
     const state = learnLoadState();
+    const imported = learnListImportedCourses();
+    const all = builtIn.concat(imported);
     const grid = document.getElementById('course-grid');
-    grid.innerHTML = courses.map(c => {
+
+    if (!all.length) {
+      grid.innerHTML = `<p style="color:var(--text-muted)">Brak kursów. <a href="/courses/generate">Wygeneruj</a> lub <a href="/courses/import">zaimportuj</a> jeden.</p>`;
+      return;
+    }
+
+    grid.innerHTML = all.map(c => {
       const entry = state.courses[c.id];
       const pct = entry ? learnCourseProgress(entry) : 0;
       return `
         <a class="course-card" href="/courses/${c.slug}">
-          <div class="course-card-icon">${c.icon}</div>
+          <div class="course-card-icon">${c.icon || '📘'}</div>
           <h2>${c.title}</h2>
-          <p>${c.description}</p>
+          <p>${c.description || ''}</p>
           ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
           <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
         </a>`;
