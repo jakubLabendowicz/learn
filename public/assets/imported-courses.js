@@ -18,6 +18,24 @@ function learnGetImportedCourse(slug) {
   return all[slug] || null;
 }
 
+/* Downloads the course's JSON as a file, whether it's imported (read from
+ * localStorage) or built-in (fetched from the server). */
+async function learnExportCourse(slug) {
+  let data = learnGetImportedCourse(slug);
+  if (!data) {
+    const r = await fetch(`/courses/${slug}.json`);
+    if (!r.ok) { alert('Nie udało się pobrać danych kursu do eksportu.'); return; }
+    data = await r.json();
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${slug}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function learnListImportedCourses() {
   const all = learnLoadImportedCourses();
   return Object.values(all).map(data => ({

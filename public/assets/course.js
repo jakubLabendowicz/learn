@@ -44,6 +44,7 @@
     document.getElementById('course-topbar-title').textContent = COURSE.shortTitle || COURSE.title;
     if (imported) document.getElementById('course-archive-wrap').style.display = 'none';
     else document.getElementById('course-archive-link').href = `/archive/${COURSE.slug}`;
+    document.getElementById('course-topbar-export').addEventListener('click', () => learnExportCourse(COURSE.slug));
     topbar.style.display = 'block';
     footer.style.display = 'block';
 
