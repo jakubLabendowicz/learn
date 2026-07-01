@@ -3,10 +3,8 @@
  *   /courses/{course}
  *   /courses/{course}/modules
  *   /courses/{course}/modules/{module}
- *   /courses/{course}/modules/{module}/articles
- *   /courses/{course}/modules/{module}/articles/{article}
- *   /courses/{course}/modules/{module}/quizes
- *   /courses/{course}/modules/{module}/quizes/{quiz}
+ *   /courses/{course}/modules/{module}/items
+ *   /courses/{course}/modules/{module}/items/{item}   (article or quiz, by item.type)
  */
 (function () {
   const app = document.getElementById('course-app');
@@ -74,18 +72,15 @@
   function moduleBySlug(slug) { return MODULES.find(m => m.slug === slug); }
   function articlesOf(mod) { return mod.items.filter(i => i.type === 'article'); }
   function quizzesOf(mod) { return mod.items.filter(i => i.type === 'quiz'); }
-  function articleBySlug(mod, slug) { return articlesOf(mod).find(i => i.slug === slug); }
-  function quizBySlug(mod, slug) { return quizzesOf(mod).find(i => i.slug === slug); }
+  function itemBySlug(mod, slug) { return mod.items.find(i => i.slug === slug); }
 
   // ---------------- URLs ----------------
 
   const courseUrl = () => `/courses/${COURSE.slug}`;
   const modulesUrl = () => `${courseUrl()}/modules`;
   const moduleUrl = m => `${modulesUrl()}/${m.slug}`;
-  const articlesUrl = m => `${moduleUrl(m)}/articles`;
-  const articleUrl = (m, it) => `${articlesUrl(m)}/${it.slug}`;
-  const quizzesUrl = m => `${moduleUrl(m)}/quizes`;
-  const quizUrl = (m, it) => `${quizzesUrl(m)}/${it.slug}`;
+  const itemsUrl = m => `${moduleUrl(m)}/items`;
+  const itemUrl = (m, it) => `${itemsUrl(m)}/${it.slug}`;
 
   // ---------------- Router ----------------
 
@@ -103,15 +98,12 @@
     // segs[0] is the course slug
     return {
       moduleSlug: segs[2],
-      section: segs[3], // 'articles' | 'quizes'
       itemSlug: segs[4],
       depth: segs.length,
       isModulesList: segs.length === 2 && segs[1] === 'modules',
       isModule: segs.length === 3 && segs[1] === 'modules',
-      isArticlesList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'articles',
-      isArticle: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'articles',
-      isQuizzesList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'quizes',
-      isQuiz: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'quizes',
+      isItemsList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'items',
+      isItem: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'items',
     };
   }
 
@@ -130,20 +122,12 @@
     if (!mod) { app.innerHTML = renderNotFound('moduł'); updateTopbar(); return; }
 
     if (r.isModule) { app.innerHTML = renderModulePage(mod); updateTopbar(); return; }
-    if (r.isArticlesList) { app.innerHTML = renderArticlesList(mod); updateTopbar(); return; }
-    if (r.isQuizzesList) { app.innerHTML = renderQuizzesList(mod); updateTopbar(); return; }
+    if (r.isItemsList) { app.innerHTML = renderItemsList(mod); updateTopbar(); return; }
 
-    if (r.isArticle) {
-      const item = articleBySlug(mod, r.itemSlug);
-      if (!item) { app.innerHTML = renderNotFound('artykuł'); updateTopbar(); return; }
-      app.innerHTML = renderArticlePage(mod, item);
-      updateTopbar();
-      return;
-    }
-
-    if (r.isQuiz) {
-      const item = quizBySlug(mod, r.itemSlug);
-      if (!item) { app.innerHTML = renderNotFound('quiz'); updateTopbar(); return; }
+    if (r.isItem) {
+      const item = itemBySlug(mod, r.itemSlug);
+      if (!item) { app.innerHTML = renderNotFound('element'); updateTopbar(); return; }
+      if (item.type === 'article') { app.innerHTML = renderArticlePage(mod, item); updateTopbar(); return; }
       renderQuizRoute(mod, item);
       updateTopbar();
       return;
@@ -200,8 +184,8 @@
       const quizzes = quizzesOf(m);
       const nested = `
         <div class="nested-items">
-          ${arts.map(a => `<a class="nested-link" href="${articleUrl(m, a)}" onclick="navigate('${articleUrl(m, a)}');return false;">📖 ${escapeHtml(a.title)}</a>`).join('')}
-          ${quizzes.map(q => `<a class="nested-link" href="${quizUrl(m, q)}" onclick="navigate('${quizUrl(m, q)}');return false;">✅ ${escapeHtml(q.title)}</a>`).join('')}
+          ${arts.map(a => `<a class="nested-link" href="${itemUrl(m, a)}" onclick="navigate('${itemUrl(m, a)}');return false;">📖 ${escapeHtml(a.title)}</a>`).join('')}
+          ${quizzes.map(q => `<a class="nested-link" href="${itemUrl(m, q)}" onclick="navigate('${itemUrl(m, q)}');return false;">✅ ${escapeHtml(q.title)}</a>`).join('')}
         </div>`;
       const bestQuiz = bestAttempt(quizzes.flatMap(q => moduleQuizAttempts(entry, q.id)));
       return `
@@ -281,35 +265,37 @@
 
   // ---------------- Module page ----------------
 
+  function itemRow(mod, entry, it) {
+    if (it.type === 'article') {
+      const read = entry.articlesRead[it.id];
+      return `
+        <a class="item-row" href="${itemUrl(mod, it)}" onclick="navigate('${itemUrl(mod, it)}');return false;">
+          <span class="item-row-icon">📖</span>
+          <span class="item-row-body">
+            <span class="item-row-title">${escapeHtml(it.title)}</span>
+            <span class="item-row-meta">${read ? 'Przeczytane' : 'Nieprzeczytane'}</span>
+          </span>
+        </a>`;
+    }
+    const best = bestAttempt(moduleQuizAttempts(entry, it.id));
+    return `
+      <a class="item-row" href="${itemUrl(mod, it)}" onclick="navigate('${itemUrl(mod, it)}');return false;">
+        <span class="item-row-icon">✅</span>
+        <span class="item-row-body">
+          <span class="item-row-title">${escapeHtml(it.title)}</span>
+          <span class="item-row-meta">${it.questions.length} pytań</span>
+        </span>
+        ${pillFor(best)}
+      </a>`;
+  }
+
   function renderModulePage(mod) {
     const entry = stateEntry();
     const arts = articlesOf(mod);
     const quizzes = quizzesOf(mod);
 
-    const artRows = arts.map(a => {
-      const read = entry.articlesRead[a.id];
-      return `
-        <a class="item-row" href="${articleUrl(mod, a)}" onclick="navigate('${articleUrl(mod, a)}');return false;">
-          <span class="item-row-icon">📖</span>
-          <span class="item-row-body">
-            <span class="item-row-title">${escapeHtml(a.title)}</span>
-            <span class="item-row-meta">${read ? 'Przeczytane' : 'Nieprzeczytane'}</span>
-          </span>
-        </a>`;
-    }).join('') || `<p class="dash-empty">Brak artykułów w tym module.</p>`;
-
-    const quizRows = quizzes.map(q => {
-      const best = bestAttempt(moduleQuizAttempts(entry, q.id));
-      return `
-        <a class="item-row" href="${quizUrl(mod, q)}" onclick="navigate('${quizUrl(mod, q)}');return false;">
-          <span class="item-row-icon">✅</span>
-          <span class="item-row-body">
-            <span class="item-row-title">${escapeHtml(q.title)}</span>
-            <span class="item-row-meta">${q.questions.length} pytań</span>
-          </span>
-          ${pillFor(best)}
-        </a>`;
-    }).join('') || `<p class="dash-empty">Brak quizów w tym module.</p>`;
+    const artRows = arts.map(a => itemRow(mod, entry, a)).join('') || `<p class="dash-empty">Brak artykułów w tym module.</p>`;
+    const quizRows = quizzes.map(q => itemRow(mod, entry, q)).join('') || `<p class="dash-empty">Brak quizów w tym module.</p>`;
 
     const idx = MODULES.indexOf(mod);
 
@@ -318,59 +304,27 @@
       <div class="module-head">
         <div class="module-head-eyebrow">Moduł ${idx + 1} / ${MODULES.length}${mod.weight != null ? ` · Waga: ${mod.weight}%` : ''}</div>
         <h1>${escapeHtml(mod.title)}</h1>
+        <a href="${itemsUrl(mod)}" onclick="navigate('${itemsUrl(mod)}');return false;">Zobacz wszystkie elementy →</a>
       </div>
       <div class="module-section">
-        <div class="module-list-header"><h2>Artykuły</h2><a href="${articlesUrl(mod)}" onclick="navigate('${articlesUrl(mod)}');return false;">Wszystkie artykuły →</a></div>
+        <div class="module-list-header"><h2>Artykuły</h2></div>
         <div class="item-list">${artRows}</div>
       </div>
       <div class="module-section">
-        <div class="module-list-header"><h2>Quizy</h2><a href="${quizzesUrl(mod)}" onclick="navigate('${quizzesUrl(mod)}');return false;">Wszystkie quizy →</a></div>
+        <div class="module-list-header"><h2>Quizy</h2></div>
         <div class="item-list">${quizRows}</div>
       </div>`;
   }
 
-  // ---------------- Articles / quizzes list pages ----------------
+  // ---------------- Items list page ----------------
 
-  function renderArticlesList(mod) {
+  function renderItemsList(mod) {
     const entry = stateEntry();
-    const arts = articlesOf(mod);
-    const rows = arts.map(a => {
-      const read = entry.articlesRead[a.id];
-      return `
-        <a class="item-row" href="${articleUrl(mod, a)}" onclick="navigate('${articleUrl(mod, a)}');return false;">
-          <span class="item-row-icon">📖</span>
-          <span class="item-row-body">
-            <span class="item-row-title">${escapeHtml(a.title)}</span>
-            <span class="item-row-meta">${read ? 'Przeczytane' : 'Nieprzeczytane'}</span>
-          </span>
-        </a>`;
-    }).join('') || `<p class="dash-empty">Brak artykułów w tym module.</p>`;
+    const rows = mod.items.map(it => itemRow(mod, entry, it)).join('') || `<p class="dash-empty">Brak elementów w tym module.</p>`;
 
     return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Artykuły' }])}
-      <div class="course-hero"><h1>Artykuły — ${escapeHtml(mod.title)}</h1></div>
-      <div class="item-list">${rows}</div>`;
-  }
-
-  function renderQuizzesList(mod) {
-    const entry = stateEntry();
-    const quizzes = quizzesOf(mod);
-    const rows = quizzes.map(q => {
-      const best = bestAttempt(moduleQuizAttempts(entry, q.id));
-      return `
-        <a class="item-row" href="${quizUrl(mod, q)}" onclick="navigate('${quizUrl(mod, q)}');return false;">
-          <span class="item-row-icon">✅</span>
-          <span class="item-row-body">
-            <span class="item-row-title">${escapeHtml(q.title)}</span>
-            <span class="item-row-meta">${q.questions.length} pytań</span>
-          </span>
-          ${pillFor(best)}
-        </a>`;
-    }).join('') || `<p class="dash-empty">Brak quizów w tym module.</p>`;
-
-    return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Quizy' }])}
-      <div class="course-hero"><h1>Quizy — ${escapeHtml(mod.title)}</h1></div>
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Elementy' }])}
+      <div class="course-hero"><h1>Elementy — ${escapeHtml(mod.title)}</h1></div>
       <div class="item-list">${rows}</div>`;
   }
 
@@ -387,11 +341,11 @@
     }
     const html = renderMarkdown(item.content);
     const quizzes = quizzesOf(mod);
-    const ctaUrl = quizzes.length === 1 ? quizUrl(mod, quizzes[0]) : quizzesUrl(mod);
+    const ctaUrl = quizzes.length === 1 ? itemUrl(mod, quizzes[0]) : itemsUrl(mod);
     const ctaLabel = quizzes.length === 1 ? 'Przejdź do quizu →' : 'Zobacz quizy modułu →';
 
     return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Artykuły', href: articlesUrl(mod) }, { label: item.title }])}
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Elementy', href: itemsUrl(mod) }, { label: item.title }])}
       <div class="module-head">
         <h1>${escapeHtml(item.title)}</h1>
       </div>
@@ -420,10 +374,10 @@
       { label: COURSE.shortTitle || COURSE.title, href: courseUrl() },
       { label: 'Moduły', href: modulesUrl() },
       { label: mod.title, href: moduleUrl(mod) },
-      { label: 'Quizy', href: quizzesUrl(mod) },
+      { label: 'Elementy', href: itemsUrl(mod) },
       { label: item.title },
     ]);
-    const backUrl = quizzesUrl(mod);
+    const backUrl = itemsUrl(mod);
 
     if (!QUIZ_SESSION || QUIZ_SESSION.itemId !== item.id) {
       if (!SETUP || SETUP.itemId !== item.id) {
@@ -501,7 +455,7 @@
     const mod = FINAL_QUIZ_ACTIVE ? null : moduleBySlug(r.moduleSlug);
     const item = FINAL_QUIZ_ACTIVE
       ? { id: 'final-quiz', title: COURSE.finalQuizTitle || 'Egzamin końcowy', questions: questionPoolFor(null, { id: 'final-quiz' }) }
-      : quizBySlug(mod, r.itemSlug);
+      : itemBySlug(mod, r.itemSlug);
 
     const pool = questionPoolFor(mod, item);
     const shuffled = shuffle(pool).slice(0, count);

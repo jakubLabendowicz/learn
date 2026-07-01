@@ -1,6 +1,6 @@
 [
   {
-    "id": "salesforce-certified-platform-administrator",
+    "id": "08ecd32a-aa72-41a0-a254-487c9b51e6e2",
     "slug": "Salesforce-Certified-Platform-Administrator",
     "title": "ADM-201 — Salesforce Certified Platform Administrator",
     "shortTitle": "ADM-201",
@@ -9,7 +9,7 @@
     "accent": "#0176d3"
   },
   {
-    "id": "zarzadzanie-projektem-informatycznym",
+    "id": "eedfc87f-faba-4651-ba7f-93468bca3c56",
     "slug": "Zarzadzanie-Projektem-Informatycznym",
     "title": "Zarządzanie Projektem Informatycznym",
     "shortTitle": "ZPiT",
