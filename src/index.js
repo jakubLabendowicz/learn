@@ -1,11 +1,19 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    let pathname = url.pathname;
 
-    // Serve /courses/<name> (no extension) by mapping it to /courses/<name>.html
-    if (url.pathname.startsWith("/courses/") && !url.pathname.endsWith(".html")) {
+    if (pathname === "/courses" || pathname === "/courses/") {
+      // Serve the course list page
+      pathname = "/courses/index.html";
+    } else if (pathname.startsWith("/courses/") && !pathname.endsWith(".html")) {
+      // Serve /courses/<name> (no extension) by mapping it to /courses/<name>.html
+      pathname = `${pathname}.html`;
+    }
+
+    if (pathname !== url.pathname) {
       const rewritten = new URL(request.url);
-      rewritten.pathname = `${url.pathname}.html`;
+      rewritten.pathname = pathname;
       return env.ASSETS.fetch(new Request(rewritten, request));
     }
 
