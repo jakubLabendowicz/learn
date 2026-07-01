@@ -153,19 +153,6 @@
   margin: 0;
 }
 
-.weightbar {
-  display: flex;
-  border-radius: 8px;
-  overflow: hidden;
-  height: 10px;
-  margin: 1.5rem 0 0.5rem;
-}
-
-.weightbar-seg {
-  height: 100%;
-  opacity: 0.85;
-}
-
 .module-list-header {
   display: flex;
   align-items: baseline;
@@ -357,6 +344,12 @@
   margin: 0 0 0.6rem;
 }
 
+.module-head-desc {
+  color: var(--text-muted);
+  font-size: 0.94rem;
+  margin: 0;
+}
+
 .module-head > a {
   font-size: 0.85rem;
   font-weight: 600;
@@ -471,6 +464,7 @@
 
 .setup-icon { font-size: 2.2rem; margin-bottom: 0.6rem; }
 .setup-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.4rem; }
+.setup-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.6rem; }
 .setup-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
 
 .setup-options {

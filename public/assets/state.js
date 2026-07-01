@@ -66,10 +66,9 @@ function learnRecordQuizAttempt(course, module, item, result) {
   const entry = learnTouchCourse(state, course);
   entry.quizAttempts.unshift({
     itemId: item.id,
-    moduleId: module ? module.id : null,
-    moduleTitle: module ? module.title : course.finalQuizTitle,
+    moduleId: module.id,
+    moduleTitle: module.title,
     itemTitle: item.title,
-    isFinal: !module,
     score: result.score,
     total: result.total,
     pct: result.pct,
@@ -86,7 +85,7 @@ function learnCourseProgress(entry) {
   if (!totalItems) return 0;
   const readCount = Object.keys(entry.articlesRead || {}).length;
   const quizzedModuleIds = new Set();
-  (entry.quizAttempts || []).forEach(a => { if (!a.isFinal) quizzedModuleIds.add(a.moduleId); });
+  (entry.quizAttempts || []).forEach(a => quizzedModuleIds.add(a.moduleId));
   const doneCount = readCount + quizzedModuleIds.size;
   return Math.min(100, Math.round((doneCount / totalItems) * 100));
 }
