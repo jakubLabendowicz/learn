@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Importuj kurs — learn</title>
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/utility-pages.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <span class="logo-dot"></span>
+      learn
+    </a>
+    <div class="nav-links">
+      <a href="/courses">Kursy</a>
+      <a href="/courses/generate">Generuj</a>
+      <a href="/courses/import">Importuj</a>
+    </div>
+  </div>
+</nav>
+
+<main class="utility-main">
+  <div class="page-header">
+    <h1>Importuj kurs</h1>
+    <p>
+      Wgraj plik <code>course.json</code> (np. wygenerowany przez AI za pomocą
+      <a href="/courses/generate">skilla</a>). Kurs zostanie zapisany lokalnie w
+      przeglądarce (local storage) i będzie działał tak samo jak wbudowane kursy —
+      łącznie z postępem, quizami i wynikami.
+    </p>
+  </div>
+
+  <div id="import-message" class="import-message"></div>
+
+  <div class="dropzone" id="dropzone">
+    <div class="dropzone-icon">📄</div>
+    <div class="dropzone-text">Kliknij, aby wybrać plik, albo przeciągnij go tutaj</div>
+    <div class="dropzone-sub">Akceptowany format: .json</div>
+    <input type="file" id="file-input" accept="application/json,.json" style="display:none">
+  </div>
+
+  <div class="page-header" style="padding-top:1rem">
+    <h1 style="font-size:1.3rem">Zaimportowane kursy</h1>
+  </div>
+  <div class="imported-list" id="imported-list"></div>
+</main>
+
+<footer class="site-footer">
+  learn — platforma kursów
+</footer>
+
+<script src="/assets/imported-courses.js"></script>
+<script>
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-input');
+const messageEl = document.getElementById('import-message');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+  fileInput.value = '';
+});
+
+function showMessage(cls, html) {
+  messageEl.className = `import-message ${cls}`;
+  messageEl.innerHTML = html;
+}
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try {
+      data = JSON.parse(reader.result);
+    } catch (e) {
+      showMessage('error', `Plik nie zawiera poprawnego JSON: ${e.message}`);
+      return;
+    }
+    const result = learnImportCourse(data);
+    if (!result.ok) {
+      showMessage('error', `Nie udało się zaimportować kursu:\n${result.error}`);
+      return;
+    }
+    showMessage('success', `Zaimportowano kurs „${data.course.title}”. <a href="/courses/${result.slug}">Rozpocznij kurs →</a>`);
+    renderImportedList();
+  };
+  reader.onerror = () => showMessage('error', 'Nie udało się odczytać pliku.');
+  reader.readAsText(file);
+}
+
+function renderImportedList() {
+  const list = document.getElementById('imported-list');
+  const courses = learnListImportedCourses();
+  if (!courses.length) {
+    list.innerHTML = `<p class="dash-empty">Nie zaimportowano jeszcze żadnego kursu.</p>`;
+    return;
+  }
+  list.innerHTML = courses.map(c => `
+    <div class="imported-card">
+      <div class="imported-card-icon">${c.icon || '📘'}</div>
+      <div class="imported-card-body">
+        <div class="imported-card-title">${c.title}</div>
+        <div class="imported-card-meta">${c.moduleCount} modułów${c.description ? ' · ' + c.description : ''}</div>
+      </div>
+      <div class="imported-card-actions">
+        <a class="icon-btn" href="/courses/${c.slug}">Otwórz</a>
+        <button class="icon-btn danger" onclick="removeImported('${c.slug}')">Usuń</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function removeImported(slug) {
+  if (!confirm('Usunąć zaimportowany kurs? Postęp i wyniki quizów dla tego kursu pozostaną zapisane, ale sam kurs zniknie z listy, dopóki nie zaimportujesz go ponownie.')) return;
+  learnDeleteImportedCourse(slug);
+  renderImportedList();
+}
+
+renderImportedList();
+</script>
+
+</body>
+</html>

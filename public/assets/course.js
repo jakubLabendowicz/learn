@@ -21,12 +21,20 @@
   let QUIZ_SESSION = null; // { itemId, phase: 'run'|'results', ...quiz state }
   let FINAL_QUIZ_ACTIVE = false;
 
-  fetch(`/courses/${courseSlug}.json`)
-    .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
-    .then(data => { boot(data); })
-    .catch(() => {
-      app.innerHTML = `<div class="course-hero"><h1>Nie znaleziono kursu</h1><p><a href="/courses">Wróć do listy kursów</a></p></div>`;
-    });
+  const imported = learnGetImportedCourse(courseSlug);
+  if (imported) {
+    // Defer to a microtask so this runs after the rest of the script has
+    // finished executing (all the const helpers below must be initialized
+    // first — the fetch() branch gets this for free since it resolves async).
+    Promise.resolve().then(() => boot(imported));
+  } else {
+    fetch(`/courses/${courseSlug}.json`)
+      .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+      .then(data => { boot(data); })
+      .catch(() => {
+        app.innerHTML = `<div class="course-hero"><h1>Nie znaleziono kursu</h1><p><a href="/courses">Wróć do listy kursów</a></p></div>`;
+      });
+  }
 
   function boot(data) {
     COURSE = data.course;
@@ -34,7 +42,8 @@
     document.title = `${COURSE.title} — learn`;
     document.documentElement.style.setProperty('--course-accent', COURSE.accent || '#4f46e5');
     document.getElementById('course-topbar-title').textContent = COURSE.shortTitle || COURSE.title;
-    document.getElementById('course-archive-link').href = `/archive/${COURSE.slug}`;
+    if (imported) document.getElementById('course-archive-wrap').style.display = 'none';
+    else document.getElementById('course-archive-link').href = `/archive/${COURSE.slug}`;
     topbar.style.display = 'block';
     footer.style.display = 'block';
 

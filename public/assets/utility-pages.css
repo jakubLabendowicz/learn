@@ -1,0 +1,158 @@
+.utility-main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem 5rem;
+}
+
+.utility-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.copy-feedback {
+  font-size: 0.85rem;
+  color: #15803d;
+  font-weight: 600;
+}
+
+.skill-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.7rem;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  margin-bottom: 3rem;
+}
+
+/* ---------- Import page ---------- */
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  margin: 1.5rem 0;
+}
+
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.dropzone-icon {
+  font-size: 2rem;
+  margin-bottom: 0.6rem;
+}
+
+.dropzone-text {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.dropzone-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.import-message {
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+.import-message.success {
+  display: block;
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.import-message.error {
+  display: block;
+  background: #fee2e2;
+  color: #b91c1c;
+  white-space: pre-wrap;
+}
+
+.import-message a {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+.imported-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.imported-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+}
+
+.imported-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.imported-card-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.imported-card-title {
+  font-weight: 700;
+  font-size: 0.94rem;
+}
+
+.imported-card-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.imported-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.icon-btn:hover { border-color: var(--accent); }
+.icon-btn.danger:hover { border-color: #dc2626; color: #dc2626; }
