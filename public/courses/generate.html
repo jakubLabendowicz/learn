@@ -59,32 +59,45 @@ dla każdego elementu — nie kopiuj tego samego identyfikatora w dwóch
 miejscach. `id` NIE jest używane w adresach URL (nie musi być czytelne) —
 do tego służy osobne pole `slug`.
 
-## Struktura pliku
+## Struktura pliku — trzy tabele, nie zagnieżdżony dokument
 
-Plik to pojedynczy obiekt JSON z dwoma polami najwyższego poziomu: `course`
-i `modules`.
+Plik to pojedynczy obiekt JSON z **trzema tablicami najwyższego poziomu**:
+`courses`, `modules`, `items` — jak trzy tabele relacyjnej bazy danych.
+Każdy rekord ma własne `id` (UUID); powiązania między tabelami to
+referencje po id, NIE zagnieżdżanie obiektów jeden w drugim:
 
-### `course` (obiekt, wymagany)
+- `course.modules[]` to lista `{ "module_id": "..." }` — referencje do
+  rekordów w tablicy `modules`, w kolejności wyświetlania.
+- `module.items[]` to lista `{ "item_id": "..." }` — referencje do
+  rekordów w tablicy `items`, w kolejności wyświetlania.
+- `item.quizes[]` (tylko dla `type: "exam"`) to lista
+  `{ "item_id": "...", "weight": n }` — referencje do rekordów `type: "quiz"`
+  w tablicy `items`.
+
+Plik zawsze opisuje DOKŁADNIE JEDEN kurs: `courses` ma jeden element, a
+`modules`/`items` zawierają WYŁĄCZNIE rekordy należące do tego kursu (nic
+spoza jego drzewa modułów/elementów).
+
+### `courses[]` (tablica, dokładnie 1 element)
 
 | Pole               | Typ           | Wymagane | Opis |
 |--------------------|---------------|----------|------|
 | `id`               | string (UUID) | tak      | Unikalny, stabilny identyfikator kursu. Używany jako klucz postępu w local storage — nie zmieniaj go po imporcie. |
-| `slug`             | string        | tak      | Slug używany w adresie URL: `/courses/{slug}`. Musi być unikalny wśród zaimportowanych kursów. |
+| `slug`             | string        | tak      | Slug używany w adresie URL: `/courses/{slug}`. |
 | `title`            | string        | tak      | Pełny tytuł kursu. Wyświetlany na stronie samego kursu (nagłówek). |
 | `shortTitle`       | string        | tak      | Skrócona wersja `title`, wyświetlana wszędzie tam, gdzie kurs pojawia się na listach (siatka kursów, pasek postępu, breadcrumbs). MUSI być realnie krótsza niż `title` — nie kopiuj tam pełnego tytułu. Dla długich tytułów użyj naturalnego skrótu/akronimu (np. „ADM-201”), a nie tylko obcięcia. |
 | `description`      | string        | tak      | Dokładny, wyczerpujący opis tego, co kurs zawiera — czego się nauczysz, ile ma modułów, jaki jest zakres materiału. Wyświetlany na stronie samego kursu. |
 | `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach kursów zamiast pełnego opisu. |
 | `icon`             | string        | tak      | Krótki tekst odznaki (2–3 znaki), np. `"PY"`. |
 | `accent`           | string        | tak      | Kolor akcentu w formacie hex, np. `"#4f46e5"`. |
+| `modules`          | tablica `{module_id}` | tak, min. 1 | Referencje do rekordów w `modules[]`, w kolejności wyświetlania. |
 
-Kurs NIE ma już własnego `passThreshold` ani `finalQuizTitle`/
-`finalQuizDescription` — próg zaliczenia jest teraz polem każdego
-quizu/egzaminu z osobna (patrz niżej), a quiz końcowy to zwykły element
-typu `"exam"` w ostatnim module, a nie osobny mechanizm.
+Kurs NIE ma własnego `passThreshold` ani `finalQuizTitle`/
+`finalQuizDescription` — próg zaliczenia jest polem każdego quizu/egzaminu
+z osobna (patrz niżej), a quiz końcowy to zwykły element typu `"exam"` w
+ostatnim module, a nie osobny mechanizm.
 
-### `modules` (tablica obiektów, wymagana, min. 1 element)
-
-Każdy moduł:
+### `modules[]` (tablica, min. 1 element)
 
 | Pole               | Typ           | Wymagane | Opis |
 |--------------------|---------------|----------|------|
@@ -96,18 +109,19 @@ Każdy moduł:
 | `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach modułów zamiast pełnego opisu. |
 | `icon`             | string        | tak      | Emoji reprezentujące moduł. |
 | `accent`           | string        | tak      | Kolor akcentu w formacie hex — nadpisuje kolor kursu tylko dla tego modułu. |
-| `items`            | tablica       | tak, min. 1 | Lista elementów należących do modułu — patrz niżej. Moduł MOŻE zawierać wiele artykułów i wiele quizów. |
+| `items`            | tablica `{item_id}` | tak, min. 1 | Referencje do rekordów w `items[]`, w kolejności wyświetlania. Moduł MOŻE zawierać wiele artykułów i wiele quizów. |
 
-**Ostatni moduł kursu musi być modułem egzaminacyjnym** — slug `exam`,
-`title`/`shortTitle` w stylu „Egzamin końcowy” / „Exam”, zawierający co
-najmniej jeden element typu `"exam"` (patrz niżej). Dobrą praktyką jest
-dodanie w tym module również artykułu „Szybka powtórka do egzaminu”
-(`type: "article"`) — zwięzłego podsumowania najważniejszych zasad i
-pułapek z KAŻDEGO modułu kursu, złożonego z realnej treści zawartej w
-artykułach kursu (nie zmyślaj nowych faktów — przepisz/skondensuj to, co
-już znajduje się w materiale źródłowym).
+**Ostatni moduł kursu (czyli ostatnia referencja w `course.modules[]`)
+musi być modułem egzaminacyjnym** — slug `exam`, `title`/`shortTitle` w
+stylu „Egzamin końcowy” / „Exam”, zawierający co najmniej jeden element
+typu `"exam"` (patrz niżej). Dobrą praktyką jest dodanie w tym module
+również artykułu „Szybka powtórka do egzaminu” (`type: "article"`) —
+zwięzłego podsumowania najważniejszych zasad i pułapek z KAŻDEGO modułu
+kursu, złożonego z realnej treści zawartej w artykułach kursu (nie zmyślaj
+nowych faktów — przepisz/skondensuj to, co już znajduje się w materiale
+źródłowym).
 
-### Elementy modułu (`items[]`)
+### `items[]` (tablica, min. 1 element)
 
 Wszystkie elementy dzielą wspólną przestrzeń adresów URL:
 `/courses/{course}/modules/{module}/items/{slug}`. Każdy element ma pole
@@ -143,7 +157,7 @@ test.
 
 | Pole            | Typ            | Wymagane | Opis |
 |-----------------|----------------|----------|------|
-| `quizes`        | tablica `{id, weight}` | tak, min. 1 | Lista quizów wchodzących w skład egzaminu. `id` to `id` istniejącego elementu `type: "quiz"` w tym samym kursie (może być w dowolnym module). `weight` to liczba (np. udział % w egzaminie) — użyj do proporcjonalnego doboru pytań; wagi wszystkich pozycji powinny sumować się do 100. |
+| `quizes`        | tablica `{item_id, weight}` | tak, min. 1 | Lista quizów wchodzących w skład egzaminu. `item_id` to `id` istniejącego elementu `type: "quiz"` w tablicy `items[]` tego kursu (może być w dowolnym module). `weight` to liczba (np. udział % w egzaminie) — użyj do proporcjonalnego doboru pytań; wagi wszystkich pozycji powinny sumować się do 100. |
 | `passThreshold` | number \| null | tak      | Próg zaliczenia całego egzaminu w %, analogicznie jak w quizie. |
 
 ### Pytania (`questions[]`)
@@ -173,7 +187,9 @@ test.
 
 ## Zasady unikalności slugów
 
-- `course.slug` musi być unikalny wśród wszystkich zaimportowanych kursów.
+- `course.slug` powinien być unikalny (jeśli koliduje z już zapisanym
+  kursem o INNYM `id`, użytkownik zobaczy dwa kursy pod tym samym adresem
+  URL — unikaj tego).
 - `module.slug` musi być unikalny w obrębie kursu.
 - `item.slug` musi być unikalny w obrębie CAŁEGO modułu, niezależnie od
   typu — artykuł, quiz i egzamin w tym samym module NIE MOGĄ mieć tego
@@ -186,16 +202,22 @@ test.
 
 ```json
 {
-  "course": {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "slug": "Przyklad-Kurs",
-    "title": "Przykładowy kurs demonstracyjny",
-    "shortTitle": "Przykład",
-    "description": "Dokładny, wyczerpujący opis tego, czego dotyczy kurs, jakie moduły zawiera i czego się nauczysz.",
-    "shortDescription": "Krótki, jednozdaniowy opis kursu do wyświetlenia na listach.",
-    "icon": "PK",
-    "accent": "#4f46e5"
-  },
+  "courses": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "slug": "Przyklad-Kurs",
+      "title": "Przykładowy kurs demonstracyjny",
+      "shortTitle": "Przykład",
+      "description": "Dokładny, wyczerpujący opis tego, czego dotyczy kurs, jakie moduły zawiera i czego się nauczysz.",
+      "shortDescription": "Krótki, jednozdaniowy opis kursu do wyświetlenia na listach.",
+      "icon": "PK",
+      "accent": "#4f46e5",
+      "modules": [
+        { "module_id": "6b1f2e3a-8c4d-4a6e-9f0b-1d2e3f4a5b6c" },
+        { "module_id": "d4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f7a" }
+      ]
+    }
+  ],
   "modules": [
     {
       "id": "6b1f2e3a-8c4d-4a6e-9f0b-1d2e3f4a5b6c",
@@ -207,50 +229,8 @@ test.
       "icon": "🚀",
       "accent": "#4f46e5",
       "items": [
-        {
-          "type": "article",
-          "id": "9c8b7a6f-5e4d-4c3b-8a29-1f0e9d8c7b6a",
-          "slug": "wprowadzenie",
-          "title": "Wprowadzenie do tematu",
-          "shortTitle": "Wprowadzenie",
-          "description": "Dokładny opis tego, co artykuł omawia — nie skrót, lecz precyzyjne streszczenie treści.",
-          "shortDescription": "Podstawowe pojęcia, które będą się przewijać przez cały kurs.",
-          "content": "# Wprowadzenie\n\nTo jest przykładowy akapit z **pogrubieniem** i *kursywą*.\n\n## Kluczowe pojęcia\n\n- Pierwszy punkt\n- Drugi punkt\n  - Punkt zagnieżdżony\n\n> Ważna uwaga w formie cytatu."
-        },
-        {
-          "type": "quiz",
-          "id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6",
-          "slug": "quiz-wprowadzenie",
-          "title": "Quiz: Wprowadzenie",
-          "shortTitle": "Quiz: Wprowadzenie",
-          "description": "Quiz sprawdzający wiedzę z modułu „Wprowadzenie” — 2 pytania jednokrotnego i wielokrotnego wyboru, próg zaliczenia 70%.",
-          "shortDescription": "2 pytania sprawdzające wiedzę z modułu „Wprowadzenie”.",
-          "passThreshold": 70,
-          "questions": [
-            {
-              "id": "f0e1d2c3-b4a5-4968-8778-9a0b1c2d3e4f",
-              "question": "Które stwierdzenie jest prawdziwe?",
-              "options": [
-                { "key": "A", "text": "Odpowiedź A" },
-                { "key": "B", "text": "Odpowiedź B (poprawna)" },
-                { "key": "C", "text": "Odpowiedź C" }
-              ],
-              "answer": ["B"],
-              "explanation": "**Poprawna odpowiedź: B.** Krótkie wyjaśnienie dlaczego.\n\n> Dodatkowa wskazówka na przyszłość."
-            },
-            {
-              "id": "2b3c4d5e-6f70-4819-9a0b-c1d2e3f4a5b7",
-              "question": "Które dwie odpowiedzi są poprawne? (pytanie wielokrotnego wyboru)",
-              "options": [
-                { "key": "A", "text": "Odpowiedź poprawna nr 1" },
-                { "key": "B", "text": "Odpowiedź błędna" },
-                { "key": "C", "text": "Odpowiedź poprawna nr 2" }
-              ],
-              "answer": ["A", "C"],
-              "explanation": "Poprawne są **A** i **C**, ponieważ:\n\n- pierwszy powód\n- drugi powód"
-            }
-          ]
-        }
+        { "item_id": "9c8b7a6f-5e4d-4c3b-8a29-1f0e9d8c7b6a" },
+        { "item_id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6" }
       ]
     },
     {
@@ -263,29 +243,77 @@ test.
       "icon": "🏁",
       "accent": "#b8862e",
       "items": [
+        { "item_id": "a1b2c3d4-5e6f-4708-9a0b-c1d2e3f4a5b8" },
+        { "item_id": "e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b" }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "9c8b7a6f-5e4d-4c3b-8a29-1f0e9d8c7b6a",
+      "type": "article",
+      "slug": "wprowadzenie",
+      "title": "Wprowadzenie do tematu",
+      "shortTitle": "Wprowadzenie",
+      "description": "Dokładny opis tego, co artykuł omawia — nie skrót, lecz precyzyjne streszczenie treści.",
+      "shortDescription": "Podstawowe pojęcia, które będą się przewijać przez cały kurs.",
+      "content": "# Wprowadzenie\n\nTo jest przykładowy akapit z **pogrubieniem** i *kursywą*.\n\n## Kluczowe pojęcia\n\n- Pierwszy punkt\n- Drugi punkt\n  - Punkt zagnieżdżony\n\n> Ważna uwaga w formie cytatu."
+    },
+    {
+      "id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6",
+      "type": "quiz",
+      "slug": "quiz-wprowadzenie",
+      "title": "Quiz: Wprowadzenie",
+      "shortTitle": "Quiz: Wprowadzenie",
+      "description": "Quiz sprawdzający wiedzę z modułu „Wprowadzenie” — 2 pytania jednokrotnego i wielokrotnego wyboru, próg zaliczenia 70%.",
+      "shortDescription": "2 pytania sprawdzające wiedzę z modułu „Wprowadzenie”.",
+      "passThreshold": 70,
+      "questions": [
         {
-          "type": "article",
-          "id": "a1b2c3d4-5e6f-4708-9a0b-c1d2e3f4a5b8",
-          "slug": "szybka-powtorka-do-egzaminu",
-          "title": "Szybka powtórka do egzaminu",
-          "shortTitle": "Powtórka",
-          "description": "Skondensowane podsumowanie kluczowych zasad i najczęstszych pułapek egzaminacyjnych wyodrębnionych z każdego modułu kursu — ostatni przegląd przed egzaminem.",
-          "shortDescription": "Skondensowane podsumowanie kluczowych zagadnień z każdego modułu przed egzaminem.",
-          "content": "# Szybka powtórka do egzaminu\n\n## Wprowadzenie\n\n- Punkt podsumowujący najważniejszą zasadę z modułu.\n- Kolejna częsta pułapka egzaminacyjna z tego modułu."
+          "id": "f0e1d2c3-b4a5-4968-8778-9a0b1c2d3e4f",
+          "question": "Które stwierdzenie jest prawdziwe?",
+          "options": [
+            { "key": "A", "text": "Odpowiedź A" },
+            { "key": "B", "text": "Odpowiedź B (poprawna)" },
+            { "key": "C", "text": "Odpowiedź C" }
+          ],
+          "answer": ["B"],
+          "explanation": "**Poprawna odpowiedź: B.** Krótkie wyjaśnienie dlaczego.\n\n> Dodatkowa wskazówka na przyszłość."
         },
         {
-          "type": "exam",
-          "id": "e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
-          "slug": "egzamin-koncowy",
-          "title": "Egzamin końcowy",
-          "shortTitle": "Final Exam",
-          "description": "Egzamin końcowy łączący pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu: Wprowadzenie (100%). Próg zaliczenia: 70%.",
-          "shortDescription": "Pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu.",
-          "passThreshold": 70,
-          "quizes": [
-            { "id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6", "weight": 100 }
-          ]
+          "id": "2b3c4d5e-6f70-4819-9a0b-c1d2e3f4a5b7",
+          "question": "Które dwie odpowiedzi są poprawne? (pytanie wielokrotnego wyboru)",
+          "options": [
+            { "key": "A", "text": "Odpowiedź poprawna nr 1" },
+            { "key": "B", "text": "Odpowiedź błędna" },
+            { "key": "C", "text": "Odpowiedź poprawna nr 2" }
+          ],
+          "answer": ["A", "C"],
+          "explanation": "Poprawne są **A** i **C**, ponieważ:\n\n- pierwszy powód\n- drugi powód"
         }
+      ]
+    },
+    {
+      "id": "a1b2c3d4-5e6f-4708-9a0b-c1d2e3f4a5b8",
+      "type": "article",
+      "slug": "szybka-powtorka-do-egzaminu",
+      "title": "Szybka powtórka do egzaminu",
+      "shortTitle": "Powtórka",
+      "description": "Skondensowane podsumowanie kluczowych zasad i najczęstszych pułapek egzaminacyjnych wyodrębnionych z każdego modułu kursu — ostatni przegląd przed egzaminem.",
+      "shortDescription": "Skondensowane podsumowanie kluczowych zagadnień z każdego modułu przed egzaminem.",
+      "content": "# Szybka powtórka do egzaminu\n\n## Wprowadzenie\n\n- Punkt podsumowujący najważniejszą zasadę z modułu.\n- Kolejna częsta pułapka egzaminacyjna z tego modułu."
+    },
+    {
+      "id": "e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
+      "type": "exam",
+      "slug": "egzamin-koncowy",
+      "title": "Egzamin końcowy",
+      "shortTitle": "Final Exam",
+      "description": "Egzamin końcowy łączący pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu: Wprowadzenie (100%). Próg zaliczenia: 70%.",
+      "shortDescription": "Pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu.",
+      "passThreshold": 70,
+      "quizes": [
+        { "item_id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6", "weight": 100 }
       ]
     }
   ]
@@ -296,10 +324,10 @@ test.
 
 1. Zapisz odpowiedź AI jako plik `.json` (dowolna nazwa, np. `moj-kurs.json`).
 2. Przejdź na stronę **/courses/import** platformy learn.
-3. Wgraj plik — kurs zostanie zapisany lokalnie w przeglądarce (local storage)
-   i natychmiast dostępny pod adresem `/courses/{slug}` z pełną
-   funkcjonalnością: przeglądanie modułów, artykuły, quizy jedno- i
-   wielokrotnego wyboru, quiz końcowy oraz śledzenie postępu.
+3. Wgraj plik — kurs zostanie zapisany lokalnie w przeglądarce (local storage,
+   w tabelach `courses`/`modules`/`items`) i natychmiast dostępny pod adresem
+   `/courses/{slug}` z pełną funkcjonalnością: przeglądanie modułów, artykuły,
+   quizy jedno- i wielokrotnego wyboru, quiz końcowy oraz śledzenie postępu.
 </pre>
 </main>
 

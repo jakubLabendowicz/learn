@@ -18,20 +18,16 @@
   let SETUP = null;
   let QUIZ_SESSION = null; // { itemId, phase: 'run'|'results', ...quiz state }
 
-  const imported = learnGetImportedCourse(courseSlug);
-  if (imported) {
-    // Defer to a microtask so this runs after the rest of the script has
-    // finished executing (all the const helpers below must be initialized
-    // first — the fetch() branch gets this for free since it resolves async).
-    Promise.resolve().then(() => boot(imported));
-  } else {
-    fetch(`/courses/${courseSlug}.json`)
-      .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
-      .then(data => { boot(data); })
-      .catch(() => {
-        app.innerHTML = `<div class="course-hero"><h1>Nie znaleziono kursu</h1><p><a href="/courses">Wróć do listy kursów</a></p></div>`;
-      });
-  }
+  // The local DB (localStorage) is the only source of course data; on
+  // first ever load it's seeded from the built-in course.json files.
+  learnEnsureSeeded().then(() => {
+    const data = learnGetCourseData(courseSlug);
+    if (!data) {
+      app.innerHTML = `<div class="course-hero"><h1>Nie znaleziono kursu</h1><p><a href="/courses">Wróć do listy kursów</a></p></div>`;
+      return;
+    }
+    boot(data);
+  });
 
   function boot(data) {
     COURSE = data.course;
@@ -39,8 +35,12 @@
     document.title = `${COURSE.title} — learn`;
     document.documentElement.style.setProperty('--course-accent', COURSE.accent || '#4f46e5');
     document.getElementById('course-topbar-title').textContent = COURSE.shortTitle || COURSE.title;
-    if (imported) document.getElementById('course-archive-wrap').style.display = 'none';
-    else document.getElementById('course-archive-link').href = `/archive/${COURSE.slug}`;
+    fetch(`/archive/${COURSE.slug}`, { method: 'HEAD' })
+      .then(r => {
+        if (r.ok) document.getElementById('course-archive-link').href = `/archive/${COURSE.slug}`;
+        else document.getElementById('course-archive-wrap').style.display = 'none';
+      })
+      .catch(() => { document.getElementById('course-archive-wrap').style.display = 'none'; });
     document.getElementById('course-topbar-export').addEventListener('click', () => learnExportCourse(COURSE.slug));
     topbar.style.display = 'block';
     footer.style.display = 'block';
@@ -338,7 +338,7 @@
 
   function examMaxQuestions(examItem) {
     return examItem.quizes.reduce((sum, ref) => {
-      const q = itemById(ref.id);
+      const q = itemById(ref.item_id);
       return sum + (q ? q.questions.length : 0);
     }, 0);
   }
@@ -351,7 +351,7 @@
     if (count >= total) {
       let all = [];
       examItem.quizes.forEach(ref => {
-        const q = itemById(ref.id);
+        const q = itemById(ref.item_id);
         if (q) all.push(...q.questions);
       });
       return shuffle(all);
@@ -359,7 +359,7 @@
     const totalWeight = examItem.quizes.reduce((s, r) => s + r.weight, 0) || 1;
     let selected = [];
     examItem.quizes.forEach(ref => {
-      const q = itemById(ref.id);
+      const q = itemById(ref.item_id);
       if (!q) return;
       const share = Math.round(count * (ref.weight / totalWeight));
       selected.push(...shuffle(q.questions).slice(0, Math.min(share, q.questions.length)));

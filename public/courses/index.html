@@ -42,37 +42,35 @@
 <script src="/assets/state.js"></script>
 <script src="/assets/imported-courses.js"></script>
 <script>
-fetch('/courses/manifest.json')
-  .then(r => r.json())
-  .then(builtIn => {
-    const state = learnLoadState();
-    const imported = learnListImportedCourses();
-    const all = builtIn.concat(imported);
-    const grid = document.getElementById('course-grid');
+(async () => {
+  await learnEnsureSeeded();
+  const state = learnLoadState();
+  const all = learnListCourses();
+  const grid = document.getElementById('course-grid');
 
-    if (!all.length) {
-      grid.innerHTML = `<p style="color:var(--text-muted)">Brak kursów. <a href="/courses/generate">Wygeneruj</a> lub <a href="/courses/import">zaimportuj</a> jeden.</p>`;
-      return;
-    }
+  if (!all.length) {
+    grid.innerHTML = `<p style="color:var(--text-muted)">Brak kursów. <a href="/courses/generate">Wygeneruj</a> lub <a href="/courses/import">zaimportuj</a> jeden.</p>`;
+    return;
+  }
 
-    grid.innerHTML = all.map(c => {
-      const entry = state.courses[c.id];
-      const pct = entry ? learnCourseProgress(entry) : 0;
-      return `
-        <div class="course-card">
-          <a class="course-card-link" href="/courses/${c.slug}">
-            <div class="course-card-icon">${c.icon || '📘'}</div>
-            <h2>${c.shortTitle || c.title}</h2>
-            <p>${c.shortDescription || ''}</p>
-            ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
-            <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
-          </a>
-          <div class="course-card-footer">
-            <button class="course-card-export" onclick="learnExportCourse('${c.slug}')">⬇ Eksportuj</button>
-          </div>
-        </div>`;
-    }).join('');
-  });
+  grid.innerHTML = all.map(c => {
+    const entry = state.courses[c.id];
+    const pct = entry ? learnCourseProgress(entry) : 0;
+    return `
+      <div class="course-card">
+        <a class="course-card-link" href="/courses/${c.slug}">
+          <div class="course-card-icon">${c.icon || '📘'}</div>
+          <h2>${c.shortTitle || c.title}</h2>
+          <p>${c.shortDescription || ''}</p>
+          ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
+          <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
+        </a>
+        <div class="course-card-footer">
+          <button class="course-card-export" onclick="learnExportCourse('${c.slug}')">⬇ Eksportuj</button>
+        </div>
+      </div>`;
+  }).join('');
+})();
 </script>
 
 </body>
