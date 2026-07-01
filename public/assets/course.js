@@ -254,7 +254,6 @@
       </div>
       <div class="module-list-header">
         <h2>Moduły</h2>
-        <a href="${modulesUrl()}" onclick="navigate('${modulesUrl()}');return false;">Wszystkie moduły →</a>
       </div>
       <div class="module-list">
         ${rows}
@@ -322,6 +321,7 @@
 
     return `
       ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title }])}
+      <button class="back-link" onclick="navigate('${courseUrl()}')">← Wróć</button>
       <div class="module-head">
         <div class="module-head-eyebrow">Moduł ${idx + 1} / ${MODULES.length}${mod.weight != null ? ` · Waga: ${mod.weight}%` : ''}</div>
         <h1>${escapeHtml(mod.title)}</h1>
@@ -356,6 +356,7 @@
 
     return `
       ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.title, href: moduleUrl(mod) }, { label: 'Elementy', href: itemsUrl(mod) }, { label: item.title }])}
+      <button class="back-link" onclick="navigate('${moduleUrl(mod)}')">← Wróć</button>
       <div class="module-head">
         <h1>${escapeHtml(item.title)}</h1>
       </div>
@@ -387,7 +388,7 @@
       { label: 'Elementy', href: itemsUrl(mod) },
       { label: item.title },
     ]);
-    const backUrl = itemsUrl(mod);
+    const backUrl = moduleUrl(mod);
 
     if (!QUIZ_SESSION || QUIZ_SESSION.itemId !== item.id) {
       if (!SETUP || SETUP.itemId !== item.id) {
