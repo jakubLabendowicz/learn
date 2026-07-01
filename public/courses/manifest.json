@@ -4,7 +4,7 @@
     "slug": "Salesforce-Certified-Platform-Administrator",
     "title": "ADM-201 — Salesforce Certified Platform Administrator",
     "shortTitle": "ADM-201",
-    "description": "Kurs przygotowawczy do egzaminu Salesforce Certified Platform Administrator.",
+    "shortDescription": "Kurs przygotowawczy do egzaminu Salesforce Certified Platform Administrator.",
     "icon": "SF",
     "accent": "#0176d3"
   },
@@ -13,7 +13,7 @@
     "slug": "Zarzadzanie-Projektem-Informatycznym",
     "title": "Zarządzanie Projektem Informatycznym",
     "shortTitle": "ZPiT",
-    "description": "Ścieżka nauki obejmująca Scrum, Kanban, EVM i wskaźniki finansowe projektu.",
+    "shortDescription": "Ścieżka nauki obejmująca Scrum, Kanban, EVM i wskaźniki finansowe projektu.",
     "icon": "ZP",
     "accent": "#3182ce"
   }

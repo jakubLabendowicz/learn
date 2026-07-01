@@ -24,6 +24,7 @@ function learnTouchCourse(state, course) {
       id: course.id,
       slug: course.slug,
       title: course.title,
+      shortTitle: course.shortTitle,
       icon: course.icon,
       accent: course.accent,
       firstVisitedAt: now,
@@ -36,6 +37,7 @@ function learnTouchCourse(state, course) {
     {
       slug: course.slug,
       title: course.title,
+      shortTitle: course.shortTitle,
       icon: course.icon,
       accent: course.accent,
       lastVisitedAt: now,
@@ -55,6 +57,7 @@ function learnMarkArticleRead(course, module, item) {
     moduleId: module.id,
     moduleTitle: module.title,
     itemTitle: item.title,
+    itemShortTitle: item.shortTitle,
     date: new Date().toISOString(),
   };
   learnSaveState(state);
@@ -69,6 +72,7 @@ function learnRecordQuizAttempt(course, module, item, result) {
     moduleId: module.id,
     moduleTitle: module.title,
     itemTitle: item.title,
+    itemShortTitle: item.shortTitle,
     score: result.score,
     total: result.total,
     pct: result.pct,
@@ -103,10 +107,12 @@ function learnRecentModules(state, limit) {
       events.push({
         courseId: c.id,
         courseTitle: c.title,
+        courseShortTitle: c.shortTitle,
         courseSlug: c.slug,
         moduleId: a.moduleId,
         moduleTitle: a.moduleTitle,
         itemTitle: a.itemTitle,
+        itemShortTitle: a.itemShortTitle,
         date: a.date,
       });
     });
@@ -119,7 +125,7 @@ function learnRecentResults(state, limit) {
   const events = [];
   Object.values(state.courses).forEach(c => {
     (c.quizAttempts || []).forEach(a => {
-      events.push(Object.assign({ courseId: c.id, courseTitle: c.title, courseSlug: c.slug }, a));
+      events.push(Object.assign({ courseId: c.id, courseTitle: c.title, courseShortTitle: c.shortTitle, courseSlug: c.slug }, a));
     });
   });
   events.sort((a, b) => new Date(b.date) - new Date(a.date));

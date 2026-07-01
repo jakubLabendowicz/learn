@@ -62,8 +62,8 @@ fetch('/courses/manifest.json')
         <div class="course-card">
           <a class="course-card-link" href="/courses/${c.slug}">
             <div class="course-card-icon">${c.icon || '📘'}</div>
-            <h2>${c.title}</h2>
-            <p>${c.description || ''}</p>
+            <h2>${c.shortTitle || c.title}</h2>
+            <p>${c.shortDescription || ''}</p>
             ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
             <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
           </a>

@@ -50,7 +50,7 @@
 
     const state = learnLoadState();
     learnTouchCourse(state, {
-      id: COURSE.id, slug: COURSE.slug, title: COURSE.title, icon: COURSE.icon,
+      id: COURSE.id, slug: COURSE.slug, title: COURSE.title, shortTitle: COURSE.shortTitle, icon: COURSE.icon,
       accent: COURSE.accent, totalArticles, totalQuizzes,
     });
     learnSaveState(state);
@@ -207,7 +207,7 @@
         <div class="module-num"${numStyle}>${m.icon || String(idx + 1).padStart(2, '0')}</div>
         <div class="module-row-body">
           <div class="module-row-title">${escapeHtml(m.shortTitle || m.title)}</div>
-          <div class="module-row-desc">${escapeHtml(m.description || '')}</div>
+          <div class="module-row-desc">${escapeHtml(m.shortDescription || '')}</div>
         </div>
       </div>`;
   }
@@ -262,7 +262,7 @@
         <span class="item-row-icon">${iconForType(it.type)}</span>
         <span class="item-row-body">
           <span class="item-row-title">${escapeHtml(it.shortTitle || it.title)}</span>
-          <span class="item-row-desc">${escapeHtml(it.description || '')}</span>
+          <span class="item-row-desc">${escapeHtml(it.shortDescription || '')}</span>
         </span>
         ${itemStatus(entry, it)}
       </a>`;
@@ -303,7 +303,7 @@
     const alreadyRead = !!entry.articlesRead[item.id];
     if (!alreadyRead) {
       learnMarkArticleRead(
-        { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
+        { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, shortTitle: COURSE.shortTitle, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
         mod, item
       );
     }
@@ -578,7 +578,7 @@
 
     const entry = stateEntry();
     learnRecordQuizAttempt(
-      { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
+      { id: COURSE.id, slug: COURSE.slug, title: COURSE.title, shortTitle: COURSE.shortTitle, icon: COURSE.icon, accent: COURSE.accent, totalArticles: entry.totalArticles, totalQuizzes: entry.totalQuizzes },
       mod, item, { score: QUIZ_SESSION.score, total, pct }
     );
 

@@ -66,15 +66,16 @@ i `modules`.
 
 ### `course` (obiekt, wymagany)
 
-| Pole          | Typ           | Wymagane | Opis |
-|---------------|---------------|----------|------|
-| `id`          | string (UUID) | tak      | Unikalny, stabilny identyfikator kursu. Używany jako klucz postępu w local storage — nie zmieniaj go po imporcie. |
-| `slug`        | string        | tak      | Slug używany w adresie URL: `/courses/{slug}`. Musi być unikalny wśród zaimportowanych kursów. |
-| `title`       | string        | tak      | Pełny tytuł kursu. |
-| `shortTitle`  | string        | tak      | Krótka nazwa wyświetlana w górnym pasku postępu. |
-| `description` | string        | tak      | Krótki opis kursu (1 akapit). |
-| `icon`        | string        | tak      | Krótki tekst odznaki (2–3 znaki), np. `"PY"`. |
-| `accent`      | string        | tak      | Kolor akcentu w formacie hex, np. `"#4f46e5"`. |
+| Pole               | Typ           | Wymagane | Opis |
+|--------------------|---------------|----------|------|
+| `id`               | string (UUID) | tak      | Unikalny, stabilny identyfikator kursu. Używany jako klucz postępu w local storage — nie zmieniaj go po imporcie. |
+| `slug`             | string        | tak      | Slug używany w adresie URL: `/courses/{slug}`. Musi być unikalny wśród zaimportowanych kursów. |
+| `title`            | string        | tak      | Pełny tytuł kursu. Wyświetlany na stronie samego kursu (nagłówek). |
+| `shortTitle`       | string        | tak      | Skrócona wersja `title`, wyświetlana wszędzie tam, gdzie kurs pojawia się na listach (siatka kursów, pasek postępu, breadcrumbs). MUSI być realnie krótsza niż `title` — nie kopiuj tam pełnego tytułu. Dla długich tytułów użyj naturalnego skrótu/akronimu (np. „ADM-201”), a nie tylko obcięcia. |
+| `description`      | string        | tak      | Dokładny, wyczerpujący opis tego, co kurs zawiera — czego się nauczysz, ile ma modułów, jaki jest zakres materiału. Wyświetlany na stronie samego kursu. |
+| `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach kursów zamiast pełnego opisu. |
+| `icon`             | string        | tak      | Krótki tekst odznaki (2–3 znaki), np. `"PY"`. |
+| `accent`           | string        | tak      | Kolor akcentu w formacie hex, np. `"#4f46e5"`. |
 
 Kurs NIE ma już własnego `passThreshold` ani `finalQuizTitle`/
 `finalQuizDescription` — próg zaliczenia jest teraz polem każdego
@@ -85,16 +86,17 @@ typu `"exam"` w ostatnim module, a nie osobny mechanizm.
 
 Każdy moduł:
 
-| Pole          | Typ           | Wymagane | Opis |
-|---------------|---------------|----------|------|
-| `id`          | string (UUID) | tak      | Unikalny identyfikator modułu. |
-| `slug`        | string        | tak      | Slug modułu w URL: `/courses/{course}/modules/{slug}`. Unikalny w obrębie kursu. |
-| `title`       | string        | tak      | Tytuł modułu. |
-| `shortTitle`  | string        | tak      | Krótka nazwa modułu (np. do nawigacji/breadcrumbs). |
-| `description` | string        | tak      | Krótki opis modułu (1 zdanie/akapit). |
-| `icon`        | string        | tak      | Emoji reprezentujące moduł. |
-| `accent`      | string        | tak      | Kolor akcentu w formacie hex — nadpisuje kolor kursu tylko dla tego modułu. |
-| `items`       | tablica       | tak, min. 1 | Lista elementów należących do modułu — patrz niżej. Moduł MOŻE zawierać wiele artykułów i wiele quizów. |
+| Pole               | Typ           | Wymagane | Opis |
+|--------------------|---------------|----------|------|
+| `id`               | string (UUID) | tak      | Unikalny identyfikator modułu. |
+| `slug`             | string        | tak      | Slug modułu w URL: `/courses/{course}/modules/{slug}`. Unikalny w obrębie kursu. |
+| `title`            | string        | tak      | Pełny tytuł modułu. Wyświetlany na stronie samego modułu (nagłówek). |
+| `shortTitle`       | string        | tak      | Skrócona wersja `title`, wyświetlana na listach modułów (strona kursu, lista modułów, breadcrumbs). MUSI być realnie krótsza niż `title` dla długich tytułów — nie kopiuj tam pełnego tytułu bez zmian. |
+| `description`      | string        | tak      | Dokładny opis tego, co moduł obejmuje — konkretne tematy/podrozdziały poruszane w module. Wyświetlany na stronie samego modułu. |
+| `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach modułów zamiast pełnego opisu. |
+| `icon`             | string        | tak      | Emoji reprezentujące moduł. |
+| `accent`           | string        | tak      | Kolor akcentu w formacie hex — nadpisuje kolor kursu tylko dla tego modułu. |
+| `items`            | tablica       | tak, min. 1 | Lista elementów należących do modułu — patrz niżej. Moduł MOŻE zawierać wiele artykułów i wiele quizów. |
 
 **Ostatni moduł kursu musi być modułem egzaminacyjnym** — slug `exam`,
 `title`/`shortTitle` w stylu „Egzamin końcowy” / „Exam”, zawierający co
@@ -113,13 +115,14 @@ Wszystkie elementy dzielą wspólną przestrzeń adresów URL:
 
 **Wspólne dla wszystkich typów:**
 
-| Pole          | Typ           | Wymagane | Opis |
-|---------------|---------------|----------|------|
-| `id`          | string (UUID) | tak      | Unikalny identyfikator elementu. |
-| `slug`        | string        | tak      | Unikalny WŚRÓD WSZYSTKICH ELEMENTÓW tego modułu, niezależnie od typu. URL: `/courses/{course}/modules/{module}/items/{slug}`. |
-| `title`       | string        | tak      | Pełny tytuł elementu. |
-| `shortTitle`  | string        | tak      | Krótka nazwa (nawigacja, breadcrumbs, prev/next). |
-| `description` | string        | tak      | Krótki opis elementu (1 zdanie), wyświetlany pod tytułem na stronie elementu. |
+| Pole               | Typ           | Wymagane | Opis |
+|--------------------|---------------|----------|------|
+| `id`               | string (UUID) | tak      | Unikalny identyfikator elementu. |
+| `slug`             | string        | tak      | Unikalny WŚRÓD WSZYSTKICH ELEMENTÓW tego modułu, niezależnie od typu. URL: `/courses/{course}/modules/{module}/items/{slug}`. |
+| `title`            | string        | tak      | Pełny tytuł elementu. Wyświetlany na stronie samego elementu (nagłówek). |
+| `shortTitle`       | string        | tak      | Skrócona wersja `title`, wyświetlana na listach elementów (strona modułu, lista elementów, nawigacja prev/next). MUSI być realnie krótsza niż `title` dla długich tytułów — nie kopiuj tam pełnego tytułu bez zmian. |
+| `description`      | string        | tak      | Dokładny opis tego, co konkretnie zawiera element — dla artykułu: jakie zagadnienia porusza; dla quizu/egzaminu: z czego dokładnie się składa. Wyświetlany pod tytułem na stronie samego elementu. |
+| `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach elementów zamiast pełnego opisu. |
 
 **Artykuł (`type: "article"`):**
 
@@ -185,7 +188,8 @@ test.
     "slug": "Przyklad-Kurs",
     "title": "Przykładowy kurs demonstracyjny",
     "shortTitle": "Przykład",
-    "description": "Krótki opis tego, czego dotyczy kurs.",
+    "description": "Dokładny, wyczerpujący opis tego, czego dotyczy kurs, jakie moduły zawiera i czego się nauczysz.",
+    "shortDescription": "Krótki, jednozdaniowy opis kursu do wyświetlenia na listach.",
     "icon": "PK",
     "accent": "#4f46e5"
   },
@@ -195,7 +199,8 @@ test.
       "slug": "modul-1",
       "title": "Wprowadzenie",
       "shortTitle": "Wprowadzenie",
-      "description": "Podstawowe pojęcia i pierwszy quiz sprawdzający.",
+      "description": "Dokładny opis tematów poruszanych w module — konkretne zagadnienia i podrozdziały.",
+      "shortDescription": "Podstawowe pojęcia i pierwszy quiz sprawdzający.",
       "icon": "🚀",
       "accent": "#4f46e5",
       "items": [
@@ -205,7 +210,8 @@ test.
           "slug": "wprowadzenie",
           "title": "Wprowadzenie do tematu",
           "shortTitle": "Wprowadzenie",
-          "description": "Podstawowe pojęcia, które będą się przewijać przez cały kurs.",
+          "description": "Dokładny opis tego, co artykuł omawia — nie skrót, lecz precyzyjne streszczenie treści.",
+          "shortDescription": "Podstawowe pojęcia, które będą się przewijać przez cały kurs.",
           "content": "# Wprowadzenie\n\nTo jest przykładowy akapit z **pogrubieniem** i *kursywą*.\n\n## Kluczowe pojęcia\n\n- Pierwszy punkt\n- Drugi punkt\n  - Punkt zagnieżdżony\n\n> Ważna uwaga w formie cytatu."
         },
         {
@@ -214,7 +220,8 @@ test.
           "slug": "quiz-wprowadzenie",
           "title": "Quiz: Wprowadzenie",
           "shortTitle": "Quiz: Wprowadzenie",
-          "description": "2 pytania sprawdzające wiedzę z modułu „Wprowadzenie”.",
+          "description": "Quiz sprawdzający wiedzę z modułu „Wprowadzenie” — 2 pytania jednokrotnego i wielokrotnego wyboru, próg zaliczenia 70%.",
+          "shortDescription": "2 pytania sprawdzające wiedzę z modułu „Wprowadzenie”.",
           "passThreshold": 70,
           "questions": [
             {
@@ -248,7 +255,8 @@ test.
       "slug": "exam",
       "title": "Egzamin końcowy",
       "shortTitle": "Exam",
-      "description": "Powtórka kluczowych zagadnień i symulacja pełnego egzaminu.",
+      "description": "Powtórka kluczowych zagadnień ze wszystkich modułów kursu i symulacja pełnego egzaminu końcowego.",
+      "shortDescription": "Powtórka kluczowych zagadnień i symulacja pełnego egzaminu.",
       "icon": "🏁",
       "accent": "#b8862e",
       "items": [
@@ -258,7 +266,8 @@ test.
           "slug": "szybka-powtorka-do-egzaminu",
           "title": "Szybka powtórka do egzaminu",
           "shortTitle": "Powtórka",
-          "description": "Skondensowane podsumowanie kluczowych zagadnień z każdego modułu przed egzaminem.",
+          "description": "Skondensowane podsumowanie kluczowych zasad i najczęstszych pułapek egzaminacyjnych wyodrębnionych z każdego modułu kursu — ostatni przegląd przed egzaminem.",
+          "shortDescription": "Skondensowane podsumowanie kluczowych zagadnień z każdego modułu przed egzaminem.",
           "content": "# Szybka powtórka do egzaminu\n\n## Wprowadzenie\n\n- Punkt podsumowujący najważniejszą zasadę z modułu.\n- Kolejna częsta pułapka egzaminacyjna z tego modułu."
         },
         {
@@ -267,7 +276,8 @@ test.
           "slug": "egzamin-koncowy",
           "title": "Egzamin końcowy",
           "shortTitle": "Final Exam",
-          "description": "Pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu.",
+          "description": "Egzamin końcowy łączący pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu: Wprowadzenie (100%). Próg zaliczenia: 70%.",
+          "shortDescription": "Pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu.",
           "passThreshold": 70,
           "quizes": [
             { "id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6", "weight": 100 }
