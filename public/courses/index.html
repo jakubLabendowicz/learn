@@ -16,8 +16,6 @@
     </a>
     <div class="nav-links">
       <a href="/courses">Kursy</a>
-      <a href="/courses/generate">Generuj</a>
-      <a href="/courses/import">Importuj</a>
     </div>
   </div>
 </nav>
@@ -25,7 +23,11 @@
 <main>
   <div class="page-header">
     <h1>Dostępne kursy</h1>
-    <p>Wybierz kurs, aby rozpocząć naukę, albo <a href="/courses/generate">wygeneruj</a> i <a href="/courses/import">zaimportuj</a> własny.</p>
+    <p>Wybierz kurs, aby rozpocząć naukę, albo wygeneruj i zaimportuj własny.</p>
+    <div class="page-header-actions">
+      <a class="btn-secondary" href="/courses/generate">✨ Generuj</a>
+      <a class="btn-secondary" href="/courses/import">⬆ Importuj</a>
+    </div>
   </div>
 
   <div class="course-grid" id="course-grid">
@@ -57,13 +59,18 @@ fetch('/courses/manifest.json')
       const entry = state.courses[c.id];
       const pct = entry ? learnCourseProgress(entry) : 0;
       return `
-        <a class="course-card" href="/courses/${c.slug}">
-          <div class="course-card-icon">${c.icon || '📘'}</div>
-          <h2>${c.title}</h2>
-          <p>${c.description || ''}</p>
-          ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
-          <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
-        </a>`;
+        <div class="course-card">
+          <a class="course-card-link" href="/courses/${c.slug}">
+            <div class="course-card-icon">${c.icon || '📘'}</div>
+            <h2>${c.title}</h2>
+            <p>${c.description || ''}</p>
+            ${entry ? `<div style="font-size:0.78rem;font-weight:700;color:var(--accent)">${pct}% ukończone</div>` : ''}
+            <span class="course-card-cta">${entry ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
+          </a>
+          <div class="course-card-footer">
+            <button class="course-card-export" onclick="learnExportCourse('${c.slug}')">⬇ Eksportuj</button>
+          </div>
+        </div>`;
     }).join('');
   });
 </script>

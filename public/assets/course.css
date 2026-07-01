@@ -65,6 +65,23 @@
   transition: width 0.3s ease;
 }
 
+.course-topbar-export {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.course-topbar-export:hover {
+  color: var(--course-accent);
+  border-color: var(--course-accent);
+}
+
 /* ---------- Breadcrumbs ---------- */
 
 .breadcrumbs {
