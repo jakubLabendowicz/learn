@@ -53,7 +53,22 @@
 </footer>
 
 <script src="/assets/storage.js"></script>
-<script src="/assets/imported-courses.js"></script>
+<script src="/assets/dao.js"></script>
+<script src="/assets/repository.js"></script>
+<script src="/assets/data/question.js"></script>
+<script src="/assets/data/question-set.js"></script>
+<script src="/assets/data/quiz-question-set.js"></script>
+<script src="/assets/data/article.js"></script>
+<script src="/assets/data/quiz.js"></script>
+<script src="/assets/data/module.js"></script>
+<script src="/assets/data/course.js"></script>
+<script src="/assets/data/user.js"></script>
+<script src="/assets/data/user-course-activity.js"></script>
+<script src="/assets/data/user-module-activity.js"></script>
+<script src="/assets/data/user-article-activity.js"></script>
+<script src="/assets/data/user-quiz-activity.js"></script>
+<script src="/assets/data/user-quiz-attempt.js"></script>
+<script src="/assets/seed.js"></script>
 <script>
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('file-input');
@@ -87,7 +102,7 @@ function handleFile(file) {
       showMessage('error', `Plik nie zawiera poprawnego JSON: ${e.message}`);
       return;
     }
-    const result = learnImportCourse(data);
+    const result = courseRepository.importCourse(data);
     if (!result.ok) {
       showMessage('error', `Nie udało się zaimportować kursu:\n${result.error}`);
       return;
@@ -102,7 +117,7 @@ function handleFile(file) {
 
 function renderImportedList() {
   const list = document.getElementById('imported-list');
-  const courses = learnListCourses();
+  const courses = courseRepository.listSummaries();
   if (!courses.length) {
     list.innerHTML = `<p class="dash-empty">Brak kursów. Zaimportuj plik powyżej.</p>`;
     return;
@@ -124,7 +139,7 @@ function renderImportedList() {
 
 function removeImported(slug) {
   if (!confirm('Usunąć ten kurs? Postęp i wyniki quizów pozostaną zapisane, ale sam kurs zniknie z listy, dopóki nie zaimportujesz go ponownie.')) return;
-  learnDeleteCourse(slug);
+  courseRepository.deleteBySlug(slug);
   renderImportedList();
 }
 

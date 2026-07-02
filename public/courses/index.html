@@ -41,13 +41,39 @@
 </footer>
 
 <script src="/assets/storage.js"></script>
-<script src="/assets/state.js"></script>
-<script src="/assets/imported-courses.js"></script>
+<script src="/assets/dao.js"></script>
+<script src="/assets/repository.js"></script>
+<script src="/assets/data/question.js"></script>
+<script src="/assets/data/question-set.js"></script>
+<script src="/assets/data/quiz-question-set.js"></script>
+<script src="/assets/data/article.js"></script>
+<script src="/assets/data/quiz.js"></script>
+<script src="/assets/data/module.js"></script>
+<script src="/assets/data/course.js"></script>
+<script src="/assets/data/user.js"></script>
+<script src="/assets/data/user-course-activity.js"></script>
+<script src="/assets/data/user-module-activity.js"></script>
+<script src="/assets/data/user-article-activity.js"></script>
+<script src="/assets/data/user-quiz-activity.js"></script>
+<script src="/assets/data/user-quiz-attempt.js"></script>
+<script src="/assets/seed.js"></script>
 <script>
+function downloadCourseExport(slug) {
+  const data = courseRepository.buildExportData(slug);
+  if (!data) { alert('Nie udało się znaleźć kursu do eksportu.'); return; }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${slug}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 (async () => {
   await learnEnsureSeeded();
-  const user = learnCurrentUser();
-  const all = learnListCourses();
+  const user = userRepository.current();
+  const all = courseRepository.listSummaries();
   const grid = document.getElementById('course-grid');
 
   if (!all.length) {
@@ -56,8 +82,8 @@
   }
 
   grid.innerHTML = all.map(c => {
-    const visited = learnUserCourseRow(user.id, c.id);
-    const pct = visited ? learnCourseProgress(user.id, c.id) : 0;
+    const visited = userCourseActivityRepository.forUserAndCourse(user.id, c.id);
+    const pct = visited ? courseRepository.getProgress(user.id, c.id) : 0;
     return `
       <div class="course-card">
         <a class="course-card-link" href="/courses/${c.slug}">
@@ -68,7 +94,7 @@
           <span class="course-card-cta">${visited ? 'Kontynuuj kurs →' : 'Rozpocznij kurs →'}</span>
         </a>
         <div class="course-card-footer">
-          <button class="course-card-export" onclick="learnExportCourse('${c.slug}')">⬇ Eksportuj</button>
+          <button class="course-card-export" onclick="downloadCourseExport('${c.slug}')">⬇ Eksportuj</button>
         </div>
       </div>`;
   }).join('');

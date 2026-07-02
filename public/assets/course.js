@@ -25,8 +25,8 @@
   // The local DB (localStorage) is the only source of course data; on
   // first ever load it's seeded from the built-in course.json files.
   learnEnsureSeeded().then(() => {
-    CURRENT_USER = learnCurrentUser();
-    const data = learnGetCourseData(courseSlug);
+    CURRENT_USER = userRepository.current();
+    const data = courseRepository.getCourseData(courseSlug);
     if (!data) {
       app.innerHTML = `<div class="course-hero"><h1>Nie znaleziono kursu</h1><p><a href="/courses">Wróć do listy kursów</a></p></div>`;
       return;
@@ -45,11 +45,11 @@
         else document.getElementById('course-archive-wrap').style.display = 'none';
       })
       .catch(() => { document.getElementById('course-archive-wrap').style.display = 'none'; });
-    document.getElementById('course-topbar-export').addEventListener('click', () => learnExportCourse(COURSE.slug));
+    document.getElementById('course-topbar-export').addEventListener('click', () => downloadCourseExport(COURSE.slug));
     topbar.style.display = 'block';
     footer.style.display = 'block';
 
-    const userCourse = learnTouchUserCourse(CURRENT_USER.id, COURSE.id);
+    const userCourse = userCourseActivityRepository.touch(CURRENT_USER.id, COURSE.id);
     document.documentElement.style.setProperty('--course-accent', userCourse.customAccent || COURSE.accent || '#4f46e5');
 
     window.addEventListener('popstate', () => renderRoute());
@@ -57,9 +57,21 @@
   }
 
   function updateTopbar() {
-    const pct = learnCourseProgress(CURRENT_USER.id, COURSE.id);
+    const pct = courseRepository.getProgress(CURRENT_USER.id, COURSE.id);
     document.getElementById('course-topbar-pct').textContent = pct + '% ukończone';
     document.getElementById('course-topbar-bar-fill').style.width = pct + '%';
+  }
+
+  function downloadCourseExport(slug) {
+    const data = courseRepository.buildExportData(slug);
+    if (!data) { alert('Nie udało się znaleźć kursu do eksportu.'); return; }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${slug}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   function moduleBySlug(slug) { return MODULES.find(m => m.slug === slug); }
@@ -143,7 +155,7 @@
     const mod = r.moduleSlug ? moduleBySlug(r.moduleSlug) : null;
     if (!mod) { app.innerHTML = renderNotFound('moduł'); updateTopbar(); return; }
     if (lastTouchedModuleId !== mod.id) {
-      learnTouchUserModule(CURRENT_USER.id, mod.id);
+      userModuleActivityRepository.touch(CURRENT_USER.id, mod.id);
       lastTouchedModuleId = mod.id;
     }
 
@@ -153,7 +165,7 @@
       const article = articleBySlug(mod, r.itemSlug);
       if (!article) { app.innerHTML = renderNotFound('artykuł'); updateTopbar(); return; }
       if (lastTouchedArticleId !== article.id) {
-        learnTouchUserArticle(CURRENT_USER.id, article.id);
+        userArticleActivityRepository.touch(CURRENT_USER.id, article.id);
         lastTouchedArticleId = article.id;
       }
       app.innerHTML = renderArticlePage(mod, article);
@@ -167,7 +179,7 @@
       // Touched once per navigation (not on every re-render during a quiz
       // session) so answering questions doesn't spam localStorage writes.
       if (lastTouchedQuizId !== quiz.id) {
-        learnTouchUserQuiz(CURRENT_USER.id, quiz.id);
+        userQuizActivityRepository.touch(CURRENT_USER.id, quiz.id);
         lastTouchedQuizId = quiz.id;
       }
       renderQuizRoute(mod, quiz);
@@ -198,10 +210,10 @@
   // shown when there's no read/attempt yet.
   function itemStatus(kind, it) {
     if (kind === 'article') {
-      if (!learnHasVisitedArticle(CURRENT_USER.id, it.id)) return '';
+      if (!userArticleActivityRepository.hasVisited(CURRENT_USER.id, it.id)) return '';
       return `<span class="pct-pill good">✓</span>`;
     }
-    const best = learnBestAttempt(learnQuizAttemptsFor(CURRENT_USER.id, it.id));
+    const best = userQuizAttemptRepository.best(userQuizAttemptRepository.forQuiz(CURRENT_USER.id, it.id));
     if (!best) return '';
     const cls = it.passThreshold != null ? (best.pct >= it.passThreshold ? 'good' : 'bad') : '';
     return `<span class="pct-pill ${cls}">${best.pct}%</span>`;
@@ -349,18 +361,8 @@
     return shuffle(selected);
   }
 
-  // A question's options carry no fixed "key" — the display letter (A, B,
-  // C…) is derived from the option's position in its own (stable, stored)
-  // options array, so the same option always shows the same letter
-  // regardless of the shuffled on-screen order.
-  function optionLabel(q, optionId) {
-    const idx = q.options.findIndex(o => o.id === optionId);
-    return String.fromCharCode(65 + Math.max(idx, 0));
-  }
-
-  function correctOptionIds(q) {
-    return q.options.filter(o => o.correct).map(o => o.id);
-  }
+  const optionLabel = (q, optionId) => questionRepository.optionLabel(q, optionId);
+  const correctOptionIds = q => questionRepository.correctOptionIds(q);
 
   function renderQuizRoute(mod, quiz) {
     const crumbs = breadcrumbs([
@@ -570,7 +572,7 @@
     const total = QUIZ_SESSION.questions.length;
     const pct = Math.round((QUIZ_SESSION.score / total) * 100);
 
-    learnRecordQuizAttempt(CURRENT_USER.id, QUIZ_SESSION.quizId, {
+    userQuizAttemptRepository.record(CURRENT_USER.id, QUIZ_SESSION.quizId, {
       answers: QUIZ_SESSION.answers, score: QUIZ_SESSION.score, total, pct,
     });
 

@@ -37,18 +37,32 @@
 </footer>
 
 <script src="/assets/storage.js"></script>
-<script src="/assets/state.js"></script>
-<script src="/assets/imported-courses.js"></script>
+<script src="/assets/dao.js"></script>
+<script src="/assets/repository.js"></script>
+<script src="/assets/data/question.js"></script>
+<script src="/assets/data/question-set.js"></script>
+<script src="/assets/data/quiz-question-set.js"></script>
+<script src="/assets/data/article.js"></script>
+<script src="/assets/data/quiz.js"></script>
+<script src="/assets/data/module.js"></script>
+<script src="/assets/data/course.js"></script>
+<script src="/assets/data/user.js"></script>
+<script src="/assets/data/user-course-activity.js"></script>
+<script src="/assets/data/user-module-activity.js"></script>
+<script src="/assets/data/user-article-activity.js"></script>
+<script src="/assets/data/user-quiz-activity.js"></script>
+<script src="/assets/data/user-quiz-attempt.js"></script>
+<script src="/assets/seed.js"></script>
 <script>
 (async () => {
   await learnEnsureSeeded();
-  const user = learnCurrentUser();
+  const user = userRepository.current();
   const dashboard = document.getElementById('dashboard');
-  const courses = learnRecentCourses(user.id, 4);
+  const courses = userCourseActivityRepository.recentCourses(user.id, 4);
   if (!courses.length) return; // first-time visitor: keep the page minimal
 
-  const modules = learnRecentModules(user.id, 5);
-  const results = learnRecentResults(user.id, 5);
+  const modules = userArticleActivityRepository.recentArticles(user.id, 5);
+  const results = userQuizAttemptRepository.recentResults(user.id, 5);
   const fmtDate = iso => new Date(iso).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' });
 
   const courseCards = courses.map(c => `
