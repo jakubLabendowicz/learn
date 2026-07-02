@@ -49,8 +49,22 @@
 </footer>
 
 <script src="/assets/storage.js"></script>
-<script src="/assets/state.js"></script>
-<script src="/assets/imported-courses.js"></script>
+<script src="/assets/dao.js"></script>
+<script src="/assets/repository.js"></script>
+<script src="/assets/data/question.js"></script>
+<script src="/assets/data/question-set.js"></script>
+<script src="/assets/data/quiz-question-set.js"></script>
+<script src="/assets/data/article.js"></script>
+<script src="/assets/data/quiz.js"></script>
+<script src="/assets/data/module.js"></script>
+<script src="/assets/data/course.js"></script>
+<script src="/assets/data/user.js"></script>
+<script src="/assets/data/user-course-activity.js"></script>
+<script src="/assets/data/user-module-activity.js"></script>
+<script src="/assets/data/user-article-activity.js"></script>
+<script src="/assets/data/user-quiz-activity.js"></script>
+<script src="/assets/data/user-quiz-attempt.js"></script>
+<script src="/assets/seed.js"></script>
 <script>
 let USER = null;
 
@@ -115,17 +129,16 @@ function saveEdit() {
     email: document.getElementById('edit-email').value.trim(),
     bio: document.getElementById('edit-bio').value.trim(),
   };
-  USER = learnUpdateUser(USER.id, patch);
+  USER = userRepository.update(USER.id, patch);
   toggleEdit(false);
   renderCard();
 }
 window.saveEdit = saveEdit;
 
 function renderStats() {
-  const db = learnLoadDB();
-  const coursesStarted = db.userCourseActivities.filter(r => r.userId === USER.id).length;
-  const articlesRead = db.userArticleActivities.filter(r => r.userId === USER.id).length;
-  const attempts = db.userQuizAttempts.filter(r => r.userId === USER.id);
+  const coursesStarted = userCourseActivityRepository.count(r => r.userId === USER.id);
+  const articlesRead = userArticleActivityRepository.count(r => r.userId === USER.id);
+  const attempts = userQuizAttemptRepository.where(r => r.userId === USER.id);
   const avgPct = attempts.length ? Math.round(attempts.reduce((s, a) => s + a.pct, 0) / attempts.length) : 0;
 
   document.getElementById('profile-stats').innerHTML = `
@@ -136,24 +149,23 @@ function renderStats() {
 }
 
 function renderActivity() {
-  const db = learnLoadDB();
-  const articleRows = db.userArticleActivities
-    .filter(r => r.userId === USER.id)
+  const articleRows = userArticleActivityRepository
+    .where(r => r.userId === USER.id)
     .map(r => {
-      const article = db.articles.find(a => a.id === r.articleId);
-      const mod = article && learnFindModuleForArticle(article.id);
-      const course = mod && learnFindCourseForModule(mod.id);
+      const article = articleRepository.find(r.articleId);
+      const mod = article && articleRepository.getModule(article.id);
+      const course = mod && moduleRepository.getCourse(mod.id);
       if (!article || !mod || !course) return null;
       return { lastVisitedAt: r.lastVisitedAt, icon: '📖', title: article.shortTitle || article.title, course, mod, url: `/courses/${course.slug}/modules/${mod.slug}/articles/${article.slug}` };
     });
-  const quizRows = db.userQuizActivities
-    .filter(r => r.userId === USER.id)
+  const quizRows = userQuizActivityRepository
+    .where(r => r.userId === USER.id)
     .map(r => {
-      const quiz = db.quizes.find(q => q.id === r.quizId);
-      const mod = quiz && learnFindModuleForQuiz(quiz.id);
-      const course = mod && learnFindCourseForModule(mod.id);
+      const quiz = quizRepository.find(r.quizId);
+      const mod = quiz && quizRepository.getModule(quiz.id);
+      const course = mod && moduleRepository.getCourse(mod.id);
       if (!quiz || !mod || !course) return null;
-      const icon = db.quizQuestionSets.filter(x => x.quizId === quiz.id).length > 1 ? '🏁' : '✅';
+      const icon = quizQuestionSetRepository.forQuiz(quiz.id).length > 1 ? '🏁' : '✅';
       return { lastVisitedAt: r.lastVisitedAt, icon, title: quiz.shortTitle || quiz.title, course, mod, url: `/courses/${course.slug}/modules/${mod.slug}/quizes/${quiz.slug}` };
     });
 
@@ -176,28 +188,18 @@ function renderActivity() {
 function optionText(question, optionId) {
   const o = (question.options || []).find(x => x.id === optionId);
   if (!o) return optionId;
-  const idx = question.options.findIndex(x => x.id === optionId);
-  const label = String.fromCharCode(65 + Math.max(idx, 0));
-  return `${label}: ${o.text}`;
+  return `${questionRepository.optionLabel(question, optionId)}: ${o.text}`;
 }
 
-// Every quiz's question pool comes uniformly from the question sets it
-// references via quizQuestionSets (a quiz with several sets behaves like
-// the former "exam" concept — same pooling, just more sets).
-function collectQuestions(quiz, db) {
-  const setIds = db.quizQuestionSets.filter(r => r.quizId === quiz.id).map(r => r.questionSetId);
-  return db.questions.filter(q => setIds.includes(q.questionSetId));
-}
-
-function renderAttemptReview(quiz, attempt, db) {
-  const poolById = new Map(collectQuestions(quiz, db).map(q => [q.id, q]));
+function renderAttemptReview(quiz, attempt) {
+  const poolById = new Map(quizRepository.getAllQuestions(quiz.id).map(q => [q.id, q]));
   const answeredIds = Object.keys(attempt.answers || {});
   if (!answeredIds.length) return '<p class="dash-empty">Brak szczegółów tego podejścia.</p>';
   return answeredIds.map((qid, i) => {
     const q = poolById.get(qid);
     if (!q) return '';
     const ans = attempt.answers[qid] || [];
-    const correctIds = q.options.filter(o => o.correct).map(o => o.id);
+    const correctIds = questionRepository.correctOptionIds(q);
     const userSet = new Set(ans);
     const correctSet = new Set(correctIds);
     const isCorrect = userSet.size === correctSet.size && [...userSet].every(id => correctSet.has(id));
@@ -222,9 +224,8 @@ function toggleAttempt(id) {
 window.toggleAttempt = toggleAttempt;
 
 function renderAttempts() {
-  const db = learnLoadDB();
-  const attempts = db.userQuizAttempts
-    .filter(r => r.userId === USER.id)
+  const attempts = userQuizAttemptRepository
+    .where(r => r.userId === USER.id)
     .slice()
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -234,10 +235,10 @@ function renderAttempts() {
   }
 
   document.getElementById('attempt-list').innerHTML = attempts.map(a => {
-    const quiz = db.quizes.find(q => q.id === a.quizId);
+    const quiz = quizRepository.find(a.quizId);
     if (!quiz) return '';
-    const mod = learnFindModuleForQuiz(quiz.id);
-    const course = mod && learnFindCourseForModule(mod.id);
+    const mod = quizRepository.getModule(quiz.id);
+    const course = mod && moduleRepository.getCourse(mod.id);
     const cls = a.pct >= 70 ? 'good' : (a.pct >= 50 ? '' : 'bad');
     const passInfo = quiz.passThreshold != null ? (a.pct >= quiz.passThreshold ? ' · zaliczone' : ' · niezaliczone') : '';
     return `
@@ -252,14 +253,14 @@ function renderAttempts() {
             <span class="attempt-row-toggle" id="toggle-${a.id}">▼ Zobacz odpowiedzi</span>
           </div>
         </div>
-        <div class="attempt-review" id="review-${a.id}">${renderAttemptReview(quiz, a, db)}</div>
+        <div class="attempt-review" id="review-${a.id}">${renderAttemptReview(quiz, a)}</div>
       </div>`;
   }).join('');
 }
 
 (async () => {
   await learnEnsureSeeded();
-  USER = learnCurrentUser();
+  USER = userRepository.current();
   renderCard();
   renderStats();
   renderActivity();
