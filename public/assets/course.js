@@ -3,7 +3,6 @@
  *   /courses/{course}
  *   /courses/{course}/modules
  *   /courses/{course}/modules/{module}
- *   /courses/{course}/modules/{module}/items                     (combined list)
  *   /courses/{course}/modules/{module}/articles/{article}
  *   /courses/{course}/modules/{module}/quizes/{quiz}              (ordinary quiz or multi-set "exam" quiz)
  */
@@ -109,7 +108,6 @@
   const courseUrl = () => `/courses/${COURSE.slug}`;
   const modulesUrl = () => `${courseUrl()}/modules`;
   const moduleUrl = m => `${modulesUrl()}/${m.slug}`;
-  const itemsUrl = m => `${moduleUrl(m)}/items`;
   const articleUrl = (m, a) => `${moduleUrl(m)}/articles/${a.slug}`;
   const quizUrl = (m, q) => `${moduleUrl(m)}/quizes/${q.slug}`;
 
@@ -132,7 +130,6 @@
       depth: segs.length,
       isModulesList: segs.length === 2 && segs[1] === 'modules',
       isModule: segs.length === 3 && segs[1] === 'modules',
-      isItemsList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'items',
       isArticle: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'articles',
       isQuiz: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'quizes',
     };
@@ -151,7 +148,6 @@
     }
 
     if (r.isModule) { app.innerHTML = renderModulePage(mod); updateTopbar(); return; }
-    if (r.isItemsList) { app.innerHTML = renderItemsList(mod); updateTopbar(); return; }
 
     if (r.isArticle) {
       const article = articleBySlug(mod, r.itemSlug);
@@ -296,17 +292,6 @@
       <div class="item-list">${rows}</div>`;
   }
 
-  // ---------------- Items list page ----------------
-
-  function renderItemsList(mod) {
-    const rows = moduleItemRows(mod) || `<p class="dash-empty">Brak elementów w tym module.</p>`;
-
-    return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Elementy' }])}
-      <div class="course-hero"><h1>Elementy — ${escapeHtml(mod.title)}</h1></div>
-      <div class="item-list">${rows}</div>`;
-  }
-
   // ---------------- Article page ----------------
 
   function renderArticlePage(mod, article) {
@@ -314,7 +299,7 @@
     const html = renderMarkdown(article.content);
 
     return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Elementy', href: itemsUrl(mod) }, { label: article.shortTitle || article.title }])}
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: article.shortTitle || article.title }])}
       <button class="back-link" onclick="navigate('${moduleUrl(mod)}')">← Wróć</button>
       <div class="module-head">
         <h1>${escapeHtml(article.title)}</h1>
@@ -382,7 +367,6 @@
       { label: COURSE.shortTitle || COURSE.title, href: courseUrl() },
       { label: 'Moduły', href: modulesUrl() },
       { label: mod.shortTitle || mod.title, href: moduleUrl(mod) },
-      { label: 'Elementy', href: itemsUrl(mod) },
       { label: quiz.shortTitle || quiz.title },
     ]);
     const backUrl = moduleUrl(mod);

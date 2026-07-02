@@ -1,85 +1,62 @@
 /* Per-user activity: visit tracking (userCourseActivities/
  * userModuleActivities/userArticleActivities/userQuizActivities) and quiz
  * attempt history (userQuizAttempts), stored as tables in the same local
- * DB as courses/modules/articles/quizes (see imported-courses.js). */
+ * DB as courses/modules/articles/quizes (see imported-courses.js).
+ * Single-table reads/writes go through the LearnDB ORM (storage.js);
+ * multi-table joins (progress, recent-activity summaries) fall back to
+ * learnLoadDB for a consistent whole-DB snapshot. */
 
 // ---------------- Touch (visit tracking) ----------------
 
 function learnTouchUserCourse(userId, courseId) {
-  const db = learnLoadDB();
   const now = new Date().toISOString();
-  let row = db.userCourseActivities.find(r => r.userId === userId && r.courseId === courseId);
-  if (!row) {
-    row = { id: learnUuid(), userId, courseId, firstVisitedAt: now, lastVisitedAt: now, customAccent: null };
-    db.userCourseActivities.push(row);
-  } else {
-    row.lastVisitedAt = now;
-  }
-  learnSaveDB(db);
-  return row;
+  return LearnDB.userCourseActivities.upsert(
+    r => r.userId === userId && r.courseId === courseId,
+    () => ({ id: learnUuid(), userId, courseId, firstVisitedAt: now, lastVisitedAt: now, customAccent: null }),
+    { lastVisitedAt: now }
+  );
 }
 
 function learnTouchUserModule(userId, moduleId) {
-  const db = learnLoadDB();
   const now = new Date().toISOString();
-  let row = db.userModuleActivities.find(r => r.userId === userId && r.moduleId === moduleId);
-  if (!row) {
-    row = { id: learnUuid(), userId, moduleId, firstVisitedAt: now, lastVisitedAt: now };
-    db.userModuleActivities.push(row);
-  } else {
-    row.lastVisitedAt = now;
-  }
-  learnSaveDB(db);
-  return row;
+  return LearnDB.userModuleActivities.upsert(
+    r => r.userId === userId && r.moduleId === moduleId,
+    () => ({ id: learnUuid(), userId, moduleId, firstVisitedAt: now, lastVisitedAt: now }),
+    { lastVisitedAt: now }
+  );
 }
 
 function learnTouchUserArticle(userId, articleId) {
-  const db = learnLoadDB();
   const now = new Date().toISOString();
-  let row = db.userArticleActivities.find(r => r.userId === userId && r.articleId === articleId);
-  if (!row) {
-    row = { id: learnUuid(), userId, articleId, firstVisitedAt: now, lastVisitedAt: now };
-    db.userArticleActivities.push(row);
-  } else {
-    row.lastVisitedAt = now;
-  }
-  learnSaveDB(db);
-  return row;
+  return LearnDB.userArticleActivities.upsert(
+    r => r.userId === userId && r.articleId === articleId,
+    () => ({ id: learnUuid(), userId, articleId, firstVisitedAt: now, lastVisitedAt: now }),
+    { lastVisitedAt: now }
+  );
 }
 
 function learnTouchUserQuiz(userId, quizId) {
-  const db = learnLoadDB();
   const now = new Date().toISOString();
-  let row = db.userQuizActivities.find(r => r.userId === userId && r.quizId === quizId);
-  if (!row) {
-    row = { id: learnUuid(), userId, quizId, firstVisitedAt: now, lastVisitedAt: now };
-    db.userQuizActivities.push(row);
-  } else {
-    row.lastVisitedAt = now;
-  }
-  learnSaveDB(db);
-  return row;
+  return LearnDB.userQuizActivities.upsert(
+    r => r.userId === userId && r.quizId === quizId,
+    () => ({ id: learnUuid(), userId, quizId, firstVisitedAt: now, lastVisitedAt: now }),
+    { lastVisitedAt: now }
+  );
 }
 
 function learnUserCourseRow(userId, courseId) {
-  const db = learnLoadDB();
-  return db.userCourseActivities.find(r => r.userId === userId && r.courseId === courseId) || null;
+  return LearnDB.userCourseActivities.first(r => r.userId === userId && r.courseId === courseId);
 }
 
 function learnSetCourseCustomAccent(userId, courseId, accent) {
   const row = learnTouchUserCourse(userId, courseId);
-  const db = learnLoadDB();
-  const found = db.userCourseActivities.find(r => r.id === row.id);
-  found.customAccent = accent || null;
-  learnSaveDB(db);
-  return found;
+  return LearnDB.userCourseActivities.update(row.id, { customAccent: accent || null });
 }
 
 // ---------------- Quiz attempts ----------------
 
 function learnRecordQuizAttempt(userId, quizId, result) {
-  const db = learnLoadDB();
-  const row = {
+  return LearnDB.userQuizAttempts.insert({
     id: learnUuid(),
     userId,
     quizId,
@@ -88,20 +65,15 @@ function learnRecordQuizAttempt(userId, quizId, result) {
     score: result.score,
     total: result.total,
     pct: result.pct,
-  };
-  db.userQuizAttempts.unshift(row);
-  learnSaveDB(db);
-  return row;
+  });
 }
 
 function learnHasVisitedArticle(userId, articleId) {
-  const db = learnLoadDB();
-  return db.userArticleActivities.some(r => r.userId === userId && r.articleId === articleId);
+  return LearnDB.userArticleActivities.count(r => r.userId === userId && r.articleId === articleId) > 0;
 }
 
 function learnQuizAttemptsFor(userId, quizId) {
-  const db = learnLoadDB();
-  return db.userQuizAttempts.filter(r => r.userId === userId && r.quizId === quizId);
+  return LearnDB.userQuizAttempts.where(r => r.userId === userId && r.quizId === quizId);
 }
 
 function learnBestAttempt(attempts) {

@@ -1,45 +1,22 @@
-/* Local "database": courses, question sets/questions, modules,
- * articles/quizes (linked to their question sets via quizQuestionSets),
- * the user(s), and per-user activity — stored as normalized tables
- * (UUID ids, id-reference relations) in a single localStorage key. This
- * is the app's only source of data — built-in courses and a default user
- * are seeded here on first load (see learnEnsureSeeded), and every page
- * reads exclusively from here afterwards, whether a course is built-in or
- * user-imported.
+/* Domain layer on top of storage.js's generic ORM: courses, question
+ * sets/questions, modules, articles/quizes (linked to their question sets
+ * via quizQuestionSets), the user(s), and per-user activity. Built-in
+ * courses and a default user are seeded here on first load (see
+ * learnEnsureSeeded), and every page reads exclusively from here
+ * afterwards, whether a course is built-in or user-imported.
  *
  * Relations are FK-on-child (child rows point at their parent via an
  * *Id field), e.g. module.courseId, article.moduleId, quiz.moduleId,
- * question.questionSetId — the reverse of pointing from parent to child. */
-const LEARN_DB_KEY = 'learn:db:v1';
-const LEARN_SEEDED_KEY = 'learn:seeded-builtin:v1';
-const LEARN_DB_DEFAULTS = {
-  courses: [], questionSets: [], questions: [], modules: [], articles: [], quizes: [], quizQuestionSets: [],
-  users: [],
-  userCourseActivities: [], userModuleActivities: [], userArticleActivities: [], userQuizActivities: [], userQuizAttempts: [],
-};
-
-function learnUuid() { return crypto.randomUUID(); }
-
-function learnLoadDB() {
-  try {
-    const raw = localStorage.getItem(LEARN_DB_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') return Object.assign({}, LEARN_DB_DEFAULTS, parsed);
-    }
-  } catch (e) {}
-  return Object.assign({}, LEARN_DB_DEFAULTS);
-}
-
-function learnSaveDB(db) {
-  localStorage.setItem(LEARN_DB_KEY, JSON.stringify(db));
-}
+ * question.questionSetId — the reverse of pointing from parent to child.
+ *
+ * This file (like every other script except storage.js) never touches
+ * `localStorage` directly — it only calls into LearnDB / learnLoadDB /
+ * learnSaveDB from storage.js. */
 
 /* Creates the single local user the first time the app ever runs. */
 function learnEnsureDefaultUser() {
-  const db = learnLoadDB();
-  if (db.users.length > 0) return;
-  db.users.push({
+  if (LearnDB.users.count() > 0) return;
+  LearnDB.users.insert({
     id: learnUuid(),
     name: 'Gość',
     email: '',
@@ -47,22 +24,15 @@ function learnEnsureDefaultUser() {
     avatarIcon: '🙂',
     createdAt: new Date().toISOString(),
   });
-  learnSaveDB(db);
 }
 
 /* This app has exactly one local user (no accounts/auth) — this is them. */
 function learnCurrentUser() {
-  const db = learnLoadDB();
-  return db.users[0] || null;
+  return LearnDB.users.all()[0] || null;
 }
 
 function learnUpdateUser(userId, patch) {
-  const db = learnLoadDB();
-  const user = db.users.find(u => u.id === userId);
-  if (!user) return null;
-  Object.assign(user, patch);
-  learnSaveDB(db);
-  return user;
+  return LearnDB.users.update(userId, patch);
 }
 
 /* Seeds the built-in courses (listed in /courses/manifest.json) and the
@@ -71,7 +41,7 @@ function learnUpdateUser(userId, patch) {
  * course — it stays deleted). */
 async function learnEnsureSeeded() {
   learnEnsureDefaultUser();
-  if (localStorage.getItem(LEARN_SEEDED_KEY)) return;
+  if (learnIsSeeded()) return;
   try {
     const slugs = await fetch('/courses/manifest.json').then(r => r.json());
     for (const slug of slugs) {
@@ -79,7 +49,7 @@ async function learnEnsureSeeded() {
       learnImportCourse(data);
     }
   } catch (e) {}
-  localStorage.setItem(LEARN_SEEDED_KEY, '1');
+  learnMarkSeeded();
 }
 
 /* Graph-traversal helpers shared by state.js and profile.html. */
