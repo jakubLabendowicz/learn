@@ -1,16 +1,17 @@
-/* Per-user activity: visit tracking (userCourses/userModules/userItems)
- * and quiz attempt history (userQuizAttempts), stored as tables in the
- * same local DB as courses/modules/items (see imported-courses.js). */
+/* Per-user activity: visit tracking (userCourseActivities/
+ * userModuleActivities/userArticleActivities/userQuizActivities) and quiz
+ * attempt history (userQuizAttempts), stored as tables in the same local
+ * DB as courses/modules/articles/quizes (see imported-courses.js). */
 
 // ---------------- Touch (visit tracking) ----------------
 
 function learnTouchUserCourse(userId, courseId) {
   const db = learnLoadDB();
   const now = new Date().toISOString();
-  let row = db.userCourses.find(r => r.userId === userId && r.courseId === courseId);
+  let row = db.userCourseActivities.find(r => r.userId === userId && r.courseId === courseId);
   if (!row) {
     row = { id: learnUuid(), userId, courseId, firstVisitedAt: now, lastVisitedAt: now, customAccent: null };
-    db.userCourses.push(row);
+    db.userCourseActivities.push(row);
   } else {
     row.lastVisitedAt = now;
   }
@@ -21,10 +22,10 @@ function learnTouchUserCourse(userId, courseId) {
 function learnTouchUserModule(userId, moduleId) {
   const db = learnLoadDB();
   const now = new Date().toISOString();
-  let row = db.userModules.find(r => r.userId === userId && r.moduleId === moduleId);
+  let row = db.userModuleActivities.find(r => r.userId === userId && r.moduleId === moduleId);
   if (!row) {
     row = { id: learnUuid(), userId, moduleId, firstVisitedAt: now, lastVisitedAt: now };
-    db.userModules.push(row);
+    db.userModuleActivities.push(row);
   } else {
     row.lastVisitedAt = now;
   }
@@ -32,13 +33,27 @@ function learnTouchUserModule(userId, moduleId) {
   return row;
 }
 
-function learnTouchUserItem(userId, itemId) {
+function learnTouchUserArticle(userId, articleId) {
   const db = learnLoadDB();
   const now = new Date().toISOString();
-  let row = db.userItems.find(r => r.userId === userId && r.itemId === itemId);
+  let row = db.userArticleActivities.find(r => r.userId === userId && r.articleId === articleId);
   if (!row) {
-    row = { id: learnUuid(), userId, itemId, firstVisitedAt: now, lastVisitedAt: now };
-    db.userItems.push(row);
+    row = { id: learnUuid(), userId, articleId, firstVisitedAt: now, lastVisitedAt: now };
+    db.userArticleActivities.push(row);
+  } else {
+    row.lastVisitedAt = now;
+  }
+  learnSaveDB(db);
+  return row;
+}
+
+function learnTouchUserQuiz(userId, quizId) {
+  const db = learnLoadDB();
+  const now = new Date().toISOString();
+  let row = db.userQuizActivities.find(r => r.userId === userId && r.quizId === quizId);
+  if (!row) {
+    row = { id: learnUuid(), userId, quizId, firstVisitedAt: now, lastVisitedAt: now };
+    db.userQuizActivities.push(row);
   } else {
     row.lastVisitedAt = now;
   }
@@ -48,13 +63,13 @@ function learnTouchUserItem(userId, itemId) {
 
 function learnUserCourseRow(userId, courseId) {
   const db = learnLoadDB();
-  return db.userCourses.find(r => r.userId === userId && r.courseId === courseId) || null;
+  return db.userCourseActivities.find(r => r.userId === userId && r.courseId === courseId) || null;
 }
 
 function learnSetCourseCustomAccent(userId, courseId, accent) {
   const row = learnTouchUserCourse(userId, courseId);
   const db = learnLoadDB();
-  const found = db.userCourses.find(r => r.id === row.id);
+  const found = db.userCourseActivities.find(r => r.id === row.id);
   found.customAccent = accent || null;
   learnSaveDB(db);
   return found;
@@ -62,12 +77,12 @@ function learnSetCourseCustomAccent(userId, courseId, accent) {
 
 // ---------------- Quiz attempts ----------------
 
-function learnRecordQuizAttempt(userId, itemId, result) {
+function learnRecordQuizAttempt(userId, quizId, result) {
   const db = learnLoadDB();
   const row = {
     id: learnUuid(),
     userId,
-    itemId,
+    quizId,
     date: new Date().toISOString(),
     answers: result.answers,
     score: result.score,
@@ -79,14 +94,14 @@ function learnRecordQuizAttempt(userId, itemId, result) {
   return row;
 }
 
-function learnHasVisitedItem(userId, itemId) {
+function learnHasVisitedArticle(userId, articleId) {
   const db = learnLoadDB();
-  return db.userItems.some(r => r.userId === userId && r.itemId === itemId);
+  return db.userArticleActivities.some(r => r.userId === userId && r.articleId === articleId);
 }
 
-function learnQuizAttemptsFor(userId, itemId) {
+function learnQuizAttemptsFor(userId, quizId) {
   const db = learnLoadDB();
-  return db.userQuizAttempts.filter(r => r.userId === userId && r.itemId === itemId);
+  return db.userQuizAttempts.filter(r => r.userId === userId && r.quizId === quizId);
 }
 
 function learnBestAttempt(attempts) {
@@ -102,14 +117,13 @@ function learnCourseProgress(userId, courseId) {
   if (!course) return 0;
   const data = learnGetCourseData(course.slug);
   if (!data) return 0;
-  const allItems = data.modules.flatMap(m => m.items);
-  const totalItems = allItems.length;
+  const articleIds = new Set(data.modules.flatMap(m => m.articles).map(a => a.id));
+  const quizIds = new Set(data.modules.flatMap(m => m.quizzes).map(q => q.id));
+  const totalItems = articleIds.size + quizIds.size;
   if (!totalItems) return 0;
-  const articleIds = new Set(allItems.filter(it => it.type === 'article').map(it => it.id));
-  const quizIds = new Set(allItems.filter(it => it.type !== 'article').map(it => it.id));
-  const readCount = db.userItems.filter(r => r.userId === userId && articleIds.has(r.itemId)).length;
+  const readCount = db.userArticleActivities.filter(r => r.userId === userId && articleIds.has(r.articleId)).length;
   const attemptedQuizIds = new Set(
-    db.userQuizAttempts.filter(r => r.userId === userId && quizIds.has(r.itemId)).map(r => r.itemId)
+    db.userQuizAttempts.filter(r => r.userId === userId && quizIds.has(r.quizId)).map(r => r.quizId)
   );
   const doneCount = readCount + attemptedQuizIds.size;
   return Math.min(100, Math.round((doneCount / totalItems) * 100));
@@ -119,7 +133,7 @@ function learnCourseProgress(userId, courseId) {
 
 function learnRecentCourses(userId, limit) {
   const db = learnLoadDB();
-  return db.userCourses
+  return db.userCourseActivities
     .filter(r => r.userId === userId)
     .slice()
     .sort((a, b) => new Date(b.lastVisitedAt) - new Date(a.lastVisitedAt))
@@ -145,17 +159,17 @@ function learnRecentCourses(userId, limit) {
 // Recently read articles, for the homepage's "Ostatnie moduły" list.
 function learnRecentModules(userId, limit) {
   const db = learnLoadDB();
-  const rows = db.userItems.filter(r => r.userId === userId).slice().sort((a, b) => new Date(b.lastVisitedAt) - new Date(a.lastVisitedAt));
+  const rows = db.userArticleActivities.filter(r => r.userId === userId).slice().sort((a, b) => new Date(b.lastVisitedAt) - new Date(a.lastVisitedAt));
   const events = [];
   for (const r of rows) {
-    const item = db.items.find(it => it.id === r.itemId);
-    if (!item || item.type !== 'article') continue;
-    const mod = learnFindModuleForItem(item.id);
+    const article = db.articles.find(a => a.id === r.articleId);
+    if (!article) continue;
+    const mod = learnFindModuleForArticle(article.id);
     const course = mod && learnFindCourseForModule(mod.id);
     if (!mod || !course) continue;
     events.push({
       courseSlug: course.slug, courseTitle: course.title, courseShortTitle: course.shortTitle,
-      itemTitle: item.title, itemShortTitle: item.shortTitle, date: r.lastVisitedAt,
+      itemTitle: article.title, itemShortTitle: article.shortTitle, date: r.lastVisitedAt,
     });
     if (events.length >= (limit || 6)) break;
   }
@@ -170,13 +184,13 @@ function learnRecentResults(userId, limit) {
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, limit || 6)
     .map(r => {
-      const item = db.items.find(it => it.id === r.itemId);
-      const mod = item && learnFindModuleForItem(item.id);
+      const quiz = db.quizes.find(q => q.id === r.quizId);
+      const mod = quiz && learnFindModuleForQuiz(quiz.id);
       const course = mod && learnFindCourseForModule(mod.id);
-      if (!item || !mod || !course) return null;
+      if (!quiz || !mod || !course) return null;
       return {
         courseSlug: course.slug, courseTitle: course.title, courseShortTitle: course.shortTitle,
-        itemTitle: item.title, itemShortTitle: item.shortTitle,
+        itemTitle: quiz.title, itemShortTitle: quiz.shortTitle,
         score: r.score, total: r.total, pct: r.pct, date: r.date,
       };
     })

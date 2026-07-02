@@ -51,33 +51,42 @@ jako plik `.json`.
 
 ## Identyfikatory (`id`) muszą być UUID
 
-Każde pole `id` w tym pliku — `course.id`, `module.id`, `item.id` oraz
-`question.id` — MUSI być losowo wygenerowanym identyfikatorem UUID w
-standardowym formacie `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` (32 znaki
-szesnastkowe podzielone myślnikami na grupy 8-4-4-4-12), np.
-`"e3b0c442-98fc-4e1b-8b6d-2c1e6f7a9d3b"`. Wygeneruj OSOBNY, unikalny UUID
-dla każdego elementu — nie kopiuj tego samego identyfikatora w dwóch
-miejscach. `id` NIE jest używane w adresach URL (nie musi być czytelne) —
-do tego służy osobne pole `slug`.
+Każde pole `id` w tym pliku — `course.id`, `questionSet.id`, `question.id`,
+`option.id`, `module.id`, `article.id`, `quiz.id` — MUSI być losowo
+wygenerowanym identyfikatorem UUID w standardowym formacie
+`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` (32 znaki szesnastkowe podzielone
+myślnikami na grupy 8-4-4-4-12), np. `"e3b0c442-98fc-4e1b-8b6d-2c1e6f7a9d3b"`.
+Wygeneruj OSOBNY, unikalny UUID dla każdego elementu — nie kopiuj tego
+samego identyfikatora w dwóch miejscach. `id` NIE jest używane w adresach
+URL (nie musi być czytelne) — do tego służy osobne pole `slug`.
 
-## Struktura pliku — trzy tabele, nie zagnieżdżony dokument
+## Struktura pliku — siedem tabel, nie zagnieżdżony dokument
 
-Plik to pojedynczy obiekt JSON z **trzema tablicami najwyższego poziomu**:
-`courses`, `modules`, `items` — jak trzy tabele relacyjnej bazy danych.
+Plik to pojedynczy obiekt JSON z **siedmioma tablicami najwyższego
+poziomu**: `courses`, `questionSets`, `questions`, `modules`, `articles`,
+`quizes`, `quizQuestionSets` — jak siedem tabel relacyjnej bazy danych.
 Każdy rekord ma własne `id` (UUID); powiązania między tabelami to
-referencje po id, NIE zagnieżdżanie obiektów jeden w drugim:
+referencje po id trzymane na REKORDZIE DZIECKA (klucz obcy wskazujący w
+górę), NIE zagnieżdżanie obiektów ani tablice referencji na rodzicu:
 
-- `course.modules[]` to lista `{ "module_id": "..." }` — referencje do
-  rekordów w tablicy `modules`, w kolejności wyświetlania.
-- `module.items[]` to lista `{ "item_id": "..." }` — referencje do
-  rekordów w tablicy `items`, w kolejności wyświetlania.
-- `item.quizes[]` (tylko dla `type: "exam"`) to lista
-  `{ "item_id": "...", "weight": n }` — referencje do rekordów `type: "quiz"`
-  w tablicy `items`.
+- `module.courseId` — `id` kursu, do którego należy moduł.
+- `article.moduleId` — `id` modułu, do którego należy artykuł.
+- `quiz.moduleId` — `id` modułu, do którego należy quiz.
+- `questionSet.courseId` — `id` kursu, do którego należy zestaw pytań.
+- `question.questionSetId` — `id` zestawu pytań, do którego należy pytanie.
+- `quizQuestionSets[]` to osobna tabela-łącznik `{ quizId, questionSetId, weight }`
+  spinająca quizy z zestawami pytań, które w nich obowiązują (patrz niżej).
 
 Plik zawsze opisuje DOKŁADNIE JEDEN kurs: `courses` ma jeden element, a
-`modules`/`items` zawierają WYŁĄCZNIE rekordy należące do tego kursu (nic
-spoza jego drzewa modułów/elementów).
+pozostałe tablice zawierają WYŁĄCZNIE rekordy należące (bezpośrednio lub
+pośrednio) do tego kursu.
+
+**Nie ma osobnego typu „egzamin”.** Quiz z jednym powiązaniem w
+`quizQuestionSets[]` to zwykły quiz modułowy; quiz z KILKOMA powiązaniami
+(różne zestawy pytań, każdy z własną wagą) to dokładnie ten sam mechanizm
+co dawny „exam” — losowo dobiera pytania proporcjonalnie do wagi każdego
+zestawu. To jedna spójna koncepcja `quizes[]`, różniąca się wyłącznie
+liczbą wpisów w `quizQuestionSets[]`.
 
 ### `courses[]` (tablica, dokładnie 1 element)
 
@@ -91,18 +100,18 @@ spoza jego drzewa modułów/elementów).
 | `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach kursów zamiast pełnego opisu. |
 | `icon`             | string        | tak      | Krótki tekst odznaki (2–3 znaki), np. `"PY"`. |
 | `accent`           | string        | tak      | Kolor akcentu w formacie hex, np. `"#4f46e5"`. |
-| `modules`          | tablica `{module_id}` | tak, min. 1 | Referencje do rekordów w `modules[]`, w kolejności wyświetlania. |
 
 Kurs NIE ma własnego `passThreshold` ani `finalQuizTitle`/
-`finalQuizDescription` — próg zaliczenia jest polem każdego quizu/egzaminu
-z osobna (patrz niżej), a quiz końcowy to zwykły element typu `"exam"` w
-ostatnim module, a nie osobny mechanizm.
+`finalQuizDescription` — próg zaliczenia jest polem każdego quizu z osobna
+(patrz niżej), a quiz końcowy to zwykły rekord w `quizes[]` w ostatnim
+module, odwołujący się do wielu zestawów pytań, a nie osobny mechanizm.
 
 ### `modules[]` (tablica, min. 1 element)
 
 | Pole               | Typ           | Wymagane | Opis |
 |--------------------|---------------|----------|------|
 | `id`               | string (UUID) | tak      | Unikalny identyfikator modułu. |
+| `courseId`         | string (UUID) | tak      | `id` kursu (z `courses[]`), do którego należy moduł. |
 | `slug`             | string        | tak      | Slug modułu w URL: `/courses/{course}/modules/{slug}`. Unikalny w obrębie kursu. |
 | `title`            | string        | tak      | Pełny tytuł modułu. Wyświetlany na stronie samego modułu (nagłówek). |
 | `shortTitle`       | string        | tak      | Skrócona wersja `title`, wyświetlana na listach modułów (strona kursu, lista modułów, breadcrumbs). MUSI być realnie krótsza niż `title` dla długich tytułów — nie kopiuj tam pełnego tytułu bez zmian. |
@@ -110,66 +119,97 @@ ostatnim module, a nie osobny mechanizm.
 | `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach modułów zamiast pełnego opisu. |
 | `icon`             | string        | tak      | Emoji reprezentujące moduł. |
 | `accent`           | string        | tak      | Kolor akcentu w formacie hex — nadpisuje kolor kursu tylko dla tego modułu. |
-| `items`            | tablica `{item_id}` | tak, min. 1 | Referencje do rekordów w `items[]`, w kolejności wyświetlania. Moduł MOŻE zawierać wiele artykułów i wiele quizów. |
 
-**Ostatni moduł kursu (czyli ostatnia referencja w `course.modules[]`)
-musi być modułem egzaminacyjnym** — slug `exam`, `title`/`shortTitle` w
-stylu „Egzamin końcowy” / „Exam”, zawierający co najmniej jeden element
-typu `"exam"` (patrz niżej). Dobrą praktyką jest dodanie w tym module
-również artykułu „Szybka powtórka do egzaminu” (`type: "article"`) —
-zwięzłego podsumowania najważniejszych zasad i pułapek z KAŻDEGO modułu
-kursu, złożonego z realnej treści zawartej w artykułach kursu (nie zmyślaj
-nowych faktów — przepisz/skondensuj to, co już znajduje się w materiale
-źródłowym).
+Moduł MOŻE zawierać wiele artykułów i wiele quizów — przynależność do
+modułu wynika z pola `moduleId` na rekordzie artykułu/quizu, nie z listy
+na module.
 
-### `items[]` (tablica, min. 1 element)
+**Ostatni moduł kursu (w kolejności, w jakiej mają się wyświetlać) musi
+być modułem egzaminacyjnym** — slug `exam`, `title`/`shortTitle` w stylu
+„Egzamin końcowy” / „Exam”, zawierający co najmniej jeden quiz odwołujący
+się (przez `quizQuestionSets[]`) do WIELU zestawów pytań z całego kursu
+(patrz niżej). Dobrą praktyką jest dodanie w tym module również artykułu
+„Szybka powtórka do egzaminu” — zwięzłego podsumowania najważniejszych
+zasad i pułapek z KAŻDEGO modułu kursu, złożonego z realnej treści
+zawartej w artykułach kursu (nie zmyślaj nowych faktów — przepisz/
+skondensuj to, co już znajduje się w materiale źródłowym).
 
-Wszystkie elementy dzielą wspólną przestrzeń adresów URL:
-`/courses/{course}/modules/{module}/items/{slug}`. Każdy element ma pole
-`type`: `"article"`, `"quiz"` albo `"exam"`.
+### `articles[]` i `quizes[]` — elementy modułu
 
-**Wspólne dla wszystkich typów:**
+Artykuły i quizy każdego modułu żyją w dwóch osobnych tablicach, ale
+dzielą podobny kształt i odrębne przestrzenie adresów URL:
+`/courses/{course}/modules/{module}/articles/{slug}` oraz
+`/courses/{course}/modules/{module}/quizes/{slug}`.
+
+**`articles[]`:**
 
 | Pole               | Typ           | Wymagane | Opis |
 |--------------------|---------------|----------|------|
-| `id`               | string (UUID) | tak      | Unikalny identyfikator elementu. |
-| `slug`             | string        | tak      | Unikalny WŚRÓD WSZYSTKICH ELEMENTÓW tego modułu, niezależnie od typu. URL: `/courses/{course}/modules/{module}/items/{slug}`. |
-| `title`            | string        | tak      | Pełny tytuł elementu. Wyświetlany na stronie samego elementu (nagłówek). |
-| `shortTitle`       | string        | tak      | Skrócona wersja `title`, wyświetlana na listach elementów (strona modułu, lista elementów, nawigacja prev/next). MUSI być realnie krótsza niż `title` dla długich tytułów — nie kopiuj tam pełnego tytułu bez zmian. |
-| `description`      | string        | tak      | Dokładny opis tego, co konkretnie zawiera element — dla artykułu: jakie zagadnienia porusza; dla quizu/egzaminu: z czego dokładnie się składa. Wyświetlany pod tytułem na stronie samego elementu. |
-| `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach elementów zamiast pełnego opisu. |
+| `id`               | string (UUID) | tak      | Unikalny identyfikator artykułu. |
+| `moduleId`         | string (UUID) | tak      | `id` modułu (z `modules[]`), do którego należy artykuł. |
+| `slug`             | string        | tak      | Unikalny WŚRÓD WSZYSTKICH ARTYKUŁÓW I QUIZÓW tego modułu. URL: `/courses/{course}/modules/{module}/articles/{slug}`. |
+| `title`            | string        | tak      | Pełny tytuł artykułu. Wyświetlany na stronie samego artykułu (nagłówek). |
+| `shortTitle`       | string        | tak      | Skrócona wersja `title`, wyświetlana na listach elementów (strona modułu, nawigacja prev/next). MUSI być realnie krótsza niż `title` dla długich tytułów. |
+| `description`      | string        | tak      | Dokładny opis tego, jakie zagadnienia porusza artykuł. Wyświetlany pod tytułem na stronie artykułu. |
+| `shortDescription` | string        | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach elementów. |
+| `content`          | string        | tak      | Treść w Markdown (patrz obsługiwana składnia niżej). |
 
-**Artykuł (`type: "article"`):**
+**`quizes[]`:**
 
-| Pole      | Typ         | Wymagane | Opis |
-|-----------|-------------|----------|------|
-| `content` | string      | tak      | Treść w Markdown (patrz obsługiwana składnia niżej). |
+| Pole               | Typ            | Wymagane | Opis |
+|--------------------|----------------|----------|------|
+| `id`               | string (UUID)  | tak      | Unikalny identyfikator quizu. |
+| `moduleId`         | string (UUID)  | tak      | `id` modułu (z `modules[]`), do którego należy quiz. |
+| `slug`             | string         | tak      | Unikalny WŚRÓD WSZYSTKICH ARTYKUŁÓW I QUIZÓW tego modułu. URL: `/courses/{course}/modules/{module}/quizes/{slug}`. |
+| `title`            | string         | tak      | Pełny tytuł quizu. Wyświetlany na stronie samego quizu (nagłówek). |
+| `shortTitle`       | string         | tak      | Skrócona wersja `title`, wyświetlana na listach elementów. MUSI być realnie krótsza niż `title` dla długich tytułów. |
+| `description`      | string         | tak      | Dokładny opis tego, z czego dokładnie składa się quiz. Wyświetlany pod tytułem na stronie quizu. |
+| `shortDescription` | string         | tak      | Zwięzłe (1 zdanie) streszczenie `description`, wyświetlane na listach elementów. |
+| `passThreshold`    | number \| null | tak      | Próg zaliczenia w %. Jeśli `null`, wynik quizu pokazuje tylko ocenę opisową, bez odznaki zdane/niezdane. |
 
-**Quiz (`type: "quiz"`):**
+Quiz sam w sobie NIE zawiera pytań — pula pytań quizu to suma zestawów
+pytań, do których się odwołuje przez `quizQuestionSets[]` (patrz niżej).
 
-| Pole            | Typ            | Wymagane | Opis |
-|-----------------|----------------|----------|------|
-| `questions`     | tablica        | tak, min. 1 | Lista pytań — patrz niżej. |
-| `passThreshold` | number \| null | tak      | Próg zaliczenia w %. Jeśli `null`, wynik quizu pokazuje tylko ocenę opisową, bez odznaki zdane/niezdane. |
+### `questionSets[]` i `questions[]` — pula pytań
 
-**Egzamin (`type: "exam"`):** losowo dobiera pytania z kilku quizów kursu
-(proporcjonalnie do ich wagi) i pozwala rozwiązać je jako jeden większy
-test.
+`questionSets[]` grupuje powiązane pytania w jeden zestaw (odpowiednik
+dawnego „quizu” jako źródła pytań); `questions[]` przechowuje same
+pytania, każde przypisane do dokładnie jednego zestawu.
 
-| Pole            | Typ            | Wymagane | Opis |
-|-----------------|----------------|----------|------|
-| `quizes`        | tablica `{item_id, weight}` | tak, min. 1 | Lista quizów wchodzących w skład egzaminu. `item_id` to `id` istniejącego elementu `type: "quiz"` w tablicy `items[]` tego kursu (może być w dowolnym module). `weight` to liczba (np. udział % w egzaminie) — użyj do proporcjonalnego doboru pytań; wagi wszystkich pozycji powinny sumować się do 100. |
-| `passThreshold` | number \| null | tak      | Próg zaliczenia całego egzaminu w %, analogicznie jak w quizie. |
+**`questionSets[]`:**
 
-### Pytania (`questions[]`)
+| Pole       | Typ           | Wymagane | Opis |
+|------------|---------------|----------|------|
+| `id`       | string (UUID) | tak      | Unikalny identyfikator zestawu pytań. |
+| `courseId` | string (UUID) | tak      | `id` kursu (z `courses[]`), do którego należy zestaw. |
 
-| Pole          | Typ                       | Wymagane   | Opis |
-|---------------|---------------------------|------------|------|
-| `id`          | string (UUID)             | tak        | Unikalny identyfikator pytania. |
-| `question`    | string                    | tak        | Treść pytania (zwykły tekst, bez markdown). |
-| `options`     | tablica `{key, text}`      | tak, min. 2 | Klucze zwykle `"A"`, `"B"`, `"C"`, `"D"`… `text` to zwykły tekst odpowiedzi. |
-| `answer`      | tablica kluczy (string[])  | tak, min. 1 | Klucze poprawnych odpowiedzi. Jedna wartość = pytanie jednokrotnego wyboru. Więcej niż jedna = pytanie wielokrotnego wyboru (checkboxy). |
-| `explanation` | string (Markdown)          | tak        | Wyjaśnienie poprawnej odpowiedzi. Renderowane przez ten sam silnik Markdown co pole `content` (patrz obsługiwana składnia niżej) — NIE wstawiaj surowego HTML, użyj np. `**pogrubienie**`, list `- `, cytatu `> `. |
+**`questions[]`:**
+
+| Pole            | Typ                              | Wymagane    | Opis |
+|-----------------|-----------------------------------|-------------|------|
+| `id`            | string (UUID)                     | tak         | Unikalny identyfikator pytania. |
+| `questionSetId` | string (UUID)                     | tak         | `id` zestawu pytań (z `questionSets[]`), do którego należy pytanie. |
+| `question`      | string                            | tak         | Treść pytania (zwykły tekst, bez markdown). |
+| `options`       | tablica `{id, text, correct}`     | tak, min. 2 | Każda odpowiedź ma własny UUID `id`, tekst `text` oraz boolean `correct`. Jedna odpowiedź `correct: true` = pytanie jednokrotnego wyboru. Więcej niż jedna = pytanie wielokrotnego wyboru (checkboxy). Litery (A, B, C…) NIE są przechowywane — interfejs generuje je automatycznie z kolejności odpowiedzi w tej tablicy. |
+| `explanation`   | string (Markdown)                  | tak         | Wyjaśnienie poprawnej odpowiedzi. Renderowane przez ten sam silnik Markdown co pole `content` (patrz obsługiwana składnia niżej) — NIE wstawiaj surowego HTML, użyj np. `**pogrubienie**`, list `- `, cytatu `> `. |
+
+### `quizQuestionSets[]` — które zestawy pytań obowiązują w danym quizie
+
+Tabela-łącznik spinająca quizy z ich pulą pytań (bez własnego pola `id`):
+
+| Pole            | Typ           | Wymagane | Opis |
+|-----------------|---------------|----------|------|
+| `quizId`        | string (UUID) | tak      | `id` quizu (z `quizes[]`). |
+| `questionSetId` | string (UUID) | tak      | `id` zestawu pytań (z `questionSets[]`). |
+| `weight`        | number        | tak      | Waga zestawu w tym quizie — użyta do proporcjonalnego doboru pytań, gdy użytkownik wybierze mniej pytań niż cała pula. |
+
+- **Zwykły quiz modułowy** ma dokładnie JEDEN wpis w `quizQuestionSets[]`
+  (jeden zestaw pytań, `weight` może być dowolną dodatnią liczbą, np. `100`
+  — nie ma znaczenia przy jednym zestawie).
+- **Quiz egzaminacyjny** (dawny „exam”) ma WIELE wpisów — po jednym dla
+  każdego zestawu pytań innych quizów kursu, których pytania mają się w
+  nim znaleźć. `weight` to liczba (np. udział % w egzaminie) — wagi
+  wszystkich pozycji jednego quizu powinny sumować się do 100.
 
 ## Obsługiwana składnia Markdown (pola `content` i `explanation`)
 
@@ -192,10 +232,11 @@ test.
   kursem o INNYM `id`, użytkownik zobaczy dwa kursy pod tym samym adresem
   URL — unikaj tego).
 - `module.slug` musi być unikalny w obrębie kursu.
-- `item.slug` musi być unikalny w obrębie CAŁEGO modułu, niezależnie od
-  typu — artykuł, quiz i egzamin w tym samym module NIE MOGĄ mieć tego
-  samego sluga. Dobra konwencja: dla quizu użyj sluga poprzedzonego
-  `quiz-` (np. artykuł `wprowadzenie`, jego quiz `quiz-wprowadzenie`).
+- `article.slug`/`quiz.slug` muszą być unikalne w obrębie CAŁEGO modułu,
+  niezależnie od tego, czy to artykuł czy quiz — artykuł i quiz w tym
+  samym module NIE MOGĄ mieć tego samego sluga. Dobra konwencja: dla
+  quizu użyj sluga poprzedzonego `quiz-` (np. artykuł `wprowadzenie`, jego
+  quiz `quiz-wprowadzenie`).
 - Używaj tylko małych liter, cyfr i myślników w slugach, np. `"wprowadzenie-do-tematu"`.
 - Slug ostatniego (egzaminacyjnego) modułu powinien brzmieć `exam`.
 
@@ -212,47 +253,64 @@ test.
       "description": "Dokładny, wyczerpujący opis tego, czego dotyczy kurs, jakie moduły zawiera i czego się nauczysz.",
       "shortDescription": "Krótki, jednozdaniowy opis kursu do wyświetlenia na listach.",
       "icon": "PK",
-      "accent": "#4f46e5",
-      "modules": [
-        { "module_id": "6b1f2e3a-8c4d-4a6e-9f0b-1d2e3f4a5b6c" },
-        { "module_id": "d4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f7a" }
-      ]
+      "accent": "#4f46e5"
+    }
+  ],
+  "questionSets": [
+    { "id": "7c8d9e0f-1a2b-4c3d-9e4f-5a6b7c8d9e0f", "courseId": "3fa85f64-5717-4562-b3fc-2c963f66afa6" }
+  ],
+  "questions": [
+    {
+      "id": "f0e1d2c3-b4a5-4968-8778-9a0b1c2d3e4f",
+      "questionSetId": "7c8d9e0f-1a2b-4c3d-9e4f-5a6b7c8d9e0f",
+      "question": "Które stwierdzenie jest prawdziwe?",
+      "options": [
+        { "id": "aa111111-1111-4111-8111-111111111111", "text": "Odpowiedź A", "correct": false },
+        { "id": "bb222222-2222-4222-8222-222222222222", "text": "Odpowiedź B (poprawna)", "correct": true },
+        { "id": "cc333333-3333-4333-8333-333333333333", "text": "Odpowiedź C", "correct": false }
+      ],
+      "explanation": "**Poprawna odpowiedź: B.** Krótkie wyjaśnienie dlaczego.\n\n> Dodatkowa wskazówka na przyszłość."
+    },
+    {
+      "id": "2b3c4d5e-6f70-4819-9a0b-c1d2e3f4a5b7",
+      "questionSetId": "7c8d9e0f-1a2b-4c3d-9e4f-5a6b7c8d9e0f",
+      "question": "Które dwie odpowiedzi są poprawne? (pytanie wielokrotnego wyboru)",
+      "options": [
+        { "id": "dd444444-4444-4444-8444-444444444444", "text": "Odpowiedź poprawna nr 1", "correct": true },
+        { "id": "ee555555-5555-4555-8555-555555555555", "text": "Odpowiedź błędna", "correct": false },
+        { "id": "ff666666-6666-4666-8666-666666666666", "text": "Odpowiedź poprawna nr 2", "correct": true }
+      ],
+      "explanation": "Poprawne są pierwsza i trzecia odpowiedź, ponieważ:\n\n- pierwszy powód\n- drugi powód"
     }
   ],
   "modules": [
     {
       "id": "6b1f2e3a-8c4d-4a6e-9f0b-1d2e3f4a5b6c",
+      "courseId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "slug": "modul-1",
       "title": "Wprowadzenie",
       "shortTitle": "Wprowadzenie",
       "description": "Dokładny opis tematów poruszanych w module — konkretne zagadnienia i podrozdziały.",
       "shortDescription": "Podstawowe pojęcia i pierwszy quiz sprawdzający.",
       "icon": "🚀",
-      "accent": "#4f46e5",
-      "items": [
-        { "item_id": "9c8b7a6f-5e4d-4c3b-8a29-1f0e9d8c7b6a" },
-        { "item_id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6" }
-      ]
+      "accent": "#4f46e5"
     },
     {
       "id": "d4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f7a",
+      "courseId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "slug": "exam",
       "title": "Egzamin końcowy",
       "shortTitle": "Exam",
       "description": "Powtórka kluczowych zagadnień ze wszystkich modułów kursu i symulacja pełnego egzaminu końcowego.",
       "shortDescription": "Powtórka kluczowych zagadnień i symulacja pełnego egzaminu.",
       "icon": "🏁",
-      "accent": "#b8862e",
-      "items": [
-        { "item_id": "a1b2c3d4-5e6f-4708-9a0b-c1d2e3f4a5b8" },
-        { "item_id": "e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b" }
-      ]
+      "accent": "#b8862e"
     }
   ],
-  "items": [
+  "articles": [
     {
       "id": "9c8b7a6f-5e4d-4c3b-8a29-1f0e9d8c7b6a",
-      "type": "article",
+      "moduleId": "6b1f2e3a-8c4d-4a6e-9f0b-1d2e3f4a5b6c",
       "slug": "wprowadzenie",
       "title": "Wprowadzenie do tematu",
       "shortTitle": "Wprowadzenie",
@@ -261,72 +319,59 @@ test.
       "content": "# Wprowadzenie\n\nTo jest przykładowy akapit z **pogrubieniem** i *kursywą*.\n\n## Kluczowe pojęcia\n\n- Pierwszy punkt\n- Drugi punkt\n  - Punkt zagnieżdżony\n\n> Ważna uwaga w formie cytatu."
     },
     {
-      "id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6",
-      "type": "quiz",
-      "slug": "quiz-wprowadzenie",
-      "title": "Quiz: Wprowadzenie",
-      "shortTitle": "Quiz: Wprowadzenie",
-      "description": "Quiz sprawdzający wiedzę z modułu „Wprowadzenie” — 2 pytania jednokrotnego i wielokrotnego wyboru, próg zaliczenia 70%.",
-      "shortDescription": "2 pytania sprawdzające wiedzę z modułu „Wprowadzenie”.",
-      "passThreshold": 70,
-      "questions": [
-        {
-          "id": "f0e1d2c3-b4a5-4968-8778-9a0b1c2d3e4f",
-          "question": "Które stwierdzenie jest prawdziwe?",
-          "options": [
-            { "key": "A", "text": "Odpowiedź A" },
-            { "key": "B", "text": "Odpowiedź B (poprawna)" },
-            { "key": "C", "text": "Odpowiedź C" }
-          ],
-          "answer": ["B"],
-          "explanation": "**Poprawna odpowiedź: B.** Krótkie wyjaśnienie dlaczego.\n\n> Dodatkowa wskazówka na przyszłość."
-        },
-        {
-          "id": "2b3c4d5e-6f70-4819-9a0b-c1d2e3f4a5b7",
-          "question": "Które dwie odpowiedzi są poprawne? (pytanie wielokrotnego wyboru)",
-          "options": [
-            { "key": "A", "text": "Odpowiedź poprawna nr 1" },
-            { "key": "B", "text": "Odpowiedź błędna" },
-            { "key": "C", "text": "Odpowiedź poprawna nr 2" }
-          ],
-          "answer": ["A", "C"],
-          "explanation": "Poprawne są **A** i **C**, ponieważ:\n\n- pierwszy powód\n- drugi powód"
-        }
-      ]
-    },
-    {
       "id": "a1b2c3d4-5e6f-4708-9a0b-c1d2e3f4a5b8",
-      "type": "article",
+      "moduleId": "d4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f7a",
       "slug": "szybka-powtorka-do-egzaminu",
       "title": "Szybka powtórka do egzaminu",
       "shortTitle": "Powtórka",
       "description": "Skondensowane podsumowanie kluczowych zasad i najczęstszych pułapek egzaminacyjnych wyodrębnionych z każdego modułu kursu — ostatni przegląd przed egzaminem.",
       "shortDescription": "Skondensowane podsumowanie kluczowych zagadnień z każdego modułu przed egzaminem.",
       "content": "# Szybka powtórka do egzaminu\n\n## Wprowadzenie\n\n- Punkt podsumowujący najważniejszą zasadę z modułu.\n- Kolejna częsta pułapka egzaminacyjna z tego modułu."
+    }
+  ],
+  "quizes": [
+    {
+      "id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6",
+      "moduleId": "6b1f2e3a-8c4d-4a6e-9f0b-1d2e3f4a5b6c",
+      "slug": "quiz-wprowadzenie",
+      "title": "Quiz: Wprowadzenie",
+      "shortTitle": "Quiz: Wprowadzenie",
+      "description": "Quiz sprawdzający wiedzę z modułu „Wprowadzenie” — 2 pytania jednokrotnego i wielokrotnego wyboru, próg zaliczenia 70%.",
+      "shortDescription": "2 pytania sprawdzające wiedzę z modułu „Wprowadzenie”.",
+      "passThreshold": 70
     },
     {
       "id": "e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
-      "type": "exam",
+      "moduleId": "d4e5f6a7-8b9c-4d0e-9f1a-2b3c4d5e6f7a",
       "slug": "egzamin-koncowy",
       "title": "Egzamin końcowy",
       "shortTitle": "Final Exam",
       "description": "Egzamin końcowy łączący pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu: Wprowadzenie (100%). Próg zaliczenia: 70%.",
       "shortDescription": "Pytania ze wszystkich quizów kursu, dobierane proporcjonalnie do wagi modułu.",
-      "passThreshold": 70,
-      "quizes": [
-        { "item_id": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6", "weight": 100 }
-      ]
+      "passThreshold": 70
     }
+  ],
+  "quizQuestionSets": [
+    { "quizId": "1a2b3c4d-5e6f-4708-9a0b-c1d2e3f4a5b6", "questionSetId": "7c8d9e0f-1a2b-4c3d-9e4f-5a6b7c8d9e0f", "weight": 100 },
+    { "quizId": "e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b", "questionSetId": "7c8d9e0f-1a2b-4c3d-9e4f-5a6b7c8d9e0f", "weight": 100 }
   ]
 }
 ```
+
+Zwróć uwagę, że quiz modułowy `quiz-wprowadzenie` i quiz egzaminacyjny
+`egzamin-koncowy` odwołują się do TEGO SAMEGO zestawu pytań
+(`7c8d9e0f-...`) przez własne wpisy w `quizQuestionSets[]` — to właśnie
+mechanizm, który dawniej nazywał się `type: "exam"`. Przy kursie z wieloma
+modułami egzamin odwołuje się do zestawu pytań KAŻDEGO quizu modułowego,
+każdy z osobną wagą sumującą się do 100.
 
 ## Co zrobić z wygenerowanym plikiem
 
 1. Zapisz odpowiedź AI jako plik `.json` (dowolna nazwa, np. `moj-kurs.json`).
 2. Przejdź na stronę **/courses/import** platformy learn.
 3. Wgraj plik — kurs zostanie zapisany lokalnie w przeglądarce (local storage,
-   w tabelach `courses`/`modules`/`items`) i natychmiast dostępny pod adresem
+   w tabelach `courses`/`questionSets`/`questions`/`modules`/`articles`/`quizes`/`quizQuestionSets`)
+   i natychmiast dostępny pod adresem
    `/courses/{slug}` z pełną funkcjonalnością: przeglądanie modułów, artykuły,
    quizy jedno- i wielokrotnego wyboru, quiz końcowy oraz śledzenie postępu.
 </pre>
