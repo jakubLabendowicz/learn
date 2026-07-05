@@ -5,37 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>learn — platforma kursów</title>
 <link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/app-shell.css">
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="logo" href="/">
-      <span class="logo-dot"></span>
-      learn
-    </a>
-    <div class="nav-links">
-      <a href="/courses">Kursy</a>
-      <a href="/profile">Profil</a>
-    </div>
-  </div>
-</nav>
+<div id="app-shell-root"></div>
 
-<main>
-  <section class="hero">
-    <span class="hero-eyebrow">Platforma kursów</span>
-    <h1>Ucz się w swoim tempie.</h1>
-    <p>Krótkie, praktyczne kursy przygotowujące do certyfikacji i egzaminów — bez zbędnego balastu.</p>
-    <a class="btn" href="/courses">Przeglądaj kursy →</a>
-  </section>
+<div class="app-main">
+  <main>
+    <section class="hero">
+      <span class="hero-eyebrow">Platforma kursów</span>
+      <h1>Ucz się w swoim tempie.</h1>
+      <p>Krótkie, praktyczne kursy przygotowujące do certyfikacji i egzaminów — bez zbędnego balastu.</p>
+      <a class="btn" href="/courses">Przeglądaj kursy →</a>
+    </section>
 
-  <div id="dashboard"></div>
-</main>
+    <div id="dashboard"></div>
+  </main>
 
-<footer class="site-footer">
-  learn — platforma kursów
-</footer>
+  <footer class="site-footer">
+    learn — platforma kursów
+  </footer>
+</div>
 
+<script src="/assets/app-shell.js"></script>
+<script>renderAppShell('home');</script>
 <script src="/assets/storage.js"></script>
 <script src="/assets/dao.js"></script>
 <script src="/assets/repository.js"></script>

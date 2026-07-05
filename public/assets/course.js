@@ -3,7 +3,9 @@
  *   /courses/{course}
  *   /courses/{course}/modules
  *   /courses/{course}/modules/{module}
+ *   /courses/{course}/modules/{module}/articles
  *   /courses/{course}/modules/{module}/articles/{article}
+ *   /courses/{course}/modules/{module}/quizes
  *   /courses/{course}/modules/{module}/quizes/{quiz}              (ordinary quiz or multi-set "exam" quiz)
  */
 (function () {
@@ -120,8 +122,10 @@
   const courseUrl = () => `/courses/${COURSE.slug}`;
   const modulesUrl = () => `${courseUrl()}/modules`;
   const moduleUrl = m => `${modulesUrl()}/${m.slug}`;
-  const articleUrl = (m, a) => `${moduleUrl(m)}/articles/${a.slug}`;
-  const quizUrl = (m, q) => `${moduleUrl(m)}/quizes/${q.slug}`;
+  const articlesUrl = m => `${moduleUrl(m)}/articles`;
+  const quizesUrl = m => `${moduleUrl(m)}/quizes`;
+  const articleUrl = (m, a) => `${articlesUrl(m)}/${a.slug}`;
+  const quizUrl = (m, q) => `${quizesUrl(m)}/${q.slug}`;
 
   // ---------------- Router ----------------
 
@@ -142,6 +146,8 @@
       depth: segs.length,
       isModulesList: segs.length === 2 && segs[1] === 'modules',
       isModule: segs.length === 3 && segs[1] === 'modules',
+      isArticlesList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'articles',
+      isQuizesList: segs.length === 4 && segs[1] === 'modules' && segs[3] === 'quizes',
       isArticle: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'articles',
       isQuiz: segs.length === 5 && segs[1] === 'modules' && segs[3] === 'quizes',
     };
@@ -160,6 +166,8 @@
     }
 
     if (r.isModule) { app.innerHTML = renderModulePage(mod); updateTopbar(); return; }
+    if (r.isArticlesList) { app.innerHTML = renderArticlesList(mod); updateTopbar(); return; }
+    if (r.isQuizesList) { app.innerHTML = renderQuizesList(mod); updateTopbar(); return; }
 
     if (r.isArticle) {
       const article = articleBySlug(mod, r.itemSlug);
@@ -304,6 +312,26 @@
       <div class="item-list">${rows}</div>`;
   }
 
+  // ---------------- Articles / quizzes list pages (per module) ----------------
+
+  function renderArticlesList(mod) {
+    const rows = mod.articles.map(a => itemRow(mod, 'article', a)).join('') || `<p class="dash-empty">Brak artykułów w tym module.</p>`;
+
+    return `
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Artykuły' }])}
+      <div class="course-hero"><h1>Artykuły — ${escapeHtml(mod.title)}</h1></div>
+      <div class="item-list">${rows}</div>`;
+  }
+
+  function renderQuizesList(mod) {
+    const rows = mod.quizzes.map(q => itemRow(mod, 'quiz', q)).join('') || `<p class="dash-empty">Brak quizów w tym module.</p>`;
+
+    return `
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Quizy' }])}
+      <div class="course-hero"><h1>Quizy — ${escapeHtml(mod.title)}</h1></div>
+      <div class="item-list">${rows}</div>`;
+  }
+
   // ---------------- Article page ----------------
 
   function renderArticlePage(mod, article) {
@@ -311,7 +339,7 @@
     const html = renderMarkdown(article.content);
 
     return `
-      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: article.shortTitle || article.title }])}
+      ${breadcrumbs([{ label: COURSE.shortTitle || COURSE.title, href: courseUrl() }, { label: 'Moduły', href: modulesUrl() }, { label: mod.shortTitle || mod.title, href: moduleUrl(mod) }, { label: 'Artykuły', href: articlesUrl(mod) }, { label: article.shortTitle || article.title }])}
       <button class="back-link" onclick="navigate('${moduleUrl(mod)}')">← Wróć</button>
       <div class="module-head">
         <h1>${escapeHtml(article.title)}</h1>
@@ -369,6 +397,7 @@
       { label: COURSE.shortTitle || COURSE.title, href: courseUrl() },
       { label: 'Moduły', href: modulesUrl() },
       { label: mod.shortTitle || mod.title, href: moduleUrl(mod) },
+      { label: 'Quizy', href: quizesUrl(mod) },
       { label: quiz.shortTitle || quiz.title },
     ]);
     const backUrl = moduleUrl(mod);
