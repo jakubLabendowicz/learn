@@ -5,41 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kursy — learn</title>
 <link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/app-shell.css">
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="logo" href="/">
-      <span class="logo-dot"></span>
-      learn
-    </a>
-    <div class="nav-links">
-      <a href="/courses">Kursy</a>
-      <a href="/profile">Profil</a>
+<div id="app-shell-root"></div>
+
+<div class="app-main">
+  <main>
+    <div class="page-header">
+      <h1>Dostępne kursy</h1>
+      <p>Wybierz kurs, aby rozpocząć naukę, albo wygeneruj i zaimportuj własny.</p>
+      <div class="page-header-actions">
+        <a class="btn-secondary" href="/courses/generate">✨ Generuj</a>
+        <a class="btn-secondary" href="/courses/import">⬆ Importuj</a>
+      </div>
     </div>
-  </div>
-</nav>
 
-<main>
-  <div class="page-header">
-    <h1>Dostępne kursy</h1>
-    <p>Wybierz kurs, aby rozpocząć naukę, albo wygeneruj i zaimportuj własny.</p>
-    <div class="page-header-actions">
-      <a class="btn-secondary" href="/courses/generate">✨ Generuj</a>
-      <a class="btn-secondary" href="/courses/import">⬆ Importuj</a>
+    <div class="course-grid" id="course-grid">
+      <p style="color:var(--text-muted)">Wczytywanie…</p>
     </div>
-  </div>
+  </main>
 
-  <div class="course-grid" id="course-grid">
-    <p style="color:var(--text-muted)">Wczytywanie…</p>
-  </div>
-</main>
+  <footer class="site-footer">
+    learn — platforma kursów
+  </footer>
+</div>
 
-<footer class="site-footer">
-  learn — platforma kursów
-</footer>
-
+<script src="/assets/app-shell.js"></script>
+<script>renderAppShell('courses');</script>
 <script src="/assets/storage.js"></script>
 <script src="/assets/dao.js"></script>
 <script src="/assets/repository.js"></script>

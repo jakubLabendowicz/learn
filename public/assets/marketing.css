@@ -1,0 +1,157 @@
+/* Marketing site (learn.labendowicz.com) — a single descriptive landing
+ * page, styled independently of the app shell (app.learn.labendowicz.com
+ * uses app-shell.css instead). Shares style.css's CSS variables/reset. */
+
+.marketing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(250, 250, 250, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.marketing-nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.marketing-main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.marketing-hero {
+  padding: 6rem 0 4.5rem;
+  text-align: center;
+}
+
+.marketing-hero h1 {
+  font-size: clamp(2.3rem, 5.5vw, 3.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0 0 1.1rem;
+}
+
+.marketing-hero p {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin: 0 auto 2.25rem;
+}
+
+.marketing-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.marketing-section {
+  padding: 3.5rem 0;
+}
+
+.marketing-section-header {
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto 2.5rem;
+}
+
+.marketing-section-header h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.6rem;
+}
+
+.marketing-section-header p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem 1.5rem;
+}
+
+.feature-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.01em;
+}
+
+.feature-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.marketing-cta-band {
+  background: var(--accent);
+  border-radius: var(--radius);
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #fff;
+  margin: 1rem 0 4rem;
+}
+
+.marketing-cta-band h2 {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+
+.marketing-cta-band p {
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 1.75rem;
+}
+
+.marketing-cta-band .btn {
+  background: #fff;
+  color: var(--accent);
+}
+
+.marketing-cta-band .btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--accent-hover);
+}
+
+@media (max-width: 560px) {
+  .marketing-hero {
+    padding: 4rem 0 3rem;
+  }
+
+  .marketing-cta-band {
+    padding: 2.25rem 1.5rem;
+  }
+}

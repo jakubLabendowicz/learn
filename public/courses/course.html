@@ -6,41 +6,35 @@
 <title>Kurs — learn</title>
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="/assets/course.css">
+<link rel="stylesheet" href="/assets/app-shell.css">
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="logo" href="/">
-      <span class="logo-dot"></span>
-      learn
-    </a>
-    <div class="nav-links">
-      <a href="/courses">Kursy</a>
-      <a href="/profile">Profil</a>
-    </div>
-  </div>
-</nav>
+<div id="app-shell-root"></div>
 
-<div class="course-topbar" id="course-topbar" style="display:none">
-  <div class="course-topbar-inner">
-    <div class="course-topbar-title" id="course-topbar-title"></div>
-    <div class="course-topbar-progress">
-      <span id="course-topbar-pct">0% ukończone</span>
-      <div class="course-topbar-bar"><span id="course-topbar-bar-fill"></span></div>
-      <button class="course-topbar-export" id="course-topbar-export">⬇ Eksportuj</button>
+<div class="app-main">
+  <div class="course-topbar" id="course-topbar" style="display:none">
+    <div class="course-topbar-inner">
+      <div class="course-topbar-title" id="course-topbar-title"></div>
+      <div class="course-topbar-progress">
+        <span id="course-topbar-pct">0% ukończone</span>
+        <div class="course-topbar-bar"><span id="course-topbar-bar-fill"></span></div>
+        <button class="course-topbar-export" id="course-topbar-export">⬇ Eksportuj</button>
+      </div>
     </div>
   </div>
+
+  <main class="course-main" id="course-app">
+    <p class="course-loading">Wczytywanie kursu…</p>
+  </main>
+
+  <footer class="site-footer" id="course-footer" style="display:none">
+    learn — platforma kursów <span id="course-archive-wrap">· <a id="course-archive-link" href="#">zobacz archiwalną wersję tego kursu</a></span>
+  </footer>
 </div>
 
-<main class="course-main" id="course-app">
-  <p class="course-loading">Wczytywanie kursu…</p>
-</main>
-
-<footer class="site-footer" id="course-footer" style="display:none">
-  learn — platforma kursów <span id="course-archive-wrap">· <a id="course-archive-link" href="#">zobacz archiwalną wersję tego kursu</a></span>
-</footer>
-
+<script src="/assets/app-shell.js"></script>
+<script>renderAppShell('courses');</script>
 <script src="/assets/storage.js"></script>
 <script src="/assets/dao.js"></script>
 <script src="/assets/repository.js"></script>

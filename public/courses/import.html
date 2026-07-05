@@ -6,52 +6,46 @@
 <title>Importuj kurs — learn</title>
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="/assets/utility-pages.css">
+<link rel="stylesheet" href="/assets/app-shell.css">
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="logo" href="/">
-      <span class="logo-dot"></span>
-      learn
-    </a>
-    <div class="nav-links">
-      <a href="/courses">Kursy</a>
-      <a href="/profile">Profil</a>
+<div id="app-shell-root"></div>
+
+<div class="app-main">
+  <main class="utility-main">
+    <div class="page-header">
+      <h1>Importuj kurs</h1>
+      <p>
+        Wgraj plik <code>course.json</code> (np. wygenerowany przez AI za pomocą
+        <a href="/courses/generate">skilla</a>). Kurs zostanie zapisany lokalnie w
+        przeglądarce (local storage) i będzie działał tak samo jak wbudowane kursy —
+        łącznie z postępem, quizami i wynikami.
+      </p>
     </div>
-  </div>
-</nav>
 
-<main class="utility-main">
-  <div class="page-header">
-    <h1>Importuj kurs</h1>
-    <p>
-      Wgraj plik <code>course.json</code> (np. wygenerowany przez AI za pomocą
-      <a href="/courses/generate">skilla</a>). Kurs zostanie zapisany lokalnie w
-      przeglądarce (local storage) i będzie działał tak samo jak wbudowane kursy —
-      łącznie z postępem, quizami i wynikami.
-    </p>
-  </div>
+    <div id="import-message" class="import-message"></div>
 
-  <div id="import-message" class="import-message"></div>
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-icon">📄</div>
+      <div class="dropzone-text">Kliknij, aby wybrać plik, albo przeciągnij go tutaj</div>
+      <div class="dropzone-sub">Akceptowany format: .json</div>
+      <input type="file" id="file-input" accept="application/json,.json" style="display:none">
+    </div>
 
-  <div class="dropzone" id="dropzone">
-    <div class="dropzone-icon">📄</div>
-    <div class="dropzone-text">Kliknij, aby wybrać plik, albo przeciągnij go tutaj</div>
-    <div class="dropzone-sub">Akceptowany format: .json</div>
-    <input type="file" id="file-input" accept="application/json,.json" style="display:none">
-  </div>
+    <div class="page-header" style="padding-top:1rem">
+      <h1 style="font-size:1.3rem">Wszystkie kursy</h1>
+    </div>
+    <div class="imported-list" id="imported-list"></div>
+  </main>
 
-  <div class="page-header" style="padding-top:1rem">
-    <h1 style="font-size:1.3rem">Wszystkie kursy</h1>
-  </div>
-  <div class="imported-list" id="imported-list"></div>
-</main>
+  <footer class="site-footer">
+    learn — platforma kursów
+  </footer>
+</div>
 
-<footer class="site-footer">
-  learn — platforma kursów
-</footer>
-
+<script src="/assets/app-shell.js"></script>
+<script>renderAppShell('courses');</script>
 <script src="/assets/storage.js"></script>
 <script src="/assets/dao.js"></script>
 <script src="/assets/repository.js"></script>

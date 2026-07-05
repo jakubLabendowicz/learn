@@ -6,22 +6,13 @@
 <title>Wygeneruj kurs (AI skill) — learn</title>
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="/assets/utility-pages.css">
+<link rel="stylesheet" href="/assets/app-shell.css">
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="logo" href="/">
-      <span class="logo-dot"></span>
-      learn
-    </a>
-    <div class="nav-links">
-      <a href="/courses">Kursy</a>
-      <a href="/profile">Profil</a>
-    </div>
-  </div>
-</nav>
+<div id="app-shell-root"></div>
 
+<div class="app-main">
 <main class="utility-main">
   <div class="page-header">
     <h1>Wygeneruj kurs za pomocą AI</h1>
@@ -380,7 +371,10 @@ każdy z osobną wagą sumującą się do 100.
 <footer class="site-footer">
   learn — platforma kursów
 </footer>
+</div>
 
+<script src="/assets/app-shell.js"></script>
+<script>renderAppShell('courses');</script>
 <script>
 const skillEl = document.getElementById('skill-content');
 document.getElementById('copy-btn').addEventListener('click', async () => {
