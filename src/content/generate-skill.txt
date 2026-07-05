@@ -1,36 +1,4 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wygeneruj kurs (AI skill) — learn</title>
-<link rel="stylesheet" href="/assets/style.css">
-<link rel="stylesheet" href="/assets/utility-pages.css">
-<link rel="stylesheet" href="/assets/app-shell.css">
-</head>
-<body>
-
-<div id="app-shell-root"></div>
-
-<div class="app-main">
-<main class="utility-main">
-  <div class="page-header">
-    <h1>Wygeneruj kurs za pomocą AI</h1>
-    <p>
-      Poniższy tekst to gotowa instrukcja ("skill") dla asystenta AI (np. Claude, ChatGPT).
-      Skopiuj ją, wklej na początku rozmowy razem ze swoim materiałem źródłowym (notatki,
-      artykuł, lista pytań egzaminacyjnych) i poproś o wygenerowanie pliku <code>course.json</code>.
-      Gotowy plik wgraj na stronie <a href="/courses/import">/courses/import</a>.
-    </p>
-    <div class="utility-actions">
-      <button class="course-btn" id="copy-btn">📋 Kopiuj skill do schowka</button>
-      <button class="btn-secondary" id="download-btn">⬇ Pobierz jako .md</button>
-      <a class="btn-secondary" href="/courses/import">Przejdź do importu →</a>
-    </div>
-    <p class="copy-feedback" id="copy-feedback" style="display:none">Skopiowano do schowka.</p>
-  </div>
-
-  <pre class="skill-block" id="skill-content"># Skill: Generowanie pliku course.json dla platformy „learn”
+# Skill: Generowanie pliku course.json dla platformy „learn”
 
 Jesteś asystentem AI, którego zadaniem jest wygenerowanie pliku `course.json`
 zgodnego ze schematem platformy edukacyjnej „learn”. Użytkownik dostarczy Ci
@@ -365,38 +333,3 @@ każdy z osobną wagą sumującą się do 100.
    i natychmiast dostępny pod adresem
    `/courses/{slug}` z pełną funkcjonalnością: przeglądanie modułów, artykuły,
    quizy jedno- i wielokrotnego wyboru, quiz końcowy oraz śledzenie postępu.
-</pre>
-</main>
-
-<footer class="site-footer">
-  learn — platforma kursów
-</footer>
-</div>
-
-<script src="/assets/app-shell.js"></script>
-<script>renderAppShell('courses');</script>
-<script>
-const skillEl = document.getElementById('skill-content');
-document.getElementById('copy-btn').addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(skillEl.textContent);
-    const fb = document.getElementById('copy-feedback');
-    fb.style.display = 'block';
-    setTimeout(() => { fb.style.display = 'none'; }, 2500);
-  } catch (e) {
-    alert('Nie udało się skopiować automatycznie — zaznacz tekst ręcznie.');
-  }
-});
-document.getElementById('download-btn').addEventListener('click', () => {
-  const blob = new Blob([skillEl.textContent], { type: 'text/markdown' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'generate-course-json.skill.md';
-  a.click();
-  URL.revokeObjectURL(url);
-});
-</script>
-
-</body>
-</html>

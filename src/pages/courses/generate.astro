@@ -1,0 +1,54 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+// Raw-imported so the many literal `{...}`/backticks in the skill text
+// never get parsed as Astro template expressions.
+import skillText from '../../content/generate-skill.txt?raw';
+---
+<AppLayout title="Wygeneruj kurs (AI skill) — learn" active="courses" extraStyles={['/assets/utility-pages.css']}>
+  <main class="utility-main">
+    <div class="page-header">
+      <h1>Wygeneruj kurs za pomocą AI</h1>
+      <p>
+        Poniższy tekst to gotowa instrukcja ("skill") dla asystenta AI (np. Claude, ChatGPT).
+        Skopiuj ją, wklej na początku rozmowy razem ze swoim materiałem źródłowym (notatki,
+        artykuł, lista pytań egzaminacyjnych) i poproś o wygenerowanie pliku <code>course.json</code>.
+        Gotowy plik wgraj na stronie <a href="/courses/import">/courses/import</a>.
+      </p>
+      <div class="utility-actions">
+        <button class="course-btn" id="copy-btn">📋 Kopiuj skill do schowka</button>
+        <button class="btn-secondary" id="download-btn">⬇ Pobierz jako .md</button>
+        <a class="btn-secondary" href="/courses/import">Przejdź do importu →</a>
+      </div>
+      <p class="copy-feedback" id="copy-feedback" style="display:none">Skopiowano do schowka.</p>
+    </div>
+
+    <pre class="skill-block" id="skill-content" set:text={skillText}></pre>
+  </main>
+
+  <footer class="site-footer">
+    learn — platforma kursów
+  </footer>
+
+  <script is:inline>
+  const skillEl = document.getElementById('skill-content');
+  document.getElementById('copy-btn').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(skillEl.textContent);
+      const fb = document.getElementById('copy-feedback');
+      fb.style.display = 'block';
+      setTimeout(() => { fb.style.display = 'none'; }, 2500);
+    } catch (e) {
+      alert('Nie udało się skopiować automatycznie — zaznacz tekst ręcznie.');
+    }
+  });
+  document.getElementById('download-btn').addEventListener('click', () => {
+    const blob = new Blob([skillEl.textContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'generate-course-json.skill.md';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  </script>
+</AppLayout>

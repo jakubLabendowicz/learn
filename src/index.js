@@ -26,10 +26,12 @@ export default {
 
     if (!isApp) {
       // Marketing site: a single descriptive landing page, nothing else.
-      // "/marketing/" (trailing slash, no .html) is the clean-URL form
-      // the assets binding serves directly, without a redirect.
+      // Astro (build.format: "file") builds src/pages/marketing/index.astro
+      // to the flat file /marketing.html, so the clean-URL form to rewrite
+      // to is "/marketing" (no trailing slash, no .html) — same pattern as
+      // the /courses/course rewrite below.
       if (pathname === "/" || pathname === "") {
-        pathname = "/marketing/";
+        pathname = "/marketing";
       }
       if (pathname !== url.pathname) {
         const rewritten = new URL(request.url);
@@ -40,13 +42,15 @@ export default {
     }
 
     // ---- app.learn.labendowicz.com ----
-    if (pathname === "/courses" || pathname === "/courses/") {
-      // Course list page. "/courses/" (trailing slash, no .html) is the
-      // clean-URL form the assets binding serves directly — rewriting to
-      // ".../index.html" instead would redirect back to this same
-      // pathname, looping forever now that the Worker runs on every
-      // request (run_worker_first).
-      pathname = "/courses/";
+    // Note: /courses needs no rewrite — Astro builds
+    // src/pages/courses/index.astro to the flat file /courses.html, which
+    // the assets binding's clean-URL resolution already serves directly
+    // for the extension-less "/courses" path.
+    if (pathname === "/courses/") {
+      // Trailing slash: strip it down to the clean-URL form above, rather
+      // than let it fall through to /courses/course (which would treat ""
+      // as a course slug).
+      pathname = "/courses";
     } else if (pathname.startsWith("/courses/") && !hasExtension(pathname)) {
       const slug = pathname.replace(/^\/courses\//, "").replace(/\/$/, "");
       if (!RESERVED_COURSE_PAGES.has(slug)) {

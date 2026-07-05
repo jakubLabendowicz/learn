@@ -1,0 +1,101 @@
+---
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+---
+<MarketingLayout
+  title="learn — ucz się mądrzej, zdawaj pewniej"
+  description="learn to platforma do nauki i powtórek przed egzaminami certyfikacyjnymi: kursy podzielone na moduły, artykuły i quizy, quizy dobierane proporcjonalnie do wagi tematów jak na prawdziwym egzaminie, i wszystko zapisane lokalnie w Twojej przeglądarce."
+>
+  <nav class="marketing-nav">
+    <div class="marketing-nav-inner">
+      <a class="logo" href="/">
+        <span class="logo-dot"></span>
+        learn
+      </a>
+      <a class="btn-secondary" id="nav-app-link" href="#">Otwórz aplikację →</a>
+    </div>
+  </nav>
+
+  <main class="marketing-main">
+    <section class="marketing-hero">
+      <span class="hero-eyebrow">Platforma nauki i powtórek</span>
+      <h1>Ucz się mądrzej.<br>Zdawaj pewniej.</h1>
+      <p>
+        Krótkie, praktyczne kursy przygotowujące do certyfikacji — podzielone na moduły,
+        artykuły i quizy, z pytaniami dobieranymi tak samo, jak na prawdziwym egzaminie.
+        Bez konta, bez serwera — wszystko zostaje w Twojej przeglądarce.
+      </p>
+      <div class="marketing-hero-actions">
+        <a class="btn" id="hero-app-link" href="#">Otwórz aplikację →</a>
+        <a class="btn-secondary" href="#dlaczego-warto">Dlaczego warto</a>
+      </div>
+    </section>
+
+    <section class="marketing-section">
+      <div class="marketing-section-header">
+        <h2>Wszystko, czego potrzebujesz do skutecznej nauki</h2>
+        <p>Jeden spójny format kursu, niezależnie od tego, do jakiego egzaminu się przygotowujesz.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">📚</div>
+          <h3>Struktura, która ma sens</h3>
+          <p>Każdy kurs to moduły, a każdy moduł to artykuły do przeczytania i quizy do rozwiązania — jasna ścieżka od pierwszej do ostatniej strony.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🎯</div>
+          <h3>Quizy jak na prawdziwym egzaminie</h3>
+          <p>Pytania do quizu końcowego są losowane proporcjonalnie do wagi każdego tematu — tak jak wygląda to na rzeczywistej certyfikacji.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📈</div>
+          <h3>Śledzenie postępu</h3>
+          <p>Widzisz, które artykuły przeczytałeś i jak poszły Ci kolejne podejścia do quizów — bez zakładania konta czy logowania się.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔒</div>
+          <h3>Twoje dane zostają u Ciebie</h3>
+          <p>Cały postęp i historia wyników są zapisywane lokalnie w Twojej przeglądarce — żadnego zewnętrznego serwera, żadnej rejestracji.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">✨</div>
+          <h3>Generuj własne kursy z AI</h3>
+          <p>Wklej notatki, artykuł albo listę pytań egzaminacyjnych do asystenta AI i zaimportuj gotowy kurs jednym plikiem.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">⬆</div>
+          <h3>Import i eksport</h3>
+          <p>Zabierz swój kurs ze sobą albo podziel się nim z kimś innym jako zwykłym plikiem JSON — bez utraty postępu.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="marketing-section" id="dlaczego-warto">
+      <div class="marketing-section-header">
+        <h2>Dlaczego warto</h2>
+        <p>
+          Większość materiałów do egzaminów certyfikacyjnych to albo długie, nieustrukturyzowane
+          dokumenty, albo generyczne bazy pytań bez kontekstu. learn łączy oba światy: zwięzłą
+          treść merytoryczną z quizami, które faktycznie odzwierciedlają wagę poszczególnych
+          tematów na egzaminie — więc wiesz, gdzie realnie warto poświęcić więcej czasu.
+        </p>
+      </div>
+    </section>
+
+    <section class="marketing-cta-band">
+      <h2>Gotowy zacząć naukę?</h2>
+      <p>Wybierz gotowy kurs albo wygeneruj własny — zajmie to mniej niż minutę.</p>
+      <a class="btn" id="cta-app-link" href="#">Otwórz aplikację →</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    learn — platforma kursów
+  </footer>
+
+  <script is:inline>
+    const appUrl = `https://app.${location.hostname}`;
+    ['nav-app-link', 'hero-app-link', 'cta-app-link'].forEach(id => {
+      document.getElementById(id).href = appUrl;
+    });
+  </script>
+</MarketingLayout>

@@ -1,0 +1,235 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import DataScripts from '../components/DataScripts.astro';
+---
+<AppLayout title="Profil — learn" active="profile" extraStyles={['/assets/utility-pages.css']}>
+  <main class="utility-main">
+    <div class="page-header">
+      <h1>Twój profil</h1>
+      <p>Dane konta, aktywność w kursach i historia podejść do quizów — wszystko zapisane lokalnie w Twojej przeglądarce.</p>
+    </div>
+
+    <div id="profile-card"></div>
+    <div id="profile-edit" style="display:none"></div>
+
+    <div class="profile-stats" id="profile-stats"></div>
+
+    <div class="page-header" style="padding-top:1rem">
+      <h1 style="font-size:1.3rem">Ostatnia aktywność</h1>
+    </div>
+    <div class="dash-list" id="activity-list"></div>
+
+    <div class="page-header" style="padding-top:2rem">
+      <h1 style="font-size:1.3rem">Historia podejść do quizów</h1>
+    </div>
+    <div class="attempt-list" id="attempt-list"></div>
+  </main>
+
+  <footer class="site-footer">
+    learn — platforma kursów
+  </footer>
+
+  <DataScripts />
+  <script is:inline>
+  let USER = null;
+
+  function escapeHtml(s) {
+    if (s === undefined || s === null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  const fmtDateTime = iso => new Date(iso).toLocaleString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  function renderCard() {
+    document.getElementById('profile-card').innerHTML = `
+      <div class="profile-card">
+        <div class="profile-avatar">${escapeHtml(USER.avatarIcon || '🙂')}</div>
+        <div class="profile-body">
+          <div class="profile-name">${escapeHtml(USER.name || 'Gość')}</div>
+          ${USER.email ? `<div class="profile-email">${escapeHtml(USER.email)}</div>` : ''}
+          ${USER.bio ? `<div class="profile-bio">${escapeHtml(USER.bio)}</div>` : ''}
+          <div class="profile-meta">Konto założone: ${fmtDateTime(USER.createdAt)}</div>
+        </div>
+        <button class="btn-secondary" onclick="toggleEdit(true)">✎ Edytuj</button>
+      </div>`;
+  }
+
+  function renderEditForm() {
+    document.getElementById('profile-edit').innerHTML = `
+      <div class="profile-edit-form">
+        <div class="profile-edit-field">
+          <label for="edit-avatar">Ikona (emoji)</label>
+          <input id="edit-avatar" maxlength="4" value="${escapeHtml(USER.avatarIcon || '')}">
+        </div>
+        <div class="profile-edit-field">
+          <label for="edit-name">Imię / nazwa</label>
+          <input id="edit-name" value="${escapeHtml(USER.name || '')}">
+        </div>
+        <div class="profile-edit-field">
+          <label for="edit-email">E-mail</label>
+          <input id="edit-email" type="email" value="${escapeHtml(USER.email || '')}">
+        </div>
+        <div class="profile-edit-field">
+          <label for="edit-bio">O mnie</label>
+          <textarea id="edit-bio">${escapeHtml(USER.bio || '')}</textarea>
+        </div>
+        <div class="profile-edit-actions">
+          <button class="btn" onclick="saveEdit()">Zapisz</button>
+          <button class="btn-secondary" onclick="toggleEdit(false)">Anuluj</button>
+        </div>
+      </div>`;
+  }
+
+  function toggleEdit(show) {
+    document.getElementById('profile-edit').style.display = show ? 'block' : 'none';
+    document.getElementById('profile-card').style.display = show ? 'none' : 'flex';
+    if (show) renderEditForm();
+  }
+  window.toggleEdit = toggleEdit;
+
+  function saveEdit() {
+    const patch = {
+      avatarIcon: document.getElementById('edit-avatar').value.trim() || '🙂',
+      name: document.getElementById('edit-name').value.trim() || 'Gość',
+      email: document.getElementById('edit-email').value.trim(),
+      bio: document.getElementById('edit-bio').value.trim(),
+    };
+    USER = userRepository.update(USER.id, patch);
+    toggleEdit(false);
+    renderCard();
+  }
+  window.saveEdit = saveEdit;
+
+  function renderStats() {
+    const coursesStarted = userCourseActivityRepository.count(r => r.userId === USER.id);
+    const articlesRead = userArticleActivityRepository.count(r => r.userId === USER.id);
+    const attempts = userQuizAttemptRepository.where(r => r.userId === USER.id);
+    const avgPct = attempts.length ? Math.round(attempts.reduce((s, a) => s + a.pct, 0) / attempts.length) : 0;
+
+    document.getElementById('profile-stats').innerHTML = `
+      <div class="profile-stat"><div class="profile-stat-val">${coursesStarted}</div><div class="profile-stat-label">Rozpoczętych kursów</div></div>
+      <div class="profile-stat"><div class="profile-stat-val">${articlesRead}</div><div class="profile-stat-label">Przeczytanych artykułów</div></div>
+      <div class="profile-stat"><div class="profile-stat-val">${attempts.length}</div><div class="profile-stat-label">Podejść do quizów</div></div>
+      <div class="profile-stat"><div class="profile-stat-val">${attempts.length ? avgPct + '%' : '—'}</div><div class="profile-stat-label">Średni wynik</div></div>`;
+  }
+
+  function renderActivity() {
+    const articleRows = userArticleActivityRepository
+      .where(r => r.userId === USER.id)
+      .map(r => {
+        const article = articleRepository.find(r.articleId);
+        const mod = article && articleRepository.getModule(article.id);
+        const course = mod && moduleRepository.getCourse(mod.id);
+        if (!article || !mod || !course) return null;
+        return { lastVisitedAt: r.lastVisitedAt, icon: '📖', title: article.shortTitle || article.title, course, mod, url: `/courses/${course.slug}/modules/${mod.slug}/articles/${article.slug}` };
+      });
+    const quizRows = userQuizActivityRepository
+      .where(r => r.userId === USER.id)
+      .map(r => {
+        const quiz = quizRepository.find(r.quizId);
+        const mod = quiz && quizRepository.getModule(quiz.id);
+        const course = mod && moduleRepository.getCourse(mod.id);
+        if (!quiz || !mod || !course) return null;
+        const icon = quizQuestionSetRepository.forQuiz(quiz.id).length > 1 ? '🏁' : '✅';
+        return { lastVisitedAt: r.lastVisitedAt, icon, title: quiz.shortTitle || quiz.title, course, mod, url: `/courses/${course.slug}/modules/${mod.slug}/quizes/${quiz.slug}` };
+      });
+
+    const rows = [...articleRows, ...quizRows]
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.lastVisitedAt) - new Date(a.lastVisitedAt))
+      .slice(0, 30)
+      .map(r => `
+          <a class="dash-row" href="${r.url}">
+            <div class="dash-row-body">
+              <div class="dash-row-title">${r.icon} ${escapeHtml(r.title)}</div>
+              <div class="dash-row-sub">${escapeHtml(r.course.shortTitle || r.course.title)} · ${escapeHtml(r.mod.shortTitle || r.mod.title)}</div>
+            </div>
+            <div class="dash-row-date">${fmtDateTime(r.lastVisitedAt)}</div>
+          </a>`);
+
+    document.getElementById('activity-list').innerHTML = rows.length ? rows.join('') : `<p class="dash-empty">Brak jeszcze żadnej aktywności. <a href="/courses">Zacznij od wyboru kursu →</a></p>`;
+  }
+
+  function optionText(question, optionId) {
+    const o = (question.options || []).find(x => x.id === optionId);
+    if (!o) return optionId;
+    return `${questionRepository.optionLabel(question, optionId)}: ${o.text}`;
+  }
+
+  function renderAttemptReview(quiz, attempt) {
+    const poolById = new Map(quizRepository.getAllQuestions(quiz.id).map(q => [q.id, q]));
+    const answeredIds = Object.keys(attempt.answers || {});
+    if (!answeredIds.length) return '<p class="dash-empty">Brak szczegółów tego podejścia.</p>';
+    return answeredIds.map((qid, i) => {
+      const q = poolById.get(qid);
+      if (!q) return '';
+      const ans = attempt.answers[qid] || [];
+      const correctIds = questionRepository.correctOptionIds(q);
+      const userSet = new Set(ans);
+      const correctSet = new Set(correctIds);
+      const isCorrect = userSet.size === correctSet.size && [...userSet].every(id => correctSet.has(id));
+      return `
+        <div class="attempt-q">
+          <div class="attempt-q-text">${i + 1}. ${escapeHtml(q.question)}</div>
+          <div class="attempt-q-ans">
+            ${isCorrect
+              ? '✅ Poprawnie: ' + escapeHtml(correctIds.map(id => optionText(q, id)).join(', '))
+              : '❌ Twoja odpowiedź: <span class="your-ans">' + escapeHtml(ans.map(id => optionText(q, id)).join(', ') || '—') + '</span> · ✅ Poprawna: <span class="correct-ans">' + escapeHtml(correctIds.map(id => optionText(q, id)).join(', ')) + '</span>'}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleAttempt(id) {
+    const el = document.getElementById('review-' + id);
+    const toggle = document.getElementById('toggle-' + id);
+    const open = el.classList.toggle('open');
+    toggle.textContent = open ? '▲ Ukryj odpowiedzi' : '▼ Zobacz odpowiedzi';
+  }
+  window.toggleAttempt = toggleAttempt;
+
+  function renderAttempts() {
+    const attempts = userQuizAttemptRepository
+      .where(r => r.userId === USER.id)
+      .slice()
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (!attempts.length) {
+      document.getElementById('attempt-list').innerHTML = `<p class="dash-empty">Brak jeszcze żadnych podejść do quizów.</p>`;
+      return;
+    }
+
+    document.getElementById('attempt-list').innerHTML = attempts.map(a => {
+      const quiz = quizRepository.find(a.quizId);
+      if (!quiz) return '';
+      const mod = quizRepository.getModule(quiz.id);
+      const course = mod && moduleRepository.getCourse(mod.id);
+      const cls = a.pct >= 70 ? 'good' : (a.pct >= 50 ? '' : 'bad');
+      const passInfo = quiz.passThreshold != null ? (a.pct >= quiz.passThreshold ? ' · zaliczone' : ' · niezaliczone') : '';
+      return `
+        <div class="attempt-row">
+          <div class="attempt-row-head" onclick="toggleAttempt('${a.id}')">
+            <div>
+              <div class="attempt-row-title">${escapeHtml(quiz.shortTitle || quiz.title)}</div>
+              <div class="attempt-row-sub">${course ? escapeHtml(course.shortTitle || course.title) + ' · ' : ''}${fmtDateTime(a.date)}${passInfo}</div>
+            </div>
+            <div class="attempt-row-right">
+              <span class="pct-pill ${cls}">${a.score}/${a.total} (${a.pct}%)</span>
+              <span class="attempt-row-toggle" id="toggle-${a.id}">▼ Zobacz odpowiedzi</span>
+            </div>
+          </div>
+          <div class="attempt-review" id="review-${a.id}">${renderAttemptReview(quiz, a)}</div>
+        </div>`;
+    }).join('');
+  }
+
+  (async () => {
+    await learnEnsureSeeded();
+    USER = userRepository.current();
+    renderCard();
+    renderStats();
+    renderActivity();
+    renderAttempts();
+  })();
+  </script>
+</AppLayout>
