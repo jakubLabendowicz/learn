@@ -1,0 +1,27 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import DataScripts from '../../components/DataScripts.astro';
+---
+<AppLayout title="Kurs — learn" active="courses" extraStyles={['/assets/course.css']}>
+  <div class="course-topbar" id="course-topbar" style="display:none">
+    <div class="course-topbar-inner">
+      <div class="course-topbar-title" id="course-topbar-title"></div>
+      <div class="course-topbar-progress">
+        <span id="course-topbar-pct">0% ukończone</span>
+        <div class="course-topbar-bar"><span id="course-topbar-bar-fill"></span></div>
+        <button class="course-topbar-export" id="course-topbar-export">⬇ Eksportuj</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="course-main" id="course-app">
+    <p class="course-loading">Wczytywanie kursu…</p>
+  </main>
+
+  <footer class="site-footer" id="course-footer" style="display:none">
+    learn — platforma kursów <span id="course-archive-wrap">· <a id="course-archive-link" href="#">zobacz archiwalną wersję tego kursu</a></span>
+  </footer>
+
+  <DataScripts />
+  <script is:inline src="/assets/course.js"></script>
+</AppLayout>

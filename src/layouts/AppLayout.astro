@@ -1,0 +1,73 @@
+---
+// Shared shell for every app.learn.labendowicz.com page: a fixed top bar
+// + left sidebar nav, rendered server-side at build time (replacing the
+// old runtime renderAppShell() DOM-injection approach — Astro lets the
+// shell just be real markup instead).
+interface Props {
+  title: string;
+  active: 'home' | 'courses' | 'profile';
+  extraStyles?: string[];
+}
+const { title, active, extraStyles = [] } = Astro.props;
+
+const navItems = [
+  { key: 'home', href: '/', icon: '🏠', label: 'Strona główna' },
+  { key: 'courses', href: '/courses', icon: '📚', label: 'Kursy' },
+  { key: 'profile', href: '/profile', icon: '👤', label: 'Profil' },
+];
+---
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/app-shell.css">
+  {extraStyles.map(href => <link rel="stylesheet" href={href} />)}
+</head>
+<body>
+
+<div class="app-topbar">
+  <div class="app-topbar-left">
+    <button class="app-menu-btn" id="app-menu-btn" aria-label="Otwórz menu">☰</button>
+    <a class="logo" href="/">
+      <span class="logo-dot"></span>
+      learn
+    </a>
+  </div>
+  <div class="app-topbar-right">
+    <a class="btn-secondary" href="/profile">👤 Profil</a>
+  </div>
+</div>
+
+<nav class="app-sidebar" id="app-sidebar">
+  <div class="app-nav">
+    {navItems.map(it => (
+      <a class={`app-nav-link${it.key === active ? ' active' : ''}`} href={it.href}>
+        <span class="app-nav-icon">{it.icon}</span> {it.label}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<div class="app-shell-overlay" id="app-shell-overlay"></div>
+
+<div class="app-main">
+  <slot />
+</div>
+
+<script is:inline>
+  const sidebar = document.getElementById('app-sidebar');
+  const overlay = document.getElementById('app-shell-overlay');
+  document.getElementById('app-menu-btn').addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  });
+</script>
+</body>
+</html>
